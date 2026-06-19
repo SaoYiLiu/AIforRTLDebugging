@@ -1,0 +1,34 @@
+#! /usr/bin/vvp
+:ivl_version "11.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2009.vpi";
+S_0x5f3335dc5e50 .scope package, "$unit" "$unit" 2 1;
+ .timescale 0 0;
+S_0x5f3335dc5fe0 .scope module, "TopModule" "TopModule" 3 1;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 16 "o";
+v0x5f3335debbf0_0 .net *"_ivl_0", 31 0, L_0x5f3335e0e020;  1 drivers
+L_0x7cbaf3bb7018 .functor BUFT 1, C4<0000000000000000>, C4<0>, C4<0>, C4<0>;
+v0x5f3335e0dae0_0 .net *"_ivl_3", 15 0, L_0x7cbaf3bb7018;  1 drivers
+L_0x7cbaf3bb7060 .functor BUFT 1, C4<00000000000000000000000000000000>, C4<0>, C4<0>, C4<0>;
+v0x5f3335e0dbc0_0 .net/2u *"_ivl_4", 31 0, L_0x7cbaf3bb7060;  1 drivers
+v0x5f3335e0dc80_0 .net *"_ivl_6", 0 0, L_0x5f3335e1e1b0;  1 drivers
+o0x7cbaf3e4f0d8 .functor BUFZ 16, C4<zzzzzzzzzzzzzzzz>; HiZ drive
+; Elide local net with no drivers, v0x5f3335e0dd40_0 name=_ivl_8
+v0x5f3335e0de20_0 .net "o", 15 0, L_0x5f3335e1e320;  1 drivers
+v0x5f3335e0df00_0 .var "r", 15 0;
+L_0x5f3335e0e020 .concat [ 16 16 0 0], v0x5f3335e0df00_0, L_0x7cbaf3bb7018;
+L_0x5f3335e1e1b0 .cmp/eq 32, L_0x5f3335e0e020, L_0x7cbaf3bb7060;
+L_0x5f3335e1e320 .functor MUXZ 16, v0x5f3335e0df00_0, o0x7cbaf3e4f0d8, L_0x5f3335e1e1b0, C4<>;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "-";
+    "ref_only.sv";

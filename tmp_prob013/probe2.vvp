@@ -1,0 +1,55 @@
+#! /usr/bin/vvp
+:ivl_version "11.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+S_0x5ca2ccc2d110 .scope module, "probe2" "probe2" 2 2;
+ .timescale -12 -12;
+L_0x73448d356180 .functor BUFT 1, C4<zzzzzzzzzzzzzzzz000000000>, C4<0>, C4<0>, C4<0>;
+L_0x73448d3561c8 .functor BUFT 1, C4<zzzzzzzzzzzzzzzz000000000>, C4<0>, C4<0>, C4<0>;
+L_0x5ca2ccc02cf0 .functor XOR 25, L_0x73448d356180, L_0x73448d3561c8, C4<0000000000000000000000000>, C4<0000000000000000000000000>;
+L_0x73448d356210 .functor BUFT 1, C4<zzzzzzzzzzzzzzzz000000000>, C4<0>, C4<0>, C4<0>;
+L_0x5ca2ccc51170 .functor XOR 25, L_0x5ca2ccc02cf0, L_0x73448d356210, C4<0000000000000000000000000>, C4<0000000000000000000000000>;
+o0x73448d39f1f8 .functor BUFZ 16, C4<zzzzzzzzzzzzzzzz>; HiZ drive
+o0x73448d39f198 .functor BUFZ 16, C4<zzzzzzzzzzzzzzzz>; HiZ drive
+L_0x5ca2ccc512e0 .functor XOR 16, o0x73448d39f1f8, o0x73448d39f198, C4<0000000000000000>, C4<0000000000000000>;
+L_0x5ca2ccc513e0 .functor XOR 16, L_0x5ca2ccc512e0, o0x73448d39f1f8, C4<0000000000000000>, C4<0000000000000000>;
+L_0x73448d356138 .functor BUFT 1, C4<zzzzzzzzzzzzzzzz000000000>, C4<0>, C4<0>, C4<0>;
+v0x5ca2ccc28520_0 .net *"_ivl_12", 24 0, L_0x73448d356138;  1 drivers
+v0x5ca2ccc28120_0 .net *"_ivl_14", 24 0, L_0x73448d356180;  1 drivers
+v0x5ca2ccc50540_0 .net *"_ivl_16", 24 0, L_0x73448d3561c8;  1 drivers
+v0x5ca2ccc50600_0 .net *"_ivl_18", 24 0, L_0x5ca2ccc02cf0;  1 drivers
+v0x5ca2ccc506e0_0 .net *"_ivl_20", 24 0, L_0x73448d356210;  1 drivers
+v0x5ca2ccc507c0_0 .net *"_ivl_22", 24 0, L_0x5ca2ccc51170;  1 drivers
+v0x5ca2ccc508a0_0 .net *"_ivl_26", 15 0, L_0x5ca2ccc512e0;  1 drivers
+v0x5ca2ccc50980_0 .net *"_ivl_28", 15 0, L_0x5ca2ccc513e0;  1 drivers
+v0x5ca2ccc50a60_0 .net "lcm_dut", 15 0, o0x73448d39f198;  0 drivers
+v0x5ca2ccc50b40_0 .net "lcm_mis", 0 0, L_0x5ca2ccc51500;  1 drivers
+v0x5ca2ccc50c00_0 .net "lcm_ref", 15 0, o0x73448d39f1f8;  0 drivers
+L_0x73448d356060 .functor BUFT 1, C4<00000000>, C4<0>, C4<0>, C4<0>;
+v0x5ca2ccc50ce0_0 .net "mcd_dut", 7 0, L_0x73448d356060;  1 drivers
+L_0x73448d356018 .functor BUFT 1, C4<00000000>, C4<0>, C4<0>, C4<0>;
+v0x5ca2ccc50dc0_0 .net "mcd_ref", 7 0, L_0x73448d356018;  1 drivers
+v0x5ca2ccc50ea0_0 .net "tb_match", 0 0, L_0x5ca2ccc51210;  1 drivers
+L_0x73448d3560f0 .functor BUFT 1, C4<0>, C4<0>, C4<0>, C4<0>;
+v0x5ca2ccc50f60_0 .net "vld_dut", 0 0, L_0x73448d3560f0;  1 drivers
+L_0x73448d3560a8 .functor BUFT 1, C4<0>, C4<0>, C4<0>, C4<0>;
+v0x5ca2ccc51020_0 .net "vld_ref", 0 0, L_0x73448d3560a8;  1 drivers
+L_0x5ca2ccc51210 .cmp/eeq 25, L_0x73448d356138, L_0x5ca2ccc51170;
+L_0x5ca2ccc51500 .cmp/nee 16, o0x73448d39f1f8, L_0x5ca2ccc513e0;
+    .scope S_0x5ca2ccc2d110;
+T_0 ;
+    %delay 1, 0;
+    %vpi_call 2 21 "$display", "tb_match=%b lcm_individual_mis=%b", v0x5ca2ccc50ea0_0, v0x5ca2ccc50b40_0 {0 0 0};
+    %vpi_call 2 22 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 3;
+    "N/A";
+    "<interactive>";
+    "probe2.sv";

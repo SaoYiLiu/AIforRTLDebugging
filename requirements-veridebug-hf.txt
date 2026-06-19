@@ -1,0 +1,17 @@
+# Optional: Hugging Face LLM-EDA/VeriDebug (GritLM unified model)
+# Install PyTorch for your platform first: https://pytorch.org/get-started/locally/
+#
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+#   pip install -r requirements-veridebug-hf.txt
+#
+# GPU strongly recommended (~7B-class model). Set:
+#   export VERIDEBUG_HF_MODEL=LLM-EDA/VeriDebug
+#   export VERIDEBUG_HF_DEVICE_MAP=auto
+
+gritlm>=1.0.2
+transformers>=4.36.0
+accelerate>=0.25.0
+scipy>=1.10.0
+numpy>=1.24.0
+huggingface_hub>=0.20.0
+sentencepiece>=0.1.99

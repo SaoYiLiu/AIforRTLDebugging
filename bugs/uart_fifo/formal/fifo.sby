@@ -1,0 +1,17 @@
+[options]
+mode bmc
+depth 5
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal fifo.sv fifo_formal.sv
+hierarchy -check -top fifo_formal
+proc; opt
+memory; opt
+
+[files]
+../rtl/fifo.sv
+fifo_formal.sv
+

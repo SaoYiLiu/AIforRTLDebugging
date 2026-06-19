@@ -1,0 +1,17 @@
+[options]
+mode prove
+depth 20
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal counter.sv counter_formal.sv
+hierarchy -check -top counter_formal
+proc; opt
+memory; opt
+
+[files]
+counter.sv
+counter_formal.sv
+

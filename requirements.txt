@@ -1,0 +1,9 @@
+## MCP server + waveform parsing utilities
+mcp
+vcdvcd
+pydantic
+rich
+cursor-sdk
+httpx
+click
+

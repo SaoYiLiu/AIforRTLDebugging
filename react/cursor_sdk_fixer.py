@@ -1,0 +1,293 @@
+from __future__ import annotations
+
+import os
+import re
+from dataclasses import dataclass
+from typing import Any
+
+from react.connection_map import format_connection_map_for_llm  # noqa: E402
+from react.cursor_transport import cursor_prompt  # noqa: E402
+from react.parsers import (  # noqa: E402
+    ErrorKind,
+    StructuredFeedback,
+    format_structured_feedback,
+)
+
+
+@dataclass(frozen=True)
+class FixResult:
+    fixed_sv: str
+    rationale: str
+    raw_text: str
+    transport: str = "bridge"
+
+
+ERROR_PROMPTS: dict[ErrorKind, str] = {
+    "syntax": (
+        "Focus on syntax only: semicolons, begin/end pairing, keywords, and valid Verilog-2001 constructs. "
+        "Do not change functional logic unless required to fix a syntax error."
+    ),
+    "binding": (
+        "Focus on undeclared identifiers, port connections, and wire/reg declarations. "
+        "Ensure every signal used in the module is declared before use."
+    ),
+    "type": (
+        "Focus on bit-width mismatches, signed/unsigned issues, and assignment width rules."
+    ),
+    "port": (
+        "Focus on module port lists matching instantiation and reference connections."
+    ),
+    "range": (
+        "Focus on index bounds, array sizes, and part-select ranges."
+    ),
+    "compile": (
+        "Fix all compilation errors before attempting logic changes. "
+        "Address each listed error at the indicated line."
+    ),
+    "logic": (
+        "The design compiles but fails simulation against the reference model. "
+        "Use structured mismatch data and the causal waveform trace to find where DUT diverges from ref. "
+        "Make minimal targeted logic fixes; preserve correct behavior elsewhere."
+    ),
+    "unknown": (
+        "Review structured feedback and simulation evidence to identify whether the issue is "
+        "compile-time or a logic mismatch, then apply the smallest correct fix."
+    ),
+}
+
+
+def _extract_topmodule_sv(text: str) -> str | None:
+    m = re.search(
+        r"```(?:verilog|systemverilog|sv)?\s*(module\s+TopModule[\s\S]*?endmodule)\s*```",
+        text,
+    )
+    if m:
+        return m.group(1).strip() + "\n"
+
+    m2 = re.search(r"(module\s+TopModule[\s\S]*?endmodule)", text)
+    if m2:
+        return m2.group(1).strip() + "\n"
+
+    return None
+
+
+def _extract_rationale(text: str) -> str:
+    m = re.search(
+        r"##\s*Rationale\s*(.*?)(?:\n##\s*FixedTopModule|\Z)",
+        text,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    if m:
+        return m.group(1).strip()
+
+    parts = re.split(
+        r"```(?:verilog|systemverilog|sv)?\s*module\s+TopModule[\s\S]*?endmodule\s*```",
+        text,
+        maxsplit=1,
+    )
+    if len(parts) >= 1:
+        return parts[0].strip()
+
+    return ""
+
+
+def _add_line_numbers(code: str) -> str:
+    lines = code.splitlines()
+    width = max(3, len(str(len(lines))))
+    return "\n".join(f"L{i + 1:0{width}d}: {line}" for i, line in enumerate(lines))
+
+
+def _format_vcd_summary(vcd_summary: dict[str, Any] | None) -> str:
+    if not vcd_summary:
+        return ""
+
+    parts: list[str] = []
+
+    if vcd_summary.get("failure_time") is not None:
+        parts.append(f"failure_time (ps): {vcd_summary['failure_time']}")
+
+    causal = vcd_summary.get("causal_chain") or []
+    if causal:
+        parts.append("\n## Causal trace (transitions before failure)")
+        for ev in causal[:20]:
+            parts.append(
+                f"- {ev['signal']} @ t={ev['time']}: {ev['value']} "
+                f"(Δ={ev['delta_to_failure']} ps before failure)"
+            )
+
+    sigs = vcd_summary.get("signals", [])[:40]
+    if sigs:
+        parts.append("\n## Available signals (partial)")
+        parts.extend(f"- {s}" for s in sigs)
+
+    results = vcd_summary.get("results", {})
+    for sig, info in list(results.items())[:6]:
+        parts.append(f"\n## Waveform: {sig}")
+        parts.extend(info.get("lines", [])[:80])
+
+    return "\n".join(parts).strip()
+
+
+def fix_with_cursor_sdk(
+    *,
+    prob_id: str,
+    spec_text: str,
+    buggy_sv: str,
+    current_sv: str,
+    sim_stdout: str,
+    sim_stderr: str,
+    vcd_summary: dict[str, Any] | None,
+    connection_map: dict[str, Any] | None = None,
+    structured_feedback: StructuredFeedback | dict[str, Any] | None = None,
+    error_kind: ErrorKind | None = None,
+    prior_rationales: list[str] | None = None,
+    model: str = "composer-2.5",
+) -> FixResult:
+    """
+    Use Cursor (SDK bridge or REST API) to propose a corrected `TopModule`.
+
+    Requires ``CURSOR_API_KEY``. Transport is chosen automatically: local SDK
+    bridge on WSL/desktop, direct REST on headless Linux (see ``cursor_transport``).
+    """
+    if "CURSOR_API_KEY" not in os.environ:
+        raise RuntimeError("CURSOR_API_KEY is not set in environment.")
+
+    if isinstance(structured_feedback, dict):
+        kind = error_kind or structured_feedback.get("error_kind", "unknown")
+        feedback_text = _format_feedback_from_dict(structured_feedback)
+    elif structured_feedback is not None:
+        kind = error_kind or structured_feedback.error_kind
+        feedback_text = format_structured_feedback(structured_feedback)
+    else:
+        kind = error_kind or "unknown"
+        feedback_text = ""
+
+    kind = kind or "unknown"
+    error_guidance = ERROR_PROMPTS.get(kind, ERROR_PROMPTS["unknown"])
+
+    vcd_text = _format_vcd_summary(vcd_summary)
+    map_text = format_connection_map_for_llm(connection_map)
+
+    memory = ""
+    if prior_rationales:
+        recent = [r.strip() for r in prior_rationales if r.strip()][-3:]
+        if recent:
+            memory = "## Memory (prior iterations)\n" + "\n\n".join(
+                f"- Iteration rationale:\n{r}" for r in recent
+            )
+
+    numbered_current = _add_line_numbers(current_sv)
+
+    raw_sim = (sim_stdout or "").strip()
+    if (sim_stderr or "").strip():
+        raw_sim += "\n[stderr]\n" + sim_stderr.strip()
+
+    prompt = f"""You are debugging a Verilog RTL module called TopModule.
+
+## Problem
+{prob_id}
+
+## Error type
+{kind}
+
+## Fix strategy
+{error_guidance}
+
+## Spec (from prompt file)
+{spec_text.strip()}
+
+## Buggy RTL (from prompt file)
+```verilog
+{buggy_sv.strip()}
+```
+
+## Current candidate RTL (line-numbered)
+```verilog
+{numbered_current}
+```
+
+## Structured tool feedback
+```text
+{feedback_text.strip() if feedback_text else "(none — see raw simulation output below)"}
+```
+
+## Connection map (testbench wiring — use for waveform interpretation)
+```text
+{map_text if map_text else "(not available)"}
+```
+
+## Raw simulation output
+```text
+{raw_sim}
+```
+
+## Waveform evidence
+```text
+{vcd_text if vcd_text else "(no VCD summary available)"}
+```
+
+{memory}
+
+## Task
+- Output in TWO sections:
+
+## Rationale
+3-8 bullet points describing:
+- the suspected bug (cite line numbers from the numbered RTL)
+- evidence from structured feedback and waveform causal trace
+- what change you made
+
+## FixedTopModule
+A FULL corrected `TopModule` implementation (verilog). Put it in a single fenced ```verilog block.
+"""
+
+    raw, transport = cursor_prompt(
+        prompt,
+        model=model,
+        api_key=os.environ["CURSOR_API_KEY"],
+        workspace=os.getcwd(),
+        timeout_s=600,
+    )
+    fixed = _extract_topmodule_sv(raw)
+    if not fixed:
+        raise RuntimeError("Cursor response did not contain a parsable TopModule.")
+
+    rationale = _extract_rationale(raw)
+    return FixResult(
+        fixed_sv=fixed,
+        rationale=rationale,
+        raw_text=raw,
+        transport=transport,
+    )
+
+
+def _format_feedback_from_dict(data: dict[str, Any]) -> str:
+    """Reconstruct formatted feedback from a serialized StructuredFeedback dict."""
+    lines: list[str] = [f"error_kind: {data.get('error_kind', 'unknown')}"]
+
+    compile_block = data.get("compile")
+    if compile_block and not compile_block.get("success", True):
+        lines.append("\n## Compile errors")
+        for err in compile_block.get("errors", []):
+            if err.get("type") == "warning":
+                continue
+            hint = err.get("hint")
+            hint_s = f" — hint: {hint}" if hint else ""
+            lines.append(
+                f"- L{err.get('line')} [{err.get('type')}]: {err.get('message')}{hint_s}"
+            )
+
+    sim_block = data.get("simulation")
+    if sim_block:
+        cb = sim_block.get("chipbench")
+        if cb:
+            lines.append("\n## ChipBench regression")
+            lines.append(f"- mismatches: {cb.get('mismatches')} / {cb.get('samples')} samples")
+            if cb.get("first_mismatch_time_ps") is not None:
+                lines.append(f"- first_mismatch_time_ps: {cb['first_mismatch_time_ps']}")
+        for f in sim_block.get("failures", [])[:10]:
+            lines.append(
+                f"- {f.get('signal')}: expected={f.get('expected')} actual={f.get('actual')}"
+            )
+
+    return "\n".join(lines)

@@ -1,0 +1,10 @@
+# running in fifo_buggy/src/
+read -formal -D USE_BUGGY fifo_buggy.sv fifo_formal.sv
+hierarchy -check -top fifo_formal
+proc; opt
+memory; opt
+
+hierarchy -smtcheck
+rename -witness
+write_jny -no-connections ../model/design.json
+write_rtlil ../model/design.il

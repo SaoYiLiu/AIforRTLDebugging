@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+<testsuite timestamp="2026-05-28T12:24:06" hostname="LAPTOP-IV30H7JE" package="counter_legacy" id="0" name="default" tests="1" errors="1" failures="0" time="0" skipped="0">
+<properties>
+<property name="os" value="Linux"/>
+<property name="expect" value="PASS"/>
+<property name="status" value="ERROR"/>
+</properties>
+<testcase classname="default" name="default" time="0">
+<error type="ERROR"/>
+</testcase>
+<system-out>SBY 12:24:05 [counter_legacy] Removing directory '/mnt/c/Users/user/Desktop/AIfordebugging/formal/counter_legacy'.
+SBY 12:24:05 [counter_legacy] Copy '/mnt/c/Users/user/Desktop/AIfordebugging/formal/../rtl/counter.sv' to '/mnt/c/Users/user/Desktop/AIfordebugging/formal/counter_legacy/src/counter.sv'.
+SBY 12:24:05 [counter_legacy] Copy '/mnt/c/Users/user/Desktop/AIfordebugging/formal/counter_formal.sv' to '/mnt/c/Users/user/Desktop/AIfordebugging/formal/counter_legacy/src/counter_formal.sv'.
+SBY 12:24:05 [counter_legacy] engine_0: smtbmc z3
+SBY 12:24:05 [counter_legacy] base: starting process &quot;cd counter_legacy/src; yosys -ql ../model/design.log ../model/design.ys&quot;
+SBY 12:24:05 [counter_legacy] base: ERROR: Command syntax error: Unknown option or option in arguments.
+SBY 12:24:05 [counter_legacy] base: &gt; hierarchy -smtcheck
+SBY 12:24:05 [counter_legacy] base: &gt;           ^
+SBY 12:24:05 [counter_legacy] base: finished (returncode=1)
+SBY 12:24:05 [counter_legacy] base: task failed. ERROR.
+SBY 12:24:05 [counter_legacy] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 12:24:05 [counter_legacy] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 12:24:05 [counter_legacy] summary: engine_0 (smtbmc z3) did not return a status
+SBY 12:24:05 [counter_legacy] summary: engine_0 did not produce any traces
+SBY 12:24:06 [counter_legacy] DONE (ERROR, rc=16)
+</system-out>
+<system-err>
+</system-err>
+</testsuite>
+</testsuites>

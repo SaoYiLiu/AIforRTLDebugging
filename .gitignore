@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# common HDL outputs
+*.vcd
+*.fst
+*.log
+*.out
+*.blif
+*.json
+
+# generated outputs
+outputs/
+
+# SymbiYosys artifacts
+*_sby/
+sby_*/
+

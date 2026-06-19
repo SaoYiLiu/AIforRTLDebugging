@@ -1,0 +1,15 @@
+SBY 12:24:05 [counter_legacy] Removing directory '/mnt/c/Users/user/Desktop/AIfordebugging/formal/counter_legacy'.
+SBY 12:24:05 [counter_legacy] Copy '/mnt/c/Users/user/Desktop/AIfordebugging/formal/../rtl/counter.sv' to '/mnt/c/Users/user/Desktop/AIfordebugging/formal/counter_legacy/src/counter.sv'.
+SBY 12:24:05 [counter_legacy] Copy '/mnt/c/Users/user/Desktop/AIfordebugging/formal/counter_formal.sv' to '/mnt/c/Users/user/Desktop/AIfordebugging/formal/counter_legacy/src/counter_formal.sv'.
+SBY 12:24:05 [counter_legacy] engine_0: smtbmc z3
+SBY 12:24:05 [counter_legacy] base: starting process "cd counter_legacy/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 12:24:05 [counter_legacy] base: ERROR: Command syntax error: Unknown option or option in arguments.
+SBY 12:24:05 [counter_legacy] base: > hierarchy -smtcheck
+SBY 12:24:05 [counter_legacy] base: >           ^
+SBY 12:24:05 [counter_legacy] base: finished (returncode=1)
+SBY 12:24:05 [counter_legacy] base: task failed. ERROR.
+SBY 12:24:05 [counter_legacy] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 12:24:05 [counter_legacy] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 12:24:05 [counter_legacy] summary: engine_0 (smtbmc z3) did not return a status
+SBY 12:24:05 [counter_legacy] summary: engine_0 did not produce any traces
+SBY 12:24:06 [counter_legacy] DONE (ERROR, rc=16)

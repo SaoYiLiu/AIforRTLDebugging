@@ -1,0 +1,18 @@
+initial
+assume (= [_witness_.anyinit_procdff_131] false)
+assume (= [_witness_.anyinit_procdff_132] false)
+assume (= [_witness_.anyinit_procdff_133] false)
+assume (= [dut.count] #b010)
+assume (= [dut.dout] #x01)
+assume (= [dut.mem[0]] #x00)
+assume (= [dut.mem[1]] #x01)
+assume (= [dut.mem[2]] #x00)
+assume (= [dut.mem[3]] #x02)
+assume (= [dut.rptr] #b11)
+assume (= [dut.wptr] #b00)
+
+state 0
+
+state 1
+
+state 2

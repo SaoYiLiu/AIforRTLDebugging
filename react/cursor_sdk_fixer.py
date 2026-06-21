@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from react.connection_map import format_connection_map_for_llm  # noqa: E402
-from react.cursor_transport import cursor_prompt  # noqa: E402
+from react.cursor_transport import CursorPromptSession, cursor_prompt  # noqa: E402
 from react.formal_runner import format_formal_for_llm  # noqa: E402
 from react.parsers import (  # noqa: E402
     ErrorKind,
@@ -137,7 +137,16 @@ def _format_vcd_summary(vcd_summary: dict[str, Any] | None) -> str:
     return "\n".join(parts).strip()
 
 
-def fix_with_cursor_sdk(
+def _format_prior_rationale(prior_rationales: list[str] | None) -> str:
+    if not prior_rationales:
+        return ""
+    latest = [r.strip() for r in prior_rationales if r.strip()][-1:]
+    if not latest:
+        return ""
+    return "## Previous iteration rationale (prioritize this)\n" + latest[0]
+
+
+def build_chipbench_fix_prompt(
     *,
     prob_id: str,
     spec_text: str,
@@ -150,18 +159,8 @@ def fix_with_cursor_sdk(
     structured_feedback: StructuredFeedback | dict[str, Any] | None = None,
     error_kind: ErrorKind | None = None,
     prior_rationales: list[str] | None = None,
-    model: str = "composer-2.5",
     formal_summary: dict[str, Any] | None = None,
-) -> FixResult:
-    """
-    Use Cursor (SDK bridge or REST API) to propose a corrected `TopModule`.
-
-    Requires ``CURSOR_API_KEY``. Transport is chosen automatically: local SDK
-    bridge on WSL/desktop, direct REST on headless Linux (see ``cursor_transport``).
-    """
-    if "CURSOR_API_KEY" not in os.environ:
-        raise RuntimeError("CURSOR_API_KEY is not set in environment.")
-
+) -> tuple[str, ErrorKind]:
     if isinstance(structured_feedback, dict):
         kind = error_kind or structured_feedback.get("error_kind", "unknown")
         feedback_text = _format_feedback_from_dict(structured_feedback)
@@ -174,19 +173,10 @@ def fix_with_cursor_sdk(
 
     kind = kind or "unknown"
     error_guidance = ERROR_PROMPTS.get(kind, ERROR_PROMPTS["unknown"])
-
     vcd_text = _format_vcd_summary(vcd_summary)
     map_text = format_connection_map_for_llm(connection_map)
     formal_text = format_formal_for_llm(formal_summary)
-
-    memory = ""
-    if prior_rationales:
-        recent = [r.strip() for r in prior_rationales if r.strip()][-3:]
-        if recent:
-            memory = "## Memory (prior iterations)\n" + "\n\n".join(
-                f"- Iteration rationale:\n{r}" for r in recent
-            )
-
+    prior_memory = _format_prior_rationale(prior_rationales)
     numbered_current = _add_line_numbers(current_sv)
 
     raw_sim = (sim_stdout or "").strip()
@@ -203,6 +193,8 @@ def fix_with_cursor_sdk(
 
 ## Fix strategy
 {error_guidance}
+
+{prior_memory}
 
 ## Spec (from prompt file)
 {spec_text.strip()}
@@ -242,8 +234,6 @@ def fix_with_cursor_sdk(
 {formal_text if formal_text else "(formal not run or passed)"}
 ```
 
-{memory}
-
 ## Task
 - Output in TWO sections:
 
@@ -256,14 +246,67 @@ def fix_with_cursor_sdk(
 ## FixedTopModule
 A FULL corrected `TopModule` implementation (verilog). Put it in a single fenced ```verilog block.
 """
+    return prompt, kind  # type: ignore[return-value]
 
-    raw, transport = cursor_prompt(
-        prompt,
-        model=model,
-        api_key=os.environ["CURSOR_API_KEY"],
-        workspace=str(REPO_ROOT),
-        timeout_s=600,
+
+def fix_with_cursor_sdk(
+    *,
+    prob_id: str,
+    spec_text: str,
+    buggy_sv: str,
+    current_sv: str,
+    sim_stdout: str,
+    sim_stderr: str,
+    vcd_summary: dict[str, Any] | None,
+    connection_map: dict[str, Any] | None = None,
+    structured_feedback: StructuredFeedback | dict[str, Any] | None = None,
+    error_kind: ErrorKind | None = None,
+    prior_rationales: list[str] | None = None,
+    model: str = "composer-2.5",
+    formal_summary: dict[str, Any] | None = None,
+    cursor_session: CursorPromptSession | None = None,
+    prompt_artifact_path: Path | None = None,
+) -> FixResult:
+    """
+    Use Cursor (SDK bridge or REST API) to propose a corrected `TopModule`.
+
+    Requires ``CURSOR_API_KEY``. Pass ``cursor_session`` to reuse one REST cloud
+    agent per problem (see ``CursorPromptSession``).
+    """
+    if "CURSOR_API_KEY" not in os.environ:
+        raise RuntimeError("CURSOR_API_KEY is not set in environment.")
+
+    prompt, _kind = build_chipbench_fix_prompt(
+        prob_id=prob_id,
+        spec_text=spec_text,
+        buggy_sv=buggy_sv,
+        current_sv=current_sv,
+        sim_stdout=sim_stdout,
+        sim_stderr=sim_stderr,
+        vcd_summary=vcd_summary,
+        connection_map=connection_map,
+        structured_feedback=structured_feedback,
+        error_kind=error_kind,
+        prior_rationales=prior_rationales,
+        formal_summary=formal_summary,
     )
+
+    if cursor_session is not None:
+        raw, transport = cursor_session.prompt(
+            prompt,
+            model=model,
+            timeout_s=600,
+            prompt_artifact_path=prompt_artifact_path,
+        )
+    else:
+        raw, transport = cursor_prompt(
+            prompt,
+            model=model,
+            api_key=os.environ["CURSOR_API_KEY"],
+            workspace=str(REPO_ROOT),
+            timeout_s=600,
+            prompt_artifact_path=prompt_artifact_path,
+        )
     fixed = _extract_topmodule_sv(raw)
     if not fixed:
         raise RuntimeError("Cursor response did not contain a parsable TopModule.")

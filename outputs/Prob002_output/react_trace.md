@@ -26,12 +26,40 @@
 
 **Action**: Call fixer() for iteration 2.
 
-**Observation**: Cursor (bridge) produced candidate (len=736 chars).
+**Observation**: Cursor (rest) produced candidate (len=277 chars).
 
 ## Step 5
 **Thought**: Run simulation to compare DUT vs reference.
 
 **Action**: run_iverilog(tb, ref, fixed) [iteration 2]
+
+**Observation**: compile.rc=0, run.rc=0
+
+## Step 6
+**Thought**: There are mismatches; use simulation evidence (and waveform summary) to propose a patch.
+
+**Action**: Call fixer() for iteration 3.
+
+**Observation**: Cursor (rest) produced candidate (len=316 chars).
+
+## Step 7
+**Thought**: Run simulation to compare DUT vs reference.
+
+**Action**: run_iverilog(tb, ref, fixed) [iteration 3]
+
+**Observation**: compile.rc=0, run.rc=0
+
+## Step 8
+**Thought**: There are mismatches; use simulation evidence (and waveform summary) to propose a patch.
+
+**Action**: Call fixer() for iteration 4.
+
+**Observation**: Cursor (rest) produced candidate (len=316 chars).
+
+## Step 9
+**Thought**: Run simulation to compare DUT vs reference.
+
+**Action**: run_iverilog(tb, ref, fixed) [iteration 4]
 
 **Observation**: compile.rc=0, run.rc=0
 

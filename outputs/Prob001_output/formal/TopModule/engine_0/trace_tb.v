@@ -28,20 +28,29 @@ module testbench(input clock, output reg genclock);
 `ifndef VERILATOR
     #1;
 `endif
-    UUT._witness_.anyinit_procdff_74 = 1'b1;
-    UUT._witness_.anyinit_procdff_75 = 1'b1;
-    UUT._witness_.anyinit_procdff_76 = 7'b0000000;
-    UUT._witness_.anyinit_procdff_77 = 8'b00000000;
-    UUT.gold_a_tem = 8'b00000000;
+    UUT._witness_.anyinit_procdff_151 = 1'b0;
+    UUT._witness_.anyinit_procdff_155 = 1'b0;
+    UUT._witness_.anyinit_procdff_158 = 1'b0;
+    UUT._witness_.anyinit_procdff_159 = 1'b0;
+    UUT._witness_.anyinit_procdff_160 = 1'b0;
+    UUT._witness_.anyinit_procdff_163 = 1'b0;
+    UUT._witness_.anyinit_procdff_164 = 1'b0;
+    UUT._witness_.anyinit_procdff_174 = 1'b1;
+    UUT._witness_.anyinit_procdff_176 = 1'b1;
+    UUT._witness_.anyinit_procdff_185 = 1'b1;
+    UUT._witness_.anyinit_procdff_186 = 1'b1;
+    UUT._witness_.anyinit_procdff_188 = 1'b1;
+    UUT._witness_.anyinit_procdff_190 = 1'b1;
+    UUT._witness_.anyinit_procdff_192 = 1'b1;
 
     // state 0
-    UUT.a = 1'b0;
+    UUT.a = 1'b1;
     UUT.rst_n = 1'b0;
   end
   always @(posedge clock) begin
     // state 1
     if (cycle == 0) begin
-      UUT.a <= 1'b1;
+      UUT.a <= 1'b0;
       UUT.rst_n <= 1'b1;
     end
 
@@ -59,7 +68,7 @@ module testbench(input clock, output reg genclock);
 
     // state 4
     if (cycle == 3) begin
-      UUT.a <= 1'b0;
+      UUT.a <= 1'b1;
       UUT.rst_n <= 1'b1;
     end
 
@@ -77,7 +86,7 @@ module testbench(input clock, output reg genclock);
 
     // state 7
     if (cycle == 6) begin
-      UUT.a <= 1'b1;
+      UUT.a <= 1'b0;
       UUT.rst_n <= 1'b1;
     end
 
@@ -87,13 +96,7 @@ module testbench(input clock, output reg genclock);
       UUT.rst_n <= 1'b1;
     end
 
-    // state 9
-    if (cycle == 8) begin
-      UUT.a <= 1'b0;
-      UUT.rst_n <= 1'b1;
-    end
-
-    genclock <= cycle < 9;
+    genclock <= cycle < 8;
     cycle <= cycle + 1;
   end
 endmodule

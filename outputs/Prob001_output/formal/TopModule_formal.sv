@@ -1,5 +1,5 @@
 module TopModule_formal;
-    localparam [7:0] TARGET = 8'b0111_0001;
+    localparam [7:0] PAT = 8'b0111_0001;
 
     (* gclk *) reg clk;
     (* anyseq *) reg rst_n;
@@ -13,25 +13,18 @@ module TopModule_formal;
         .match(match)
     );
 
-    // Golden shift-register state (RefModule behavior, not instantiated).
-    reg [7:0] gold_a_tem;
-
-    always @(posedge clk) begin
-        if (!rst_n)
-            gold_a_tem <= 8'b0;
-        else
-            gold_a_tem <= {gold_a_tem[6:0], a};
-    end
-
     always @(posedge clk) begin
         if ($initstate) begin
             assume(!rst_n);
-            assume(!a);
         end else if (!rst_n || !$past(rst_n)) begin
-            assert(match == 1'b0);
+            assert(!match);
+        end else if (rst_n && $past(rst_n) && $past(rst_n, 2) && $past(rst_n, 3) &&
+                     $past(rst_n, 4) && $past(rst_n, 5) && $past(rst_n, 6) &&
+                     $past(rst_n, 7)) begin
+            assert(match == ({ $past(a, 7), $past(a, 6), $past(a, 5), $past(a, 4),
+                               $past(a, 3), $past(a, 2), $past(a, 1), a } == PAT));
         end else begin
-            assert(gold_a_tem == { $past(gold_a_tem[6:0]), $past(a) });
-            assert(match == ($past(gold_a_tem) == TARGET));
+            assert(!match);
         end
     end
 endmodule

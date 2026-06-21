@@ -64,7 +64,7 @@ python react/react_runner.py \
 ## Batch
 
 ```bash
-python react/batch_runner.py \
+python run_chipbench_batch.py \
   --dataset-dir "third_party/ChipBench/Verilog Debugging/dataset_debug_one_shot_arithmetic" \
   --use-veridebug-hf \
   --max-iters 5

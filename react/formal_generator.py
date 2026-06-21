@@ -14,7 +14,9 @@ from pathlib import Path
 from typing import Any, Literal
 
 from react.connection_map import strip_spec_from_prompt  # noqa: E402
-from react.cursor_transport import cursor_prompt  # noqa: E402
+from react.cursor_transport import CursorPromptSession, cursor_prompt  # noqa: E402
+
+REPO_ROOT = Path(__file__).absolute().parents[1]
 
 FormalMode = Literal["bmc", "prove"]
 
@@ -319,6 +321,8 @@ def generate_formal_wrapper_with_cursor(
     dut_sv: str,
     model: str = "composer-2.5",
     strict: bool = False,
+    cursor_session: CursorPromptSession | None = None,
+    prompt_artifact_path: Path | None = None,
 ) -> tuple[str, str, str, str]:
     """
     Ask Cursor to emit a lightweight TopModule_formal.sv from the English spec.
@@ -338,13 +342,22 @@ def generate_formal_wrapper_with_cursor(
         strict=strict,
     )
 
-    raw, transport = cursor_prompt(
-        prompt,
-        model=model,
-        api_key=os.environ["CURSOR_API_KEY"],
-        workspace=os.getcwd(),
-        timeout_s=600,
-    )
+    if cursor_session is not None:
+        raw, transport = cursor_session.prompt(
+            prompt,
+            model=model,
+            timeout_s=600,
+            prompt_artifact_path=prompt_artifact_path,
+        )
+    else:
+        raw, transport = cursor_prompt(
+            prompt,
+            model=model,
+            api_key=os.environ["CURSOR_API_KEY"],
+            workspace=str(REPO_ROOT),
+            timeout_s=600,
+            prompt_artifact_path=prompt_artifact_path,
+        )
 
     formal_sv = _extract_formal_module(raw)
     if not formal_sv:
@@ -378,6 +391,7 @@ def ensure_formal_wrapper(
     mode: FormalMode = "bmc",
     depth: int = DEFAULT_FORMAL_DEPTH,
     force_regenerate: bool = False,
+    cursor_session: CursorPromptSession | None = None,
 ) -> FormalWrapperResult:
     """
     Load cached TopModule_formal.sv or generate a lightweight wrapper, then write .sby.
@@ -424,6 +438,8 @@ def ensure_formal_wrapper(
                     dut_sv=dut_sv,
                     model=model,
                     strict=strict,
+                    cursor_session=cursor_session,
+                    prompt_artifact_path=formal_dir / "formal_wrapper_prompt.md",
                 )
                 break
             except RuntimeError as exc:

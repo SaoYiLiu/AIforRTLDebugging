@@ -8,7 +8,24 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).absolute().parents[1]
+_PKG_DIR = Path(__file__)
+if not _PKG_DIR.is_absolute():
+    _PKG_DIR = _PKG_DIR.absolute()
+_PKG_DIR = _PKG_DIR.parent
+REPO_ROOT = _PKG_DIR.parent
+# `python react/batch_runner.py` puts react/ on sys.path and breaks `import react`.
+try:
+    if sys.path:
+        p0 = Path(sys.path[0])
+        if not p0.is_absolute():
+            try:
+                p0 = p0.absolute()
+            except OSError:
+                p0 = None
+        if p0 is not None and p0 == _PKG_DIR:
+            sys.path.pop(0)
+except OSError:
+    pass
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
@@ -97,7 +114,9 @@ def run_batch(
     formal_regenerate: bool = False,
     prob_ids: list[str] | None = None,
 ) -> dict:
-    dataset_path = Path(dataset_dir).resolve()
+    dataset_path = Path(dataset_dir)
+    if not dataset_path.is_absolute():
+        dataset_path = REPO_ROOT / dataset_path
     if not dataset_path.is_dir():
         raise NotADirectoryError(f"Dataset directory not found: {dataset_path}")
 
@@ -216,7 +235,7 @@ def run_batch(
     }
 
 
-if __name__ == "__main__":
+def main(argv: list[str] | None = None) -> dict:
     ap = argparse.ArgumentParser(
         description="Run react_runner over all ChipBench problems in a dataset folder."
     )
@@ -280,12 +299,12 @@ if __name__ == "__main__":
         nargs="+",
         help="Optional subset of problem IDs to run (e.g. Prob001 Prob002).",
     )
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     if args.cursor_transport:
         os.environ["CURSOR_TRANSPORT"] = args.cursor_transport
 
-    run_batch(
+    return run_batch(
         dataset_dir=args.dataset_dir,
         output_root=args.output_root,
         use_cursor_sdk=args.use_cursor_sdk,
@@ -304,3 +323,7 @@ if __name__ == "__main__":
         formal_regenerate=args.formal_regenerate,
         prob_ids=args.prob_ids,
     )
+
+
+if __name__ == "__main__":
+    main()

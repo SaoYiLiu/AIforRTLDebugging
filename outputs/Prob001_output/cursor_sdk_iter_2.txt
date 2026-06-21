@@ -2,15 +2,12 @@
 bridge
 
 ## Rationale
-- **Suspected bug (L031):** The shift update `a_tem <= {a, a_tem[6:0]};` inserts `a` at the **MSB** (bit 7). The spec requires shifting `a` into the **LSB** (bit 0), as in the reference model’s `{a_tem[6:0], a}`.
-
-- **Why `match` logic (L015–L021) is not the root cause:** The reference uses the same two-block structure and compares the pre-update `a_tem`. With the correct shift direction, that logic passes all 455 samples; the split-block timing is not what causes the failure here.
-
-- **Waveform evidence:** First mismatch at **200 ps** (2 total). At **195 ps** (posedge), `match_ref=1` but `match_dut=0`, and `tb.tb_mismatch` asserts. That aligns with Test Case 2 completing pattern `8'b0111_0001`: the reference shift register holds the pattern, but the DUT’s reversed shift produces a different window.
-
-- **Causal trace:** The failure follows `a=1` at 195 ps after the matching sequence (`a=0,1,1,1,0,0,0,1` from the testbench). With MSB-first shifting, `a_tem` never equals `8'b0111_0001` when the reference asserts `match`.
-
-- **Fix applied:** Change L031 to `a_tem <= {a_tem[6:0], a};` so each new bit enters the LSB and older bits shift toward the MSB. Verified: **0 mismatches / 455 samples**.
+- **Suspected bug (L031):** The shift update `a_tem <= {a, a_tem[6:0]}` inserts `a` at the MSB and drops the old LSB. The spec requires shifting `a` into the LSB while older bits move one position left (toward the MSB).
+- **Waveform evidence:** At t=195 ps (posedge after the last bit of pattern `0111_0001` is applied), `match_ref` asserts but `match_dut` stays 0. `tb_mismatch` goes high at t=195 and clears at t=205 — exactly when the reference detects the pattern and the DUT does not.
+- **Structured feedback:** 2 mismatches on `match`, first at 200 ps (sampled on the clock edge after the reference already asserted). That fits a wrong shift register contents, not wrong reset or match polarity.
+- **Root cause:** With `{a, a_tem[6:0]}`, after the test sequence `0111_0001` the register never holds `8'b0111_0001`, so the compare on L015 never succeeds at the expected time.
+- **Match logic (L010–L022) is correct:** It matches `RefModule` — `match` is registered from the pre-update `a_tem` on each posedge. No change needed there.
+- **Fix applied:** Change L031 to `a_tem <= {a_tem[6:0], a};`, which shifts left and injects `a` at bit 0. Verified: 0 mismatches in 455 samples vs 2 with the buggy shift.
 
 ## FixedTopModule
 ```verilog

@@ -31,82 +31,142 @@
 ; yosys-smt2-module TopModule_formal
 (declare-sort |TopModule_formal_s| 0)
 (declare-fun |TopModule_formal_is| (|TopModule_formal_s|) Bool)
-; yosys-smt2-anyinit TopModule_formal#0 1 TopModule_formal.sv:26.5-36.8
-; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_74"], "smtname": 0, "smtoffset": 0, "type": "init", "width": 1}
-(declare-fun |TopModule_formal#0| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_74
-; yosys-smt2-register _witness_.anyinit_procdff_74 1
-; yosys-smt2-wire _witness_.anyinit_procdff_74 1
-(define-fun |TopModule_formal_n _witness_.anyinit_procdff_74| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#0| state)) #b1))
-; yosys-smt2-anyinit TopModule_formal#1 1 TopModule_formal.sv:26.5-36.8
-; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_75"], "smtname": 1, "smtoffset": 0, "type": "init", "width": 1}
-(declare-fun |TopModule_formal#1| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_75
-; yosys-smt2-register _witness_.anyinit_procdff_75 1
-; yosys-smt2-wire _witness_.anyinit_procdff_75 1
-(define-fun |TopModule_formal_n _witness_.anyinit_procdff_75| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#1| state)) #b1))
-; yosys-smt2-anyinit TopModule_formal#2 7 TopModule_formal.sv:26.5-36.8
-; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_76"], "smtname": 2, "smtoffset": 0, "type": "init", "width": 7}
-(declare-fun |TopModule_formal#2| (|TopModule_formal_s|) (_ BitVec 7)) ; \_witness_.anyinit_procdff_76
-; yosys-smt2-register _witness_.anyinit_procdff_76 7
-; yosys-smt2-wire _witness_.anyinit_procdff_76 7
-(define-fun |TopModule_formal_n _witness_.anyinit_procdff_76| ((state |TopModule_formal_s|)) (_ BitVec 7) (|TopModule_formal#2| state))
-; yosys-smt2-anyinit TopModule_formal#3 8 TopModule_formal.sv:26.5-36.8
-; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_77"], "smtname": 3, "smtoffset": 0, "type": "init", "width": 8}
-(declare-fun |TopModule_formal#3| (|TopModule_formal_s|) (_ BitVec 8)) ; \_witness_.anyinit_procdff_77
-; yosys-smt2-register _witness_.anyinit_procdff_77 8
-; yosys-smt2-wire _witness_.anyinit_procdff_77 8
-(define-fun |TopModule_formal_n _witness_.anyinit_procdff_77| ((state |TopModule_formal_s|)) (_ BitVec 8) (|TopModule_formal#3| state))
-; yosys-smt2-anyseq TopModule_formal#4 1 TopModule_formal.sv:6.22-6.23 a
-; yosys-smt2-witness {"offset": 0, "path": ["\\a"], "smtname": 4, "smtoffset": 0, "type": "seq", "width": 1}
-(declare-fun |TopModule_formal#4| (|TopModule_formal_s|) (_ BitVec 1)) ; \a
+; yosys-smt2-anyinit TopModule_formal#0 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_192"], "smtname": 0, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#0| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_192
+; yosys-smt2-register _witness_.anyinit_procdff_192 1
+; yosys-smt2-wire _witness_.anyinit_procdff_192 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_192| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#0| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#1 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_151"], "smtname": 1, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#1| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_151
+; yosys-smt2-register _witness_.anyinit_procdff_151 1
+; yosys-smt2-wire _witness_.anyinit_procdff_151 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_151| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#1| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#2 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_155"], "smtname": 2, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#2| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_155
+; yosys-smt2-register _witness_.anyinit_procdff_155 1
+; yosys-smt2-wire _witness_.anyinit_procdff_155 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_155| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#2| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#3 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_158"], "smtname": 3, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#3| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_158
+; yosys-smt2-register _witness_.anyinit_procdff_158 1
+; yosys-smt2-wire _witness_.anyinit_procdff_158 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_158| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#3| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#4 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_159"], "smtname": 4, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#4| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_159
+; yosys-smt2-register _witness_.anyinit_procdff_159 1
+; yosys-smt2-wire _witness_.anyinit_procdff_159 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_159| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#4| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#5 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_160"], "smtname": 5, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#5| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_160
+; yosys-smt2-register _witness_.anyinit_procdff_160 1
+; yosys-smt2-wire _witness_.anyinit_procdff_160 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_160| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#5| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#6 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_163"], "smtname": 6, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#6| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_163
+; yosys-smt2-register _witness_.anyinit_procdff_163 1
+; yosys-smt2-wire _witness_.anyinit_procdff_163 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_163| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#6| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#7 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_164"], "smtname": 7, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#7| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_164
+; yosys-smt2-register _witness_.anyinit_procdff_164 1
+; yosys-smt2-wire _witness_.anyinit_procdff_164 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_164| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#7| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#8 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_174"], "smtname": 8, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#8| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_174
+; yosys-smt2-register _witness_.anyinit_procdff_174 1
+; yosys-smt2-wire _witness_.anyinit_procdff_174 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_174| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#8| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#9 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_176"], "smtname": 9, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#9| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_176
+; yosys-smt2-register _witness_.anyinit_procdff_176 1
+; yosys-smt2-wire _witness_.anyinit_procdff_176 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_176| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#9| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#10 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_185"], "smtname": 10, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#10| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_185
+; yosys-smt2-register _witness_.anyinit_procdff_185 1
+; yosys-smt2-wire _witness_.anyinit_procdff_185 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_185| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#10| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#11 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_186"], "smtname": 11, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#11| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_186
+; yosys-smt2-register _witness_.anyinit_procdff_186 1
+; yosys-smt2-wire _witness_.anyinit_procdff_186 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_186| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#11| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#12 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_188"], "smtname": 12, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#12| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_188
+; yosys-smt2-register _witness_.anyinit_procdff_188 1
+; yosys-smt2-wire _witness_.anyinit_procdff_188 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_188| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#12| state)) #b1))
+; yosys-smt2-anyinit TopModule_formal#13 1 TopModule_formal.sv:16.5-29.8
+; yosys-smt2-witness {"offset": 0, "path": ["\\_witness_", "\\anyinit_procdff_190"], "smtname": 13, "smtoffset": 0, "type": "init", "width": 1}
+(declare-fun |TopModule_formal#13| (|TopModule_formal_s|) (_ BitVec 1)) ; \_witness_.anyinit_procdff_190
+; yosys-smt2-register _witness_.anyinit_procdff_190 1
+; yosys-smt2-wire _witness_.anyinit_procdff_190 1
+(define-fun |TopModule_formal_n _witness_.anyinit_procdff_190| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#13| state)) #b1))
+; yosys-smt2-anyseq TopModule_formal#14 1 TopModule_formal.sv:6.22-6.23 a
+; yosys-smt2-witness {"offset": 0, "path": ["\\a"], "smtname": 14, "smtoffset": 0, "type": "seq", "width": 1}
+(declare-fun |TopModule_formal#14| (|TopModule_formal_s|) (_ BitVec 1)) ; \a
 ; yosys-smt2-wire a 1
-(define-fun |TopModule_formal_n a| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#4| state)) #b1))
-; yosys-smt2-anyseq TopModule_formal#5 1 $auto$setundef.cc:350:execute$110
-; yosys-smt2-witness {"offset": 0, "path": ["\\clk"], "smtname": 5, "smtoffset": 0, "type": "seq", "width": 1}
-(declare-fun |TopModule_formal#5| (|TopModule_formal_s|) (_ BitVec 1)) ; \clk
+(define-fun |TopModule_formal_n a| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#14| state)) #b1))
+; yosys-smt2-anyseq TopModule_formal#15 1 $auto$setundef.cc:350:execute$219
+; yosys-smt2-witness {"offset": 0, "path": ["\\clk"], "smtname": 15, "smtoffset": 0, "type": "seq", "width": 1}
+(declare-fun |TopModule_formal#15| (|TopModule_formal_s|) (_ BitVec 1)) ; \clk
 ; yosys-smt2-wire clk 1
-(define-fun |TopModule_formal_n clk| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#5| state)) #b1))
-; yosys-smt2-anyinit TopModule_formal#6 8 TopModule_formal.sv:19.5-24.8
-; yosys-smt2-witness {"offset": 0, "path": ["\\gold_a_tem"], "smtname": 6, "smtoffset": 0, "type": "init", "width": 8}
-(declare-fun |TopModule_formal#6| (|TopModule_formal_s|) (_ BitVec 8)) ; \gold_a_tem
-; yosys-smt2-register gold_a_tem 8
-; yosys-smt2-wire gold_a_tem 8
-(define-fun |TopModule_formal_n gold_a_tem| ((state |TopModule_formal_s|)) (_ BitVec 8) (|TopModule_formal#6| state))
+(define-fun |TopModule_formal_n clk| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#15| state)) #b1))
 ; yosys-smt2-cell TopModule dut
 ; yosys-smt2-witness {"path": ["\\dut"], "smtname": "dut", "type": "cell"}
-(declare-fun |TopModule_formal#7| (|TopModule_formal_s|) Bool) ; \match
+(declare-fun |TopModule_formal#16| (|TopModule_formal_s|) Bool) ; \match
 (declare-fun |TopModule_formal_h dut| (|TopModule_formal_s|) |TopModule_s|)
 ; yosys-smt2-wire match 1
-(define-fun |TopModule_formal_n match| ((state |TopModule_formal_s|)) Bool (|TopModule_formal#7| state))
-; yosys-smt2-anyseq TopModule_formal#8 1 TopModule_formal.sv:5.22-5.27 rst_n
-; yosys-smt2-witness {"offset": 0, "path": ["\\rst_n"], "smtname": 8, "smtoffset": 0, "type": "seq", "width": 1}
-(declare-fun |TopModule_formal#8| (|TopModule_formal_s|) (_ BitVec 1)) ; \rst_n
+(define-fun |TopModule_formal_n match| ((state |TopModule_formal_s|)) Bool (|TopModule_formal#16| state))
+; yosys-smt2-anyseq TopModule_formal#17 1 TopModule_formal.sv:5.22-5.27 rst_n
+; yosys-smt2-witness {"offset": 0, "path": ["\\rst_n"], "smtname": 17, "smtoffset": 0, "type": "seq", "width": 1}
+(declare-fun |TopModule_formal#17| (|TopModule_formal_s|) (_ BitVec 1)) ; \rst_n
 ; yosys-smt2-wire rst_n 1
-(define-fun |TopModule_formal_n rst_n| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#8| state)) #b1))
-(define-fun |TopModule_formal#9| ((state |TopModule_formal_s|)) (_ BitVec 1) (bvnot (ite (|TopModule_formal#7| state) #b1 #b0))) ; $eq$TopModule_formal.sv:31$23_Y
-(define-fun |TopModule_formal#10| ((state |TopModule_formal_s|)) Bool (not (or  (= ((_ extract 0 0) (|TopModule_formal#8| state)) #b1) false))) ; $logic_not$TopModule_formal.sv:20$9_Y
-(define-fun |TopModule_formal#11| ((state |TopModule_formal_s|)) Bool (not (or  (= ((_ extract 0 0) (|TopModule_formal#0| state)) #b1) false))) ; $logic_not$TopModule_formal.sv:30$20_Y
-(define-fun |TopModule_formal#12| ((state |TopModule_formal_s|)) Bool (or  (|TopModule_formal#10| state) false  (|TopModule_formal#11| state) false)) ; $logic_or$TopModule_formal.sv:30$21_Y
-(define-fun |TopModule_formal#13| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#12| state) #b1 #b0)) ; $procmux$50_Y
-(define-fun |TopModule_formal#14| ((state |TopModule_formal_s|)) Bool (|TopModule_formal_is| state)) ; $initstate$1_wire
-(define-fun |TopModule_formal#15| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#14| state) #b0 (|TopModule_formal#13| state))) ; $assert$TopModule_formal.sv:31$22_EN
-; yosys-smt2-assert 0 _witness_.check_assert_TopModule_formal_sv_31_22 TopModule_formal.sv:31.13-31.34
-(define-fun |TopModule_formal_a 0| ((state |TopModule_formal_s|)) Bool (or (= ((_ extract 0 0) (|TopModule_formal#9| state)) #b1) (not (= ((_ extract 0 0) (|TopModule_formal#15| state)) #b1)))) ; _witness_.check_assert_TopModule_formal_sv_31_22
-(define-fun |TopModule_formal#16| ((state |TopModule_formal_s|)) Bool (= (|TopModule_formal#6| state) (concat (|TopModule_formal#2| state) (|TopModule_formal#1| state)))) ; $eq$TopModule_formal.sv:33$25_Y
-(define-fun |TopModule_formal#17| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#12| state) #b0 #b1)) ; $procmux$38_Y
-(define-fun |TopModule_formal#18| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#14| state) #b0 (|TopModule_formal#17| state))) ; $assert$TopModule_formal.sv:33$24_EN
-; yosys-smt2-assert 1 _witness_.check_assert_TopModule_formal_sv_33_24 TopModule_formal.sv:33.13-33.71
-(define-fun |TopModule_formal_a 1| ((state |TopModule_formal_s|)) Bool (or (|TopModule_formal#16| state) (not (= ((_ extract 0 0) (|TopModule_formal#18| state)) #b1)))) ; _witness_.check_assert_TopModule_formal_sv_33_24
-(define-fun |TopModule_formal#19| ((state |TopModule_formal_s|)) Bool (= (|TopModule_formal#3| state) #b01110001)) ; $eq$TopModule_formal.sv:34$27_Y
-(define-fun |TopModule_formal#20| ((state |TopModule_formal_s|)) Bool (= (ite (|TopModule_formal#7| state) #b1 #b0) (ite (|TopModule_formal#19| state) #b1 #b0))) ; $eq$TopModule_formal.sv:34$28_Y
-; yosys-smt2-assert 2 _witness_.check_assert_TopModule_formal_sv_34_26 TopModule_formal.sv:34.13-34.59
-(define-fun |TopModule_formal_a 2| ((state |TopModule_formal_s|)) Bool (or (|TopModule_formal#20| state) (not (= ((_ extract 0 0) (|TopModule_formal#18| state)) #b1)))) ; _witness_.check_assert_TopModule_formal_sv_34_26
-(define-fun |TopModule_formal#21| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#14| state) #b1 #b0)) ; $assume$TopModule_formal.sv:28$15_EN
-; yosys-smt2-assume 0 _witness_.check_assume_TopModule_formal_sv_28_15 TopModule_formal.sv:28.13-28.27
-(define-fun |TopModule_formal_u 0| ((state |TopModule_formal_s|)) Bool (or (|TopModule_formal#10| state) (not (= ((_ extract 0 0) (|TopModule_formal#21| state)) #b1)))) ; _witness_.check_assume_TopModule_formal_sv_28_15
-(define-fun |TopModule_formal#22| ((state |TopModule_formal_s|)) Bool (not (or  (= ((_ extract 0 0) (|TopModule_formal#4| state)) #b1) false))) ; $logic_not$TopModule_formal.sv:29$18_Y
-; yosys-smt2-assume 1 _witness_.check_assume_TopModule_formal_sv_29_17 TopModule_formal.sv:29.13-29.23
-(define-fun |TopModule_formal_u 1| ((state |TopModule_formal_s|)) Bool (or (|TopModule_formal#22| state) (not (= ((_ extract 0 0) (|TopModule_formal#21| state)) #b1)))) ; _witness_.check_assume_TopModule_formal_sv_29_17
-(define-fun |TopModule_formal#23| ((state |TopModule_formal_s|)) (_ BitVec 8) (ite (= ((_ extract 0 0) (|TopModule_formal#8| state)) #b1) (concat ((_ extract 6 0) (|TopModule_formal#6| state)) (|TopModule_formal#4| state)) #b00000000)) ; $0\gold_a_tem[7:0]
+(define-fun |TopModule_formal_n rst_n| ((state |TopModule_formal_s|)) Bool (= ((_ extract 0 0) (|TopModule_formal#17| state)) #b1))
+(define-fun |TopModule_formal#18| ((state |TopModule_formal_s|)) Bool (not (or  (|TopModule_formal#16| state) false))) ; $logic_not$TopModule_formal.sv:20$83_Y
+(define-fun |TopModule_formal#19| ((state |TopModule_formal_s|)) Bool (not (or  (= ((_ extract 0 0) (|TopModule_formal#17| state)) #b1) false))) ; $logic_not$TopModule_formal.sv:18$78_Y
+(define-fun |TopModule_formal#20| ((state |TopModule_formal_s|)) Bool (not (or  (= ((_ extract 0 0) (|TopModule_formal#3| state)) #b1) false))) ; $logic_not$TopModule_formal.sv:19$80_Y
+(define-fun |TopModule_formal#21| ((state |TopModule_formal_s|)) Bool (or  (|TopModule_formal#19| state) false  (|TopModule_formal#20| state) false)) ; $logic_or$TopModule_formal.sv:19$81_Y
+(define-fun |TopModule_formal#22| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#21| state) #b1 #b0)) ; $procmux$118_Y
+(define-fun |TopModule_formal#23| ((state |TopModule_formal_s|)) Bool (|TopModule_formal_is| state)) ; $initstate$1_wire
+(define-fun |TopModule_formal#24| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#23| state) #b0 (|TopModule_formal#22| state))) ; $assert$TopModule_formal.sv:20$82_EN
+; yosys-smt2-assert 0 _witness_.check_assert_TopModule_formal_sv_20_82 TopModule_formal.sv:20.13-20.27
+(define-fun |TopModule_formal_a 0| ((state |TopModule_formal_s|)) Bool (or (|TopModule_formal#18| state) (not (= ((_ extract 0 0) (|TopModule_formal#24| state)) #b1)))) ; _witness_.check_assert_TopModule_formal_sv_20_82
+(define-fun |TopModule_formal#25| ((state |TopModule_formal_s|)) Bool (= (concat (|TopModule_formal#0| state) (concat (|TopModule_formal#10| state) (concat (|TopModule_formal#13| state) (concat (|TopModule_formal#8| state) (concat (|TopModule_formal#12| state) (concat (|TopModule_formal#9| state) (concat (|TopModule_formal#11| state) (|TopModule_formal#14| state)))))))) #b01110001)) ; $eq$TopModule_formal.sv:24$92_Y
+(define-fun |TopModule_formal#26| ((state |TopModule_formal_s|)) Bool (= (ite (|TopModule_formal#16| state) #b1 #b0) (ite (|TopModule_formal#25| state) #b1 #b0))) ; $eq$TopModule_formal.sv:24$93_Y
+(define-fun |TopModule_formal#27| ((state |TopModule_formal_s|)) Bool (and (or  (= ((_ extract 0 0) (|TopModule_formal#17| state)) #b1) false) (or  (= ((_ extract 0 0) (|TopModule_formal#3| state)) #b1) false))) ; $logic_and$TopModule_formal.sv:21$84_Y
+(define-fun |TopModule_formal#28| ((state |TopModule_formal_s|)) Bool (and (or  (|TopModule_formal#27| state) false) (or  (= ((_ extract 0 0) (|TopModule_formal#4| state)) #b1) false))) ; $logic_and$TopModule_formal.sv:21$85_Y
+(define-fun |TopModule_formal#29| ((state |TopModule_formal_s|)) Bool (and (or  (|TopModule_formal#28| state) false) (or  (= ((_ extract 0 0) (|TopModule_formal#5| state)) #b1) false))) ; $logic_and$TopModule_formal.sv:21$86_Y
+(define-fun |TopModule_formal#30| ((state |TopModule_formal_s|)) Bool (and (or  (|TopModule_formal#29| state) false) (or  (= ((_ extract 0 0) (|TopModule_formal#2| state)) #b1) false))) ; $logic_and$TopModule_formal.sv:21$87_Y
+(define-fun |TopModule_formal#31| ((state |TopModule_formal_s|)) Bool (and (or  (|TopModule_formal#30| state) false) (or  (= ((_ extract 0 0) (|TopModule_formal#1| state)) #b1) false))) ; $logic_and$TopModule_formal.sv:21$88_Y
+(define-fun |TopModule_formal#32| ((state |TopModule_formal_s|)) Bool (and (or  (|TopModule_formal#31| state) false) (or  (= ((_ extract 0 0) (|TopModule_formal#6| state)) #b1) false))) ; $logic_and$TopModule_formal.sv:21$89_Y
+(define-fun |TopModule_formal#33| ((state |TopModule_formal_s|)) Bool (and (or  (|TopModule_formal#32| state) false) (or  (= ((_ extract 0 0) (|TopModule_formal#7| state)) #b1) false))) ; $logic_and$TopModule_formal.sv:21$90_Y
+(define-fun |TopModule_formal#34| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#33| state) #b1 #b0)) ; $procmux$109_Y
+(define-fun |TopModule_formal#35| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#21| state) #b0 (|TopModule_formal#34| state))) ; $procmux$112_Y
+(define-fun |TopModule_formal#36| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#23| state) #b0 (|TopModule_formal#35| state))) ; $assert$TopModule_formal.sv:24$91_EN
+; yosys-smt2-assert 1 _witness_.check_assert_TopModule_formal_sv_24_91 TopModule_formal.sv:24.13-25.83
+(define-fun |TopModule_formal_a 1| ((state |TopModule_formal_s|)) Bool (or (|TopModule_formal#26| state) (not (= ((_ extract 0 0) (|TopModule_formal#36| state)) #b1)))) ; _witness_.check_assert_TopModule_formal_sv_24_91
+(define-fun |TopModule_formal#37| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#33| state) #b0 #b1)) ; $procmux$100_Y
+(define-fun |TopModule_formal#38| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#21| state) #b0 (|TopModule_formal#37| state))) ; $procmux$103_Y
+(define-fun |TopModule_formal#39| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#23| state) #b0 (|TopModule_formal#38| state))) ; $assert$TopModule_formal.sv:27$94_EN
+; yosys-smt2-assert 2 _witness_.check_assert_TopModule_formal_sv_27_94 TopModule_formal.sv:27.13-27.27
+(define-fun |TopModule_formal_a 2| ((state |TopModule_formal_s|)) Bool (or (|TopModule_formal#18| state) (not (= ((_ extract 0 0) (|TopModule_formal#39| state)) #b1)))) ; _witness_.check_assert_TopModule_formal_sv_27_94
+(define-fun |TopModule_formal#40| ((state |TopModule_formal_s|)) (_ BitVec 1) (ite (|TopModule_formal#23| state) #b1 #b0)) ; $assume$TopModule_formal.sv:18$77_EN
+; yosys-smt2-assume 0 _witness_.check_assume_TopModule_formal_sv_18_77 TopModule_formal.sv:18.13-18.27
+(define-fun |TopModule_formal_u 0| ((state |TopModule_formal_s|)) Bool (or (|TopModule_formal#19| state) (not (= ((_ extract 0 0) (|TopModule_formal#40| state)) #b1)))) ; _witness_.check_assume_TopModule_formal_sv_18_77
 (define-fun |TopModule_formal_a| ((state |TopModule_formal_s|)) Bool (and
   (|TopModule_formal_a 0| state)
   (|TopModule_formal_a 1| state)
@@ -115,7 +175,6 @@
 ))
 (define-fun |TopModule_formal_u| ((state |TopModule_formal_s|)) Bool (and
   (|TopModule_formal_u 0| state)
-  (|TopModule_formal_u 1| state)
   (|TopModule_u| (|TopModule_formal_h dut| state))
 ))
 (define-fun |TopModule_formal_i| ((state |TopModule_formal_s|)) Bool 
@@ -123,18 +182,27 @@
 )
 (define-fun |TopModule_formal_h| ((state |TopModule_formal_s|)) Bool (and
   (= (|TopModule_formal_is| state) (|TopModule_is| (|TopModule_formal_h dut| state)))
-  (= (= ((_ extract 0 0) (|TopModule_formal#4| state)) #b1) (|TopModule_n a| (|TopModule_formal_h dut| state))) ; TopModule.a
-  (= (= ((_ extract 0 0) (|TopModule_formal#5| state)) #b1) (|TopModule_n clk| (|TopModule_formal_h dut| state))) ; TopModule.clk
-  (= (|TopModule_formal#7| state) (|TopModule_n match| (|TopModule_formal_h dut| state))) ; TopModule.match
-  (= (= ((_ extract 0 0) (|TopModule_formal#8| state)) #b1) (|TopModule_n rst_n| (|TopModule_formal_h dut| state))) ; TopModule.rst_n
+  (= (= ((_ extract 0 0) (|TopModule_formal#14| state)) #b1) (|TopModule_n a| (|TopModule_formal_h dut| state))) ; TopModule.a
+  (= (= ((_ extract 0 0) (|TopModule_formal#15| state)) #b1) (|TopModule_n clk| (|TopModule_formal_h dut| state))) ; TopModule.clk
+  (= (|TopModule_formal#16| state) (|TopModule_n match| (|TopModule_formal_h dut| state))) ; TopModule.match
+  (= (= ((_ extract 0 0) (|TopModule_formal#17| state)) #b1) (|TopModule_n rst_n| (|TopModule_formal_h dut| state))) ; TopModule.rst_n
   (|TopModule_h| (|TopModule_formal_h dut| state))
 ))
 (define-fun |TopModule_formal_t| ((state |TopModule_formal_s|) (next_state |TopModule_formal_s|)) Bool (and
-  (= (|TopModule_formal#23| state) (|TopModule_formal#6| next_state)) ; $procdff$78 \gold_a_tem
-  (= (|TopModule_formal#6| state) (|TopModule_formal#3| next_state)) ; $procdff$77 \_witness_.anyinit_procdff_77
-  (= ((_ extract 6 0) (|TopModule_formal#6| state)) (|TopModule_formal#2| next_state)) ; $procdff$76 \_witness_.anyinit_procdff_76
-  (= (|TopModule_formal#4| state) (|TopModule_formal#1| next_state)) ; $procdff$75 \_witness_.anyinit_procdff_75
-  (= (|TopModule_formal#8| state) (|TopModule_formal#0| next_state)) ; $procdff$74 \_witness_.anyinit_procdff_74
+  (= (|TopModule_formal#8| state) (|TopModule_formal#13| next_state)) ; $procdff$190 \_witness_.anyinit_procdff_190
+  (= (|TopModule_formal#9| state) (|TopModule_formal#12| next_state)) ; $procdff$188 \_witness_.anyinit_procdff_188
+  (= (|TopModule_formal#14| state) (|TopModule_formal#11| next_state)) ; $procdff$186 \_witness_.anyinit_procdff_186
+  (= (|TopModule_formal#13| state) (|TopModule_formal#10| next_state)) ; $procdff$185 \_witness_.anyinit_procdff_185
+  (= (|TopModule_formal#11| state) (|TopModule_formal#9| next_state)) ; $procdff$176 \_witness_.anyinit_procdff_176
+  (= (|TopModule_formal#12| state) (|TopModule_formal#8| next_state)) ; $procdff$174 \_witness_.anyinit_procdff_174
+  (= (|TopModule_formal#6| state) (|TopModule_formal#7| next_state)) ; $procdff$164 \_witness_.anyinit_procdff_164
+  (= (|TopModule_formal#1| state) (|TopModule_formal#6| next_state)) ; $procdff$163 \_witness_.anyinit_procdff_163
+  (= (|TopModule_formal#4| state) (|TopModule_formal#5| next_state)) ; $procdff$160 \_witness_.anyinit_procdff_160
+  (= (|TopModule_formal#3| state) (|TopModule_formal#4| next_state)) ; $procdff$159 \_witness_.anyinit_procdff_159
+  (= (|TopModule_formal#17| state) (|TopModule_formal#3| next_state)) ; $procdff$158 \_witness_.anyinit_procdff_158
+  (= (|TopModule_formal#5| state) (|TopModule_formal#2| next_state)) ; $procdff$155 \_witness_.anyinit_procdff_155
+  (= (|TopModule_formal#2| state) (|TopModule_formal#1| next_state)) ; $procdff$151 \_witness_.anyinit_procdff_151
+  (= (|TopModule_formal#10| state) (|TopModule_formal#0| next_state)) ; $procdff$192 \_witness_.anyinit_procdff_192
   (|TopModule_t| (|TopModule_formal_h dut| state) (|TopModule_formal_h dut| next_state))
 )) ; end of module TopModule_formal
 ; yosys-smt2-topmod TopModule_formal

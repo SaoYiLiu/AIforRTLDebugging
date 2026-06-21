@@ -1,0 +1,10 @@
+# running in TopModule/src/
+read -formal -sv TopModule.sv TopModule_formal.sv
+hierarchy -check -top TopModule_formal
+proc; opt
+memory; opt
+
+hierarchy -smtcheck
+rename -witness
+write_jny -no-connections ../model/design.json
+write_rtlil ../model/design.il

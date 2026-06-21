@@ -1,12 +1,18 @@
 ## Transport
-bridge
+rest
 
 ## Rationale
-- **Suspected bug (L47):** The shift register uses `{a, a_tem[7:0]}`, which shifts the new input into bit 8 (MSB). The spec expects bit 8 to hold the oldest sample (prefix `011` at `[8:6]`) and bit 0 the newest (suffix `110` at `[2:0]`).
-- **Why that breaks detection:** With MSB-first shifting, `[8:6]` tracks the three most recent bits and `[2:0]` the three oldest. Prefix and suffix checks operate on incompatible parts of the window, so `match_f && match_b` (L50) rarely goes high together.
-- **Waveform evidence:** First mismatch at 110 ps; `match_ref` asserts at 105 ps while `match_dut` stays 0. That matches the first test vector completing `011101110` — the reference detects it, the DUT does not.
-- **Regression data:** 8/237 samples fail, all on `match`, consistent with missed detections rather than false positives.
-- **Fix applied:** Change L47 to `{a_tem[7:0], a}` so new bits enter at bit 0 and shift toward bit 8, aligning `[8:6]` with the prefix and `[2:0]` with the suffix. Verified: 0 mismatches in simulation.
+- **Root cause (L012–L038, L050):** The design splits detection into two registered flags, `match_f` and `match_b`, and drives `match` with `match_b && match_f`. That adds an extra pipeline stage instead of checking the full 9-bit window in one step.
+
+- **Spec mismatch:** The pattern is a single 9-bit condition: `a_tem[8:6] == 3'b011` **and** `a_tem[2:0] == 3'b110`. The middle bits are don’t-cares. Both ends must be true on the **same** shift-register snapshot, not on separate delayed flags.
+
+- **Timing bug:** On each posedge, `match_f`/`match_b` are updated from the **pre-shift** value of `a_tem` (L017, L031), while `a_tem` itself shifts in the new bit afterward (L047). The reference model asserts `match` when the **post-shift** register contains `011XXX110`.
+
+- **Waveform evidence:** `match_dut` stays 0 for the entire run, while `match_ref` pulses high at 105, 145, 195, and 415 ps. The first mismatch is at 110 ps (sample after the 105 ps posedge), exactly when the reference detects the completed pattern and the DUT does not.
+
+- **Why the DUT never matches:** The completing bit makes both prefix and suffix true only in the updated register for a brief window. The registered `match_f`/`match_b` path evaluates conditions one cycle late, so the AND never aligns with when the reference expects `match` high (8/237 sample mismatches, all on `match`).
+
+- **Fix applied:** Remove `match_f` and `match_b`. Keep the 9-bit shift register (L040–L048) and assert `match` combinationally from the current register contents, matching the spec’s single-cycle detection rule.
 
 ## FixedTopModule
 ```verilog
@@ -15,50 +21,17 @@ module TopModule(
 	input rst_n,
 	input a,
 	output match
-	);
+);
 
 	reg [8:0] a_tem;
-	reg match_f;
-	reg match_b;
-	
-	always @(posedge clk or negedge rst_n)
-		if (!rst_n)
-			begin 
-				match_f <= 1'b0;
-			end
-		else if (a_tem[8:6] == 3'b011)
-			begin
-				match_f <= 1'b1;
-			end
-		else 
-			begin	
-				match_f <= 1'b0;
-			end
 
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n)
-			begin 
-				match_b <= 1'b0;
-			end
-		else if (a_tem[2:0] == 3'b110)
-			begin
-				match_b <= 1'b1;
-			end
-		else 
-			begin	
-				match_b <= 1'b0;
-			end
-			
-	always @(posedge clk or negedge rst_n)
-		if (!rst_n)
-			begin 
-				a_tem <= 9'b0;
-			end
-		else 
-			begin
-				a_tem <= {a_tem[7:0], a};
-			end
-			
-	assign match = match_b && match_f;
+			a_tem <= 9'b0;
+		else
+			a_tem <= {a, a_tem[7:0]};
+
+	assign match = (a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110);
+
 endmodule
 ```

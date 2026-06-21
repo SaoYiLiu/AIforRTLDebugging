@@ -2,13 +2,12 @@
 rest
 
 ## Rationale
-- **Lines 21–24 (second prefix stage):** The generate loop iterates `i = 0, 2, 4, …, 30` but every iteration assigns `G2[i/2]` and `P2[i/2]` from **only** `G1[0]` and `P1[0]`. All 16 second-stage groups therefore see the bit-0 pair only, instead of combining adjacent pairs `(G1[i+1], P1[i+1])` with `(G1[i], P1[i])`. This collapses the Brent-Kung tree and corrupts the entire carry prefix network.
-- **Harness evidence:** Test cases 2, 3, 4, 6, and 8 show correct `sum` but wrong `carry_out` (e.g. TC2: expected 0, got 1). That pattern fits a broken prefix tree while `P1 = a ^ b` remains correct — carries are wrong even when XOR-of-operands happens to match.
-- **Lines 3–5 stages (27–46) are structurally correct:** They use the standard `G[j+1] | (P[j+1] & G[j])` / `P[j+1] & P[j]` form with proper indices. Only stage 2 is wrong.
-- **Correct stage-2 equations:** `G2[i/2] = G1[i+1] | (P1[i+1] & G1[i])` and `P2[i/2] = P1[i+1] & P1[i]` for `i = 0, 2, …, 30`, matching the pairwise combine used in stages 3–5.
-- **Line 87 (sum):** `sum = P1 | {C[31:1], carry_in}` uses **OR** instead of **XOR**. Bit `i` must be `P1[i] ^ C[i]` (with `C[1]` replaced by `carry_in` for bit 0). OR produces wrong sums whenever a carry and propagate bit are both 1 — e.g. TC11 (expected `33333334`, got `77777777` because `33333333 | 44444444 = 77777777`), TC9, TC12.
-- **Lines 51–85 (carry prefix) and line 88 (`carry_out = C[32]`)** are consistent with a Brent-Kung network once stage 2 is fixed; no changes needed there.
-- **Lines 16–17 (`P1`, `G1`)** are correct initial propagate/generate definitions.
+- **Lines 21–24 (second stage):** The generate loop declares `i` but every iteration assigns `G2[i/2]` and `P2[i/2]` from `G1[0]` and `P1[0]` only. That collapses all 16 level-2 group `(P,G)` pairs to bit 0, breaking the prefix tree above it.
+- **Harness evidence (Test Case 2):** With `a=7FFFFFFF`, `b=7FFFFFFF`, `carry_in=0`, the sum is correct (`FFFFFFFE`) but `carry_out` is `1` instead of `0`. Bit 31 of both operands is 0, so there is no overflow; a wrong `G2`/`G3`/…/`G6` chain incorrectly asserts `C[32]=1`.
+- **Correct second-stage pairing:** It must match stages 3–5 (lines 28–45): `G2[i/2] = G1[i+1] | (P1[i+1] & G1[i])` and `P2[i/2] = P1[i+1] & P1[i]` for `i = 0, 2, …, 30`.
+- **Line 87 (sum):** `sum = P1 | {C[31:1], carry_in}` is wrong. Per-bit sum is `sum[i] = P1[i] ^ carry_into_bit_i`, i.e. `sum = P1 ^ {C[31:1], carry_in}`.
+- **Harness evidence (Tests 7, 11, 12):** Wrong sums like `EEAEEAEF` vs `EEEEEEEF`, `77777777` vs `33333334`, and `55555557` vs `00000003` match XOR-vs-OR errors wherever both `P1[i]` and the incoming carry are 1 (`1 | 1 = 1` but `1 ^ 1 = 0`).
+- **Carry network (lines 51–85):** After fixing stage 2, the sparse prefix and carry-resolve equations align with Brent-Kung; no other edits are required for the listed failures.
 
 ## PatchedFiles
 ### rtl/brent_kung_adder.sv
@@ -34,7 +33,7 @@ module brent_kung_adder(
     genvar i;
     generate
         for(i=0; i<=30; i=i+2) begin: second_stage  
-            assign G2[i/2] = G1[i+1] | (P1[i+1] & G1[i]); 
+            assign G2[i/2] = G1[i+1] | (P1[i+1] & G1[i]);
             assign P2[i/2] = P1[i+1] & P1[i];
         end
     endgenerate

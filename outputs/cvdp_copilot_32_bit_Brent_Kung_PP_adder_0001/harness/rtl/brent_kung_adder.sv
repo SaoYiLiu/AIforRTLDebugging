@@ -19,7 +19,7 @@ module brent_kung_adder(
     genvar i;
     generate
         for(i=0; i<=30; i=i+2) begin: second_stage  
-            assign G2[i/2] = G1[i+1] | (P1[i+1] & G1[i]); 
+            assign G2[i/2] = G1[i+1] | (P1[i+1] & G1[i]);
             assign P2[i/2] = P1[i+1] & P1[i];
         end
     endgenerate

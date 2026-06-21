@@ -17,10 +17,8 @@
 ##   0:00:00  Checking assertions in step 7..
 ##   0:00:00  Checking assumptions in step 8..
 ##   0:00:00  Checking assertions in step 8..
-##   0:00:00  Checking assumptions in step 9..
-##   0:00:00  Checking assertions in step 9..
 ##   0:00:00  BMC failed!
-##   0:00:00  Assert failed in TopModule_formal: TopModule_formal.sv:34.13-34.59 (_witness_.check_assert_TopModule_formal_sv_34_26)
+##   0:00:00  Assert failed in TopModule_formal: TopModule_formal.sv:24.13-25.83 (_witness_.check_assert_TopModule_formal_sv_24_91)
 ##   0:00:00  Writing trace to VCD file: engine_0/trace.vcd
 ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace_tb.v
 ##   0:00:00  Writing trace to constraints file: engine_0/trace.smtc

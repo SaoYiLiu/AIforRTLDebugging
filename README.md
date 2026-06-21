@@ -1,4 +1,4 @@
-# AIfordebugging — LLM-Guided RTL Debug with EDA Tool Feedback
+# AI for RTL debugging — LLM-Guided RTL Debug with EDA Tool Feedback
 
 An automated **ReAct** (reason–act–observe) pipeline for **Verilog/SystemVerilog RTL debugging**. A fixer LLM (Cursor) patches RTL using structured evidence from simulation, waveforms, optional formal checks, and benchmark-specific harnesses. Two evaluation tracks are supported:
 
@@ -25,27 +25,19 @@ Supporting **MCP tools** (`mcp_server.py`) expose iverilog, VCD parsing, and Sym
 Full install (EDA tools + Python venv):
 
 ```bash
+cd ./AIfordebugging
 chmod +x install.sh
 ./install.sh
-```
-
-Or manual steps: **[docs/SETUP.md](docs/SETUP.md)**.
-
-```bash
-cd /mnt/c/Users/user/Desktop/AIfordebugging
 source .venv/bin/activate   # after ./install.sh
-
-# Verify EDA + Python deps
-iverilog -V && yosys -V
-python -c "import httpx, mcp, vcdvcd; print('ok')"
 ```
 
-### Environment (Cursor fixer)
+### Environment (Cursor fixer settings)
 
 ```bash
-export CURSOR_API_KEY="cursor_..."
+export CURSOR_API_KEY=crsr_...
+# API key example: crsr_20e46aafe6e8fa01817af509c3b891d5dc6bd6f6e95214f3f230bb9c9935a643
 # Optional: bridge (WSL/desktop) vs REST (headless)
-export CURSOR_TRANSPORT=auto          # default: try bridge, fall back to REST
+export CURSOR_TRANSPORT=auto          # default: try REST API call, fall back to bridge
 export CURSOR_CLOUD_REPO_URL="https://github.com/YOU/AIfordebugging"  # if REST
 ```
 
@@ -61,10 +53,13 @@ docker build -t nvidia/cvdp-sim:v1.0.0 .
 
 ### Run — ChipBench (single problem)
 
-```bash
-source .venv/bin/activate
-export CURSOR_API_KEY="..."
+- --prob-id: choose a problem from the testbench
+- --prompt: problem prompt and buggy RTL code
+- --testbench: testbench file
+- --ref: golden reference model
+- max-iters: maximum number of ReAct Loop iterations before program abortion
 
+```bash
 PYTHONPATH=. python -m react.react_runner \
   --prob-id Prob001 \
   --prompt "third_party/ChipBench/Verilog Debugging/dataset_debug_one_shot_arithmetic/Prob001_continuous_input_sequence_detect_prompt.txt" \
@@ -74,24 +69,37 @@ PYTHONPATH=. python -m react.react_runner \
   --max-iters 3
 ```
 
-**Batch (full arithmetic set):**
+**Batch (Verilog Debugging datasets):**
+
+- --dataset-dir: designate the dataset directory
+- --auto-formal: turn on assert generation and formal verification 
+- --formal-mode bmc/prove: choose bounded/unbounded proof type
 
 ```bash
-PYTHONPATH=. python react/batch_runner.py \
+python run_chipbench_batch.py \
   --dataset-dir "third_party/ChipBench/Verilog Debugging/dataset_debug_one_shot_arithmetic" \
   --use-cursor-sdk \
-  --max-iters 3
+  --auto-formal \
+  --formal-mode bmc \
+  --formal-depth 20 \
+  --max-iters 5 \
+  --output-root outputs
 ```
 
-Artifacts: `outputs/<ProbID>_output/` (`llm_fix_request.md`, `wave.vcd`, `react_trace.md`, …).
+Output directory per problem: `outputs/<ProbID>_output/` (`llm_fix_request.md`, `wave.vcd`, `react_trace.md`, …).
 
 ### Run — CVDP cid016 (single problem)
+
+- --format: CVDP has to types of testbench: non-agentic and agentic
+- --cursor-transport auto/bridge/rest: choose LLM call method; auto uses REST API first before fallback to cursor-sdk bridge.
+- --problem-ids: designate problem to solve; omit the flag to run in batch
 
 ```bash
 PYTHONPATH=. python -m react_cvdp \
   --jsonl third_party/cvdp/datasets/cvdp_v1.1.0_nonagentic_code_generation_no_commercial.jsonl \
   --format nonagentic \
   --use-cursor-sdk \
+  --cursor-transport auto \
   --max-iters 5 \
   --problem-ids cvdp_copilot_32_bit_Brent_Kung_PP_adder_0001 \
   --cvdp-env third_party/cvdp/cvdp_benchmark/.env
@@ -108,26 +116,6 @@ PYTHONPATH=. python -m react_cvdp \
   --problem-ids cvdp_agentic_lfsr_0001 \
   --cvdp-env third_party/cvdp/cvdp_benchmark/.env
 ```
-
-See also [react_cvdp/README.md](react_cvdp/README.md).
-
-### Run — MCP server (tool demo)
-
-```bash
-python mcp_server.py
-```
-
-Exercise `run_iverilog`, `vcd_to_text`, `trace_vcd_failure`, `run_sby` from Cursor MCP or the demos in `rtl/`, `tb/`, `bugs/uart_fifo/`.
-
-### Test
-
-
-| What                    | Command                                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------------------- |
-| Compose staging (unit)  | `python scripts/test_compose_volumes.py`                                                          |
-| Summarize batch results | `python scripts/summarize_results.py`                                                             |
-| List agentic cid016 IDs | `python scripts/list_agentic_cid016.py`                                                           |
-| MCP / EDA smoke         | `iverilog -g2012 -o build/a.out -s tb_counter rtl/counter.sv tb/tb_counter.sv && vvp build/a.out` |
 
 
 There is no full pytest suite for the ReAct loop; correctness is judged by benchmark harness pass/fail and saved artifacts under `outputs/`.
@@ -300,42 +288,46 @@ procedure RUN_REACT(problem, max_iters, use_cursor_sdk):
 
 ## Experimental results
 
-Results are stored under `outputs/<problem_id>/result.json` (local runs; not committed — see `.gitignore`). Regenerate summary:
+Example summary: ChipBench one shot arithmetic dataset batch run
 
-```bash
-python scripts/summarize_results.py
 ```
-
-### CVDP non-agentic cid016 (sample of completed runs)
-
-
-| Result                            | Count (snapshot)                                                           |
-| --------------------------------- | -------------------------------------------------------------------------- |
-| **PASS** (`harness_passed: true`) | **34** problems                                                            |
-| **FAIL** after max iters          | **4** problems (incl. duplicate Brent-Kung dir, line_buffer, partial runs) |
-
-
-**Representative PASS** (2–3 iterations typical): Brent-Kung adder, AXI ALU, caesar cipher, montgomery mul, scrambler, …
-
-**Representative FAIL** (7 iterations): `cvdp_copilot_line_buffer_0003` (multi-geometry line buffer; compile then logic failures).
-
-**Example PASS:** `cvdp_copilot_32_bit_Brent_Kung_PP_adder_0001` — harness PASS at **iteration 2** (1 patch after initial FAIL).
-
-### CVDP agentic cid016 (partial batch)
-
-
-| Problem                                       | Result                            | Iters |
-| --------------------------------------------- | --------------------------------- | ----- |
-| `cvdp_agentic_AES_encryption_decryption_0003` | FAIL                              | 7     |
-| `cvdp_agentic_AES_encryption_decryption_0005` | FAIL                              | 7     |
-| Others                                        | Batch interrupted / not fully run | —     |
-
-
-Harness **infrastructure worked** (Docker + cocotb); AES multi-round crypto did not converge within 7 Cursor patches. Agentic batch was slow (~39 min/problem for AES_0005).
-
-### ChipBench (Prob001–Prob034 subset)
-
-Multiple problems under `outputs/Prob*_output/` with Cursor iter artifacts (e.g. Prob001 PASS in 2 iterations per terminal logs). Full batch metrics depend on last `batch_runner.py` invocation.
+========================================================================
+SUMMARY
+========================================================================
+Problem                                    Status         Time   Mismatches
+------------------------------------------------------------------------
+Prob001_continuous_input_sequence_detect   PASS       1m 40.8s            0
+Prob002_extraneous_items_sequence_detect   PASS       1m 16.3s            0
+Prob006_data_serial-to-parallel_circuit    PASS       1m 33.4s            0
+Prob007_data_accumulation_output           PASS          45.2s            0
+Prob008_non-integer_data_width_conversion_24to128 PASS        1m 8.4s            0        
+Prob009_non-integer_data_width_conversion_8to12 PASS       1m 30.5s            0
+Prob010_integer_multiple_data_bit_width_conversion_8to16 PASS       1m 41.9s            0 
+Prob011_4-bit_carry_look-ahead_adder_circuit PASS        1m 3.2s            0
+Prob013_least_common_multiple              FAIL       2m 26.0s          389
+Prob014_sequence_generator                 PASS          39.8s            0
+Prob016_odd-number_division_with_a_duty_cycle_of_half PASS        1m 4.1s            0    
+Prob017_arbitrary_fractional_frequency_division PASS        1m 6.5s            0
+Prob019_implement_full_subtractor_using_three_to_eight_decoder PASS          49.7s            0
+Prob021_asynchronous_FIFO                  PASS          38.6s            0
+Prob022_synchronous_FIFO                   PASS        2m 0.1s            0
+Prob023_gray_code_counter                  PASS          52.6s            0
+Prob024_multiplication_and_bitwise_operations PASS          36.3s            0
+Prob025_pulse_synchronization_circuit      PASS          58.1s            0
+Prob028_up_and_down_counter                PASS       1m 36.4s            0
+Prob030_simple_implementation_RAM          PASS       1m 17.6s            0
+Prob031_johnson_counter                    PASS       1m 12.1s            0
+Prob032_pipeline_multiplier                PASS       1m 28.6s            0
+Prob033_traffic_lights                     PASS       1m 37.7s            0
+Prob034_gaming_machine_billing_program     PASS          49.6s            0
+------------------------------------------------------------------------
+Passed:       23/24
+Failed:       1/24
+Errors:       0/24
+Success rate: 95.8%
+Total time:   29m 53.6s
+========================================================================
+```
 
 ### Observations
 
@@ -354,6 +346,7 @@ AIfordebugging/
 ├── react/                  # ChipBench ReAct pipeline
 ├── react_cvdp/             # CVDP cid016 ReAct pipeline
 ├── run_cvdp_batch.py       # CVDP CLI entry
+├── run_chipbench_batch.py  # ChipBench batch CLI entry
 ├── third_party/
 │   ├── ChipBench/          # ChipBench benchmark (external)
 │   └── cvdp/               # CVDP dataset + benchmark (external)

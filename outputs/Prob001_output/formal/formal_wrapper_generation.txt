@@ -1,28 +1,72 @@
-transport=bridge
+transport=rest
 
 ## Rationale
-- **Init assumptions (`$initstate`)**: Constrain the first cycle to active reset and `a=0`, matching the example pattern so unconstrained `anyinit` state does not produce spurious failures.
-- **Reset match (`!rst_n || !$past(rst_n)`)**: Covers async reset (`!rst_n`) and the cycle immediately after reset release (`!$past(rst_n)`), requiring `match==0` in both cases.
-- **Shift-register update (`gold_a_tem == { $past(gold_a_tem[6:0]), $past(a) }`)**: Encodes the spec that `a` shifts into the LSB each enabled cycle. A shadow `gold_a_tem` tracks RefModule behavior without instantiating it; this catches the bug `{a, a_tem[6:0]}` (MSB shift) vs the correct `{a_tem[6:0], a}` (LSB shift).
-- **Pattern detect (`match == ($past(gold_a_tem) == TARGET)`)**: `match` is registered from the pre-update shift-register value, so it is checked against `$past(gold_a_tem)` and the target pattern `8'b0111_0001`.
+- **Reset (`match` low):** When `rst_n` is low or was low on the previous cycle, `a_tem` is cleared and `match` must be 0 — this catches the original bug where `match` was evaluated against the pre-shift `a_tem`.
+- **Full history (`match` vs pattern):** After 8 consecutive cycles with `rst_n` high, `a_tem` is `{a(t−7), …, a(t)}`; assert `match` equals that window against `8'b0111_0001`.
+- **Partial history (`match` low):** Fewer than 8 stable post-reset cycles leave zero-padded upper bits in `a_tem`, so `match` must stay 0.
 
-Verified with SymbiYosys BMC (depth 20): **PASS** on the fixed DUT, **FAIL** at step 9 on the buggy DUT (shift-direction bug).
+## Fixed TopModule
+
+```verilog
+module TopModule(
+	input clk,
+	input rst_n,
+	input a,
+	output reg match
+	);
+
+	reg [7:0] a_tem;
+
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n) begin
+			a_tem <= 8'b0;
+			match <= 1'b0;
+		end else begin
+			a_tem <= {a, a_tem[6:0]};
+			match <= ({a, a_tem[6:0]} == 8'b0111_0001);
+		end
+endmodule
+```
+
+**Bug:** Two separate `always` blocks made `match` compare the *old* `a_tem` before the shift. **Fix:** One block; compute `match` from the *next* shift-register value `{a, a_tem[6:0]}`.
 
 ## Raw
 ## Rationale
 
-- **Init assumptions (`$initstate`)**: Constrain the first cycle to active reset and `a=0`, matching the example pattern so unconstrained `anyinit` state does not produce spurious failures.
-- **Reset match (`!rst_n || !$past(rst_n)`)**: Covers async reset (`!rst_n`) and the cycle immediately after reset release (`!$past(rst_n)`), requiring `match==0` in both cases.
-- **Shift-register update (`gold_a_tem == { $past(gold_a_tem[6:0]), $past(a) }`)**: Encodes the spec that `a` shifts into the LSB each enabled cycle. A shadow `gold_a_tem` tracks RefModule behavior without instantiating it; this catches the bug `{a, a_tem[6:0]}` (MSB shift) vs the correct `{a_tem[6:0], a}` (LSB shift).
-- **Pattern detect (`match == ($past(gold_a_tem) == TARGET)`)**: `match` is registered from the pre-update shift-register value, so it is checked against `$past(gold_a_tem)` and the target pattern `8'b0111_0001`.
+- **Reset (`match` low):** When `rst_n` is low or was low on the previous cycle, `a_tem` is cleared and `match` must be 0 — this catches the original bug where `match` was evaluated against the pre-shift `a_tem`.
+- **Full history (`match` vs pattern):** After 8 consecutive cycles with `rst_n` high, `a_tem` is `{a(t−7), …, a(t)}`; assert `match` equals that window against `8'b0111_0001`.
+- **Partial history (`match` low):** Fewer than 8 stable post-reset cycles leave zero-padded upper bits in `a_tem`, so `match` must stay 0.
 
-Verified with SymbiYosys BMC (depth 20): **PASS** on the fixed DUT, **FAIL** at step 9 on the buggy DUT (shift-direction bug).
+## Fixed TopModule
+
+```verilog
+module TopModule(
+	input clk,
+	input rst_n,
+	input a,
+	output reg match
+	);
+
+	reg [7:0] a_tem;
+
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n) begin
+			a_tem <= 8'b0;
+			match <= 1'b0;
+		end else begin
+			a_tem <= {a, a_tem[6:0]};
+			match <= ({a, a_tem[6:0]} == 8'b0111_0001);
+		end
+endmodule
+```
+
+**Bug:** Two separate `always` blocks made `match` compare the *old* `a_tem` before the shift. **Fix:** One block; compute `match` from the *next* shift-register value `{a, a_tem[6:0]}`.
 
 ## TopModule_formal
 
 ```verilog
 module TopModule_formal;
-    localparam [7:0] TARGET = 8'b0111_0001;
+    localparam [7:0] PAT = 8'b0111_0001;
 
     (* gclk *) reg clk;
     (* anyseq *) reg rst_n;
@@ -36,26 +80,54 @@ module TopModule_formal;
         .match(match)
     );
 
-    // Golden shift-register state (RefModule behavior, not instantiated).
-    reg [7:0] gold_a_tem;
-
     always @(posedge clk) begin
-        if (!rst_n)
-            gold_a_tem <= 8'b0;
-        else
-            gold_a_tem <= {gold_a_tem[6:0], a};
+        if ($initstate) begin
+            assume(!rst_n);
+        end else if (!rst_n || !$past(rst_n)) begin
+            assert(!match);
+        end else if (rst_n && $past(rst_n) && $past(rst_n, 2) && $past(rst_n, 3) &&
+                     $past(rst_n, 4) && $past(rst_n, 5) && $past(rst_n, 6) &&
+                     $past(rst_n, 7)) begin
+            assert(match == ({ $past(a, 7), $past(a, 6), $past(a, 5), $past(a, 4),
+                               $past(a, 3), $past(a, 2), $past(a, 1), a } == PAT));
+        end else begin
+            assert(!match);
+        end
     end
+endmodule
+```
+
+## Wrapper
+```verilog
+module TopModule_formal;
+    localparam [7:0] PAT = 8'b0111_0001;
+
+    (* gclk *) reg clk;
+    (* anyseq *) reg rst_n;
+    (* anyseq *) reg a;
+    wire match;
+
+    TopModule dut (
+        .clk(clk),
+        .rst_n(rst_n),
+        .a(a),
+        .match(match)
+    );
 
     always @(posedge clk) begin
         if ($initstate) begin
             assume(!rst_n);
-            assume(!a);
         end else if (!rst_n || !$past(rst_n)) begin
-            assert(match == 1'b0);
+            assert(!match);
+        end else if (rst_n && $past(rst_n) && $past(rst_n, 2) && $past(rst_n, 3) &&
+                     $past(rst_n, 4) && $past(rst_n, 5) && $past(rst_n, 6) &&
+                     $past(rst_n, 7)) begin
+            assert(match == ({ $past(a, 7), $past(a, 6), $past(a, 5), $past(a, 4),
+                               $past(a, 3), $past(a, 2), $past(a, 1), a } == PAT));
         end else begin
-            assert(gold_a_tem == { $past(gold_a_tem[6:0]), $past(a) });
-            assert(match == ($past(gold_a_tem) == TARGET));
+            assert(!match);
         end
     end
 endmodule
+
 ```

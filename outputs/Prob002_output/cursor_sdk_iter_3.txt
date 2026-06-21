@@ -1,53 +1,38 @@
+## Transport
+rest
+
+## Rationale
+- **Suspected bug (original RTL, L008–L050):** Detection is split into two registered flags, `match_f` and `match_b`, that independently latch prefix (`a_tem[8:6] == 3'b011`) and suffix (`a_tem[2:0] == 3'b110`) checks, then `match = match_b && match_f` (L050). That is not equivalent to detecting the full 9-bit window `011XXX110` in one cycle.
+
+- **Timing bug in the original design:** On each posedge, `match_f`/`match_b` are updated from the **pre-shift** value of `a_tem` (L017, L031), but `match` ANDs the **previous cycle’s** registered flag values. When the pattern first appears in the shift register, the flags may update to 1 on that edge while `match` still sees stale 0s — so `match` never pulses when the reference expects it.
+
+- **Bug in the current candidate (L016):** `assign match = (a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110)` is combinational on `a_tem`, so after the nonblocking shift at posedge it evaluates the **post-shift** register. The completing bit shifts the window before the check runs, so `match` stays low even when the pattern was present pre-shift.
+
+- **Waveform evidence:** First mismatch at **110 ps** (sample after the **105 ps** posedge). `match_ref` goes high at 105 ps while `match_dut` stays 0 for the entire trace. Tracing inputs through posedge 105: pre-shift `a_tem = 9'b011101110` satisfies `011` at `[8:6]` and `110` at `[2:0]`; post-shift `a_tem = 9'b001110111` does not. The reference model matches the pre-shift check.
+
+- **Formal evidence:** SymbiYosys BMC fails at **step 1** on the assertion equating DUT `match` to the reference — consistent with a systematic timing mismatch, not an occasional edge case.
+
+- **Fix applied:** Use a single registered `match` updated on each posedge **before** shifting `a_tem`, evaluating both conditions on the current (pre-shift) 9-bit window. Remove `match_f` and `match_b` entirely.
+
+## FixedTopModule
 ```verilog
 module TopModule(
 	input clk,
 	input rst_n,
 	input a,
-	output match
-	);
+	output reg match
+);
 
 	reg [8:0] a_tem;
-	reg match_f;
-	reg match_b;
-	
-	always @(posedge clk or negedge rst_n)
-		if (!rst_n)
-			begin 
-				match_f <= 1'b0;
-			end
-		else if (a_tem[8:6] == 3'b011)
-			begin
-				match_f <= 1'b1;
-			end
-		else 
-			begin	
-				match_f <= 1'b0;
-			end
 
 	always @(posedge clk or negedge rst_n)
-		if (!rst_n)
-			begin 
-				match_b <= 1'b0;
-			end
-		else if (a_tem[2:0] == 3'b110)
-			begin
-				match_b <= 1'b1;
-			end
-		else 
-			begin	
-				match_b <= 1'b0;
-			end
-			
-	always @(posedge clk or negedge rst_n)
-		if (!rst_n)
-			begin 
-				a_tem <= 9'b0;
-			end
-		else 
-			begin
-				a_tem <= {a_tem[7:0], a};
-			end
-			
-	assign match = match_b && match_f;
+		if (!rst_n) begin
+			a_tem <= 9'b0;
+			match <= 1'b0;
+		end else begin
+			match <= (a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110);
+			a_tem <= {a, a_tem[7:0]};
+		end
+
 endmodule
 ```

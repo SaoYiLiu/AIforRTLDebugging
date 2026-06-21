@@ -12,7 +12,7 @@ INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-p
      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
      -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
      0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
-     0.00ns INFO     cocotb                             Seeding Python random module with 1782005321
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782047982
      0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
      0.00ns INFO     cocotb                             Running tests
      0.00ns INFO     cocotb.regression                  running test_brent_kung_adder.test_brent_kung_adder (1/1)
@@ -66,54 +66,54 @@ INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-p
    230.00ns INFO     cocotb.brent_kung_adder            Expected Sum: 00000003, Actual Sum: 00000003
    230.00ns INFO     cocotb.brent_kung_adder            Expected Carry Out: 0, Actual Carry Out: 0
    250.00ns INFO     cocotb.brent_kung_adder            Random Test Case 1
-   250.00ns INFO     cocotb.brent_kung_adder            a: 08087350, b: 34B3D026, carry_in: 1
-   250.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 3CBC4377, Actual Carry Out: 0
+   250.00ns INFO     cocotb.brent_kung_adder            a: 98C0B041, b: 7CBBDE18, carry_in: 0
+   250.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 157C8E59, Actual Carry Out: 1
    270.00ns INFO     cocotb.brent_kung_adder            Random Test Case 2
-   270.00ns INFO     cocotb.brent_kung_adder            a: 6DA9C084, b: 293E3974, carry_in: 0
-   270.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 96E7F9F8, Actual Carry Out: 0
+   270.00ns INFO     cocotb.brent_kung_adder            a: 36F021B2, b: 9650493A, carry_in: 1
+   270.00ns INFO     cocotb.brent_kung_adder            Actual Sum: CD406AED, Actual Carry Out: 0
    290.00ns INFO     cocotb.brent_kung_adder            Random Test Case 3
-   290.00ns INFO     cocotb.brent_kung_adder            a: 2EF4361C, b: D02F9545, carry_in: 0
-   290.00ns INFO     cocotb.brent_kung_adder            Actual Sum: FF23CB61, Actual Carry Out: 0
+   290.00ns INFO     cocotb.brent_kung_adder            a: D33862F7, b: 43A1F8B5, carry_in: 1
+   290.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 16DA5BAD, Actual Carry Out: 1
    310.00ns INFO     cocotb.brent_kung_adder            Random Test Case 4
-   310.00ns INFO     cocotb.brent_kung_adder            a: CA07403D, b: 9CEF09BF, carry_in: 0
-   310.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 66F649FC, Actual Carry Out: 1
+   310.00ns INFO     cocotb.brent_kung_adder            a: 4E6AD927, b: 781EAE55, carry_in: 1
+   310.00ns INFO     cocotb.brent_kung_adder            Actual Sum: C689877D, Actual Carry Out: 0
    330.00ns INFO     cocotb.brent_kung_adder            Random Test Case 5
-   330.00ns INFO     cocotb.brent_kung_adder            a: 8F349956, b: DA40CDDA, carry_in: 0
-   330.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 69756730, Actual Carry Out: 1
+   330.00ns INFO     cocotb.brent_kung_adder            a: 9FFA4C37, b: 2DA72EAF, carry_in: 1
+   330.00ns INFO     cocotb.brent_kung_adder            Actual Sum: CDA17AE7, Actual Carry Out: 0
    350.00ns INFO     cocotb.brent_kung_adder            Random Test Case 6
-   350.00ns INFO     cocotb.brent_kung_adder            a: F1F6B63F, b: 3785A799, carry_in: 0
-   350.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 297C5DD8, Actual Carry Out: 1
+   350.00ns INFO     cocotb.brent_kung_adder            a: CA117F6A, b: 826FAF0D, carry_in: 0
+   350.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 4C812E77, Actual Carry Out: 1
    370.00ns INFO     cocotb.brent_kung_adder            Random Test Case 7
-   370.00ns INFO     cocotb.brent_kung_adder            a: D8A4E0AB, b: B77D9407, carry_in: 1
-   370.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 902274B3, Actual Carry Out: 1
+   370.00ns INFO     cocotb.brent_kung_adder            a: 76ABAA0E, b: EC6584CA, carry_in: 0
+   370.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 63112ED8, Actual Carry Out: 1
    390.00ns INFO     cocotb.brent_kung_adder            Random Test Case 8
-   390.00ns INFO     cocotb.brent_kung_adder            a: 1132A991, b: E9B5ADEE, carry_in: 0
-   390.00ns INFO     cocotb.brent_kung_adder            Actual Sum: FAE8577F, Actual Carry Out: 0
+   390.00ns INFO     cocotb.brent_kung_adder            a: 885782A1, b: 7C87D4BE, carry_in: 0
+   390.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 04DF575F, Actual Carry Out: 1
    410.00ns INFO     cocotb.brent_kung_adder            Random Test Case 9
-   410.00ns INFO     cocotb.brent_kung_adder            a: B8A1676C, b: BFF42806, carry_in: 1
-   410.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 78958F73, Actual Carry Out: 1
+   410.00ns INFO     cocotb.brent_kung_adder            a: 9205EBC7, b: A48380BF, carry_in: 1
+   410.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 36896C87, Actual Carry Out: 1
    430.00ns INFO     cocotb.brent_kung_adder            Random Test Case 10
-   430.00ns INFO     cocotb.brent_kung_adder            a: BD0E916C, b: 56DF89AD, carry_in: 1
-   430.00ns INFO     cocotb.brent_kung_adder            Actual Sum: 13EE1B1A, Actual Carry Out: 1
+   430.00ns INFO     cocotb.brent_kung_adder            a: 74987259, b: 5C025C67, carry_in: 0
+   430.00ns INFO     cocotb.brent_kung_adder            Actual Sum: D09ACEC0, Actual Carry Out: 0
    440.00ns INFO     cocotb.regression                  test_brent_kung_adder.test_brent_kung_adder passed
    440.00ns INFO     cocotb.regression                  *****************************************************************************************************
                                                         ** TEST                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
                                                         *****************************************************************************************************
-                                                        ** test_brent_kung_adder.test_brent_kung_adder   PASS         440.00           0.02      27225.29  **
+                                                        ** test_brent_kung_adder.test_brent_kung_adder   PASS         440.00           0.03      15711.68  **
                                                         *****************************************************************************************************
-                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               440.00           0.02      17830.17  **
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               440.00           0.04      10258.27  **
                                                         *****************************************************************************************************
 INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_runner.result.xml
 PASSED
 
 =============================== warnings summary ===============================
 ../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
-  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-rwoqww1z'
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-gsowmz39'
     config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
 
 ../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
-  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-8vhmu9g_'
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-5afemf3q'
     session.config.cache.set(STEPWISE_CACHE_DIR, [])
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================== 1 passed, 2 warnings in 1.18s =========================
+======================== 1 passed, 2 warnings in 1.83s =========================

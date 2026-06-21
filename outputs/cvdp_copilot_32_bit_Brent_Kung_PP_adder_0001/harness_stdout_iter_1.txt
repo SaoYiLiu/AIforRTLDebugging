@@ -6,12 +6,13 @@ collecting ... collected 1 item
 
 ../../src/test_runner.py::test_runner 
 -------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
 INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s brent_kung_adder -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/brent_kung_adder.sv in directory /code/rundir/sim_build
 INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
      -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
      0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
-     0.00ns INFO     cocotb                             Seeding Python random module with 1782005287
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782047927
      0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
      0.00ns INFO     cocotb                             Running tests
      0.00ns INFO     cocotb.regression                  running test_brent_kung_adder.test_brent_kung_adder (1/1)
@@ -35,9 +36,9 @@ INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-p
     30.00ns INFO     cocotb.regression                  *****************************************************************************************************
                                                         ** TEST                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
                                                         *****************************************************************************************************
-                                                        ** test_brent_kung_adder.test_brent_kung_adder   FAIL          30.00           0.01       4027.69  **
+                                                        ** test_brent_kung_adder.test_brent_kung_adder   FAIL          30.00           0.01       3954.53  **
                                                         *****************************************************************************************************
-                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                30.00           0.02       1462.23  **
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                30.00           0.02       1432.77  **
                                                         *****************************************************************************************************
 ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
 FAILED
@@ -64,23 +65,24 @@ E       SystemExit: 1
 
 /src/test_runner.py:29: SystemExit
 ------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
 INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s brent_kung_adder -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/brent_kung_adder.sv in directory /code/rundir/sim_build
 INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
 ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
 =============================== warnings summary ===============================
 ../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
-  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-9xcc6moq'
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-6p7w8dwq'
     config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
 
 ../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
-  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-e52wky1e'
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-xwoo_81v'
     config.cache.set("cache/lastfailed", self.lastfailed)
 
 ../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
-  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-1cztnuid'
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-oprleg3v'
     session.config.cache.set(STEPWISE_CACHE_DIR, [])
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ============================
 FAILED ../../src/test_runner.py::test_runner - SystemExit: 1
-======================== 1 failed, 3 warnings in 1.40s =========================
+======================== 1 failed, 3 warnings in 1.57s =========================

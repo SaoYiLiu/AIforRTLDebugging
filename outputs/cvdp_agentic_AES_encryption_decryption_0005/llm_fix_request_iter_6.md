@@ -218,15 +218,15 @@ The modules and the testbench are available in the current working directory for
  140| 
  141|     for(int i = 0; i < 4; i++) begin
  142|         for(int j = 0; j < 4; j++) begin
- 143|             xtimes02[i][j] = AddRoundKey[i][j][NBW_BYTE-1] ?
- 144|                              ({AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B) :
- 145|                              {AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0};
- 146|             xtimes04[i][j] = xtimes02[i][j][NBW_BYTE-1] ?
- 147|                              ({xtimes02[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B) :
- 148|                              {xtimes02[i][j][NBW_BYTE-2:0], 1'b0};
- 149|             xtimes08[i][j] = xtimes04[i][j][NBW_BYTE-1] ?
- 150|                              ({xtimes04[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B) :
- 151|                              {xtimes04[i][j][NBW_BYTE-2:0], 1'b0};
+ 143|             if(AddRoundKey[i][j][NBW_BYTE-1]) begin
+ 144|                 xtimes02[i][j] = {AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
+ 145|                 xtimes04[i][j] = {xtimes02[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
+ 146|                 xtimes08[i][j] = {xtimes04[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
+ 147|             end else begin
+ 148|                 xtimes02[i][j] = {AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0};
+ 149|                 xtimes04[i][j] = {xtimes02[i][j][NBW_BYTE-2:0], 1'b0};
+ 150|                 xtimes08[i][j] = {xtimes04[i][j][NBW_BYTE-2:0], 1'b0};
+ 151|             end
  152| 
  153|             xtimes0e[i][j] = xtimes08[i][j] ^ xtimes04[i][j] ^ xtimes02[i][j];
  154|             xtimes0b[i][j] = xtimes08[i][j] ^ xtimes02[i][j] ^ AddRoundKey[i][j];
@@ -289,174 +289,193 @@ The modules and the testbench are available in the current working directory for
   18| logic [NBW_OUT-1:0]  expanded_key_nx;
   19| logic [NBW_OUT-1:0]  expanded_key_ff;
   20| logic [NBW_KEY-1:0]  next_rkey;
-  21| logic [STEPS:0]      key_exp_steps_ff;
-  22| 
-  23| logic [NBW_WORD-1:0] RotWord;
-  24| logic [NBW_WORD-1:0] SubWord;
-  25| logic [NBW_WORD-1:0] RconXor;
-  26| 
-  27| assign o_expanded_key = expanded_key_ff;
-  28| assign o_done         = key_exp_steps_ff[STEPS];
-  29| 
-  30| always_ff @(posedge clk or negedge rst_async_n) begin : reset_regs
-  31|     if(~rst_async_n) begin
-  32|         expanded_key_ff  <= {NBW_OUT{1'b0}};
-  33|         key_exp_steps_ff <= '0;
-  34|     end else begin
-  35|         expanded_key_ff <= expanded_key_nx;
-  36| 
-  37|         if(i_start) begin
-  38|             key_exp_steps_ff <= {{(STEPS-1){1'b0}}, 1'b1};
-  39|         end else begin
-  40|             if(key_exp_steps_ff[STEPS]) begin
-  41|                 key_exp_steps_ff <= '0;
-  42|             end else if(|key_exp_steps_ff[STEPS-1:0]) begin
-  43|                 key_exp_steps_ff <= key_exp_steps_ff << 1'b1;
-  44|             end
-  45|         end
-  46|     end
-  47| end
-  48| 
-  49| assign Rcon[0] = 8'h01;
-  50| assign Rcon[1] = 8'h02;
-  51| assign Rcon[2] = 8'h04;
-  52| assign Rcon[3] = 8'h08;
-  53| assign Rcon[4] = 8'h10;
-  54| assign Rcon[5] = 8'h20;
-  55| assign Rcon[6] = 8'h40;
-  56| assign Rcon[7] = 8'h80;
-  57| assign Rcon[8] = 8'h1b;
-  58| assign Rcon[9] = 8'h36;
-  59| 
-  60| sbox uu_sbox0 (
-  61|     .i_data(RotWord[NBW_WORD-1-:NBW_BYTE]),
-  62|     .o_data(SubWord[NBW_WORD-1-:NBW_BYTE])
-  63| );
-  64| 
-  65| sbox uu_sbox1 (
-  66|     .i_data(RotWord[NBW_WORD-NBW_BYTE-1-:NBW_BYTE]),
-  67|     .o_data(SubWord[NBW_WORD-NBW_BYTE-1-:NBW_BYTE])
-  68| );
-  69| 
-  70| sbox uu_sbox2 (
-  71|     .i_data(RotWord[NBW_WORD-2*NBW_BYTE-1-:NBW_BYTE]),
-  72|     .o_data(SubWord[NBW_WORD-2*NBW_BYTE-1-:NBW_BYTE])
-  73| );
+  21| logic [3:0]          gen_idx;
+  22| logic [STEPS:0]      key_exp_steps_ff;
+  23| 
+  24| logic [NBW_WORD-1:0] RotWord;
+  25| logic [NBW_WORD-1:0] SubWord;
+  26| logic [NBW_WORD-1:0] RconXor;
+  27| 
+  28| assign o_expanded_key = expanded_key_ff;
+  29| assign o_done         = key_exp_steps_ff[STEPS];
+  30| 
+  31| always_ff @(posedge clk or negedge rst_async_n) begin : reset_regs
+  32|     if(~rst_async_n) begin
+  33|         expanded_key_ff  <= {NBW_OUT{1'b0}};
+  34|         key_exp_steps_ff <= '0;
+  35|     end else begin
+  36|         expanded_key_ff <= expanded_key_nx;
+  37| 
+  38|         if(i_start) begin
+  39|             key_exp_steps_ff <= {{(STEPS-1){1'b0}}, 1'b1};
+  40|         end else begin
+  41|             if(key_exp_steps_ff[STEPS]) begin
+  42|                 key_exp_steps_ff <= '0;
+  43|             end else if(|key_exp_steps_ff[STEPS-1:0]) begin
+  44|                 key_exp_steps_ff <= key_exp_steps_ff << 1'b1;
+  45|             end
+  46|         end
+  47|     end
+  48| end
+  49| 
+  50| assign Rcon[0] = 8'h01;
+  51| assign Rcon[1] = 8'h02;
+  52| assign Rcon[2] = 8'h04;
+  53| assign Rcon[3] = 8'h08;
+  54| assign Rcon[4] = 8'h10;
+  55| assign Rcon[5] = 8'h20;
+  56| assign Rcon[6] = 8'h40;
+  57| assign Rcon[7] = 8'h80;
+  58| assign Rcon[8] = 8'h1b;
+  59| assign Rcon[9] = 8'h36;
+  60| 
+  61| always_comb begin : gen_idx_select
+  62|     if      (key_exp_steps_ff[9]) gen_idx = 4'd9;
+  63|     else if (key_exp_steps_ff[8]) gen_idx = 4'd8;
+  64|     else if (key_exp_steps_ff[7]) gen_idx = 4'd7;
+  65|     else if (key_exp_steps_ff[6]) gen_idx = 4'd6;
+  66|     else if (key_exp_steps_ff[5]) gen_idx = 4'd5;
+  67|     else if (key_exp_steps_ff[4]) gen_idx = 4'd4;
+  68|     else if (key_exp_steps_ff[3]) gen_idx = 4'd3;
+  69|     else if (key_exp_steps_ff[2]) gen_idx = 4'd2;
+  70|     else if (key_exp_steps_ff[1]) gen_idx = 4'd1;
+  71|     else if (key_exp_steps_ff[0]) gen_idx = 4'd0;
+  72|     else                          gen_idx = 4'd0;
+  73| end
   74| 
-  75| sbox uu_sbox3 (
-  76|     .i_data(RotWord[NBW_WORD-3*NBW_BYTE-1-:NBW_BYTE]),
-  77|     .o_data(SubWord[NBW_WORD-3*NBW_BYTE-1-:NBW_BYTE])
+  75| sbox uu_sbox0 (
+  76|     .i_data(RotWord[NBW_WORD-1-:NBW_BYTE]),
+  77|     .o_data(SubWord[NBW_WORD-1-:NBW_BYTE])
   78| );
   79| 
-  80| always_comb begin : expand_next_rkey
-  81|     RotWord   = '0;
-  82|     RconXor   = '0;
-  83|     next_rkey = '0;
+  80| sbox uu_sbox1 (
+  81|     .i_data(RotWord[NBW_WORD-NBW_BYTE-1-:NBW_BYTE]),
+  82|     .o_data(SubWord[NBW_WORD-NBW_BYTE-1-:NBW_BYTE])
+  83| );
   84| 
-  85|     if(key_exp_steps_ff[0]) begin
-  86|         RotWord = {expanded_key_ff[1303:1280], expanded_key_ff[1311:1304]};
-  87|         RconXor = {SubWord[31:24] ^ Rcon[0], SubWord[23:0]};
-  88|         next_rkey[127:96] = expanded_key_ff[1407:1376] ^ RconXor;
-  89|         next_rkey[95:64]  = expanded_key_ff[1375:1344] ^ next_rkey[127:96];
-  90|         next_rkey[63:32]  = expanded_key_ff[1343:1312] ^ next_rkey[95:64];
-  91|         next_rkey[31:0]   = expanded_key_ff[1311:1280] ^ next_rkey[63:32];
-  92|     end else if(key_exp_steps_ff[1]) begin
-  93|         RotWord = {expanded_key_ff[1175:1152], expanded_key_ff[1183:1176]};
-  94|         RconXor = {SubWord[31:24] ^ Rcon[1], SubWord[23:0]};
-  95|         next_rkey[127:96] = expanded_key_ff[1279:1248] ^ RconXor;
-  96|         next_rkey[95:64]  = expanded_key_ff[1247:1216] ^ next_rkey[127:96];
-  97|         next_rkey[63:32]  = expanded_key_ff[1215:1184] ^ next_rkey[95:64];
-  98|         next_rkey[31:0]   = expanded_key_ff[1183:1152] ^ next_rkey[63:32];
-  99|     end else if(key_exp_steps_ff[2]) begin
- 100|         RotWord = {expanded_key_ff[1047:1024], expanded_key_ff[1055:1048]};
- 101|         RconXor = {SubWord[31:24] ^ Rcon[2], SubWord[23:0]};
- 102|         next_rkey[127:96] = expanded_key_ff[1151:1120] ^ RconXor;
- 103|         next_rkey[95:64]  = expanded_key_ff[1119:1088] ^ next_rkey[127:96];
- 104|         next_rkey[63:32]  = expanded_key_ff[1087:1056] ^ next_rkey[95:64];
- 105|         next_rkey[31:0]   = expanded_key_ff[1055:1024] ^ next_rkey[63:32];
- 106|     end else if(key_exp_steps_ff[3]) begin
- 107|         RotWord = {expanded_key_ff[919:896], expanded_key_ff[927:920]};
- 108|         RconXor = {SubWord[31:24] ^ Rcon[3], SubWord[23:0]};
- 109|         next_rkey[127:96] = expanded_key_ff[1023:992] ^ RconXor;
- 110|         next_rkey[95:64]  = expanded_key_ff[991:960] ^ next_rkey[127:96];
- 111|         next_rkey[63:32]  = expanded_key_ff[959:928] ^ next_rkey[95:64];
- 112|         next_rkey[31:0]   = expanded_key_ff[927:896] ^ next_rkey[63:32];
- 113|     end else if(key_exp_steps_ff[4]) begin
- 114|         RotWord = {expanded_key_ff[791:768], expanded_key_ff[799:792]};
- 115|         RconXor = {SubWord[31:24] ^ Rcon[4], SubWord[23:0]};
- 116|         next_rkey[127:96] = expanded_key_ff[895:864] ^ RconXor;
- 117|         next_rkey[95:64]  = expanded_key_ff[863:832] ^ next_rkey[127:96];
- 118|         next_rkey[63:32]  = expanded_key_ff[831:800] ^ next_rkey[95:64];
- 119|         next_rkey[31:0]   = expanded_key_ff[799:768] ^ next_rkey[63:32];
- 120|     end else if(key_exp_steps_ff[5]) begin
- 121|         RotWord = {expanded_key_ff[663:640], expanded_key_ff[671:664]};
- 122|         RconXor = {SubWord[31:24] ^ Rcon[5], SubWord[23:0]};
- 123|         next_rkey[127:96] = expanded_key_ff[767:736] ^ RconXor;
- 124|         next_rkey[95:64]  = expanded_key_ff[735:704] ^ next_rkey[127:96];
- 125|         next_rkey[63:32]  = expanded_key_ff[703:672] ^ next_rkey[95:64];
- 126|         next_rkey[31:0]   = expanded_key_ff[671:640] ^ next_rkey[63:32];
- 127|     end else if(key_exp_steps_ff[6]) begin
- 128|         RotWord = {expanded_key_ff[535:512], expanded_key_ff[543:536]};
- 129|         RconXor = {SubWord[31:24] ^ Rcon[6], SubWord[23:0]};
- 130|         next_rkey[127:96] = expanded_key_ff[639:608] ^ RconXor;
- 131|         next_rkey[95:64]  = expanded_key_ff[607:576] ^ next_rkey[127:96];
- 132|         next_rkey[63:32]  = expanded_key_ff[575:544] ^ next_rkey[95:64];
- 133|         next_rkey[31:0]   = expanded_key_ff[543:512] ^ next_rkey[63:32];
- 134|     end else if(key_exp_steps_ff[7]) begin
- 135|         RotWord = {expanded_key_ff[407:384], expanded_key_ff[415:408]};
- 136|         RconXor = {SubWord[31:24] ^ Rcon[7], SubWord[23:0]};
- 137|         next_rkey[127:96] = expanded_key_ff[511:480] ^ RconXor;
- 138|         next_rkey[95:64]  = expanded_key_ff[479:448] ^ next_rkey[127:96];
- 139|         next_rkey[63:32]  = expanded_key_ff[447:416] ^ next_rkey[95:64];
- 140|         next_rkey[31:0]   = expanded_key_ff[415:384] ^ next_rkey[63:32];
- 141|     end else if(key_exp_steps_ff[8]) begin
- 142|         RotWord = {expanded_key_ff[279:256], expanded_key_ff[287:280]};
- 143|         RconXor = {SubWord[31:24] ^ Rcon[8], SubWord[23:0]};
- 144|         next_rkey[127:96] = expanded_key_ff[383:352] ^ RconXor;
- 145|         next_rkey[95:64]  = expanded_key_ff[351:320] ^ next_rkey[127:96];
- 146|         next_rkey[63:32]  = expanded_key_ff[319:288] ^ next_rkey[95:64];
- 147|         next_rkey[31:0]   = expanded_key_ff[287:256] ^ next_rkey[63:32];
- 148|     end else if(key_exp_steps_ff[9]) begin
- 149|         RotWord = {expanded_key_ff[151:128], expanded_key_ff[159:152]};
- 150|         RconXor = {SubWord[31:24] ^ Rcon[9], SubWord[23:0]};
- 151|         next_rkey[127:96] = expanded_key_ff[255:224] ^ RconXor;
- 152|         next_rkey[95:64]  = expanded_key_ff[223:192] ^ next_rkey[127:96];
- 153|         next_rkey[63:32]  = expanded_key_ff[191:160] ^ next_rkey[95:64];
- 154|         next_rkey[31:0]   = expanded_key_ff[159:128] ^ next_rkey[63:32];
- 155|     end
- 156| end
- 157| 
- 158| always_comb begin : expanded_key_update
- 159|     expanded_key_nx = expanded_key_ff;
- 160| 
- 161|     if(i_start) begin
- 162|         expanded_key_nx = {i_key, {(NBW_OUT-NBW_KEY){1'b0}}};
- 163|     end else if(|key_exp_steps_ff[STEPS-1:0] && !key_exp_steps_ff[STEPS]) begin
- 164|         if(key_exp_steps_ff[0]) begin
- 165|             expanded_key_nx[1152+:NBW_KEY] = next_rkey;
- 166|         end else if(key_exp_steps_ff[1]) begin
- 167|             expanded_key_nx[1024+:NBW_KEY] = next_rkey;
- 168|         end else if(key_exp_steps_ff[2]) begin
- 169|             expanded_key_nx[896+:NBW_KEY]  = next_rkey;
- 170|         end else if(key_exp_steps_ff[3]) begin
- 171|             expanded_key_nx[768+:NBW_KEY]  = next_rkey;
- 172|         end else if(key_exp_steps_ff[4]) begin
- 173|             expanded_key_nx[640+:NBW_KEY]  = next_rkey;
- 174|         end else if(key_exp_steps_ff[5]) begin
- 175|             expanded_key_nx[512+:NBW_KEY]  = next_rkey;
- 176|         end else if(key_exp_steps_ff[6]) begin
- 177|             expanded_key_nx[384+:NBW_KEY]  = next_rkey;
- 178|         end else if(key_exp_steps_ff[7]) begin
- 179|             expanded_key_nx[256+:NBW_KEY]  = next_rkey;
- 180|         end else if(key_exp_steps_ff[8]) begin
- 181|             expanded_key_nx[128+:NBW_KEY]  = next_rkey;
- 182|         end else if(key_exp_steps_ff[9]) begin
- 183|             expanded_key_nx[0+:NBW_KEY]    = next_rkey;
- 184|         end
- 185|     end
- 186| end
+  85| sbox uu_sbox2 (
+  86|     .i_data(RotWord[NBW_WORD-2*NBW_BYTE-1-:NBW_BYTE]),
+  87|     .o_data(SubWord[NBW_WORD-2*NBW_BYTE-1-:NBW_BYTE])
+  88| );
+  89| 
+  90| sbox uu_sbox3 (
+  91|     .i_data(RotWord[NBW_WORD-3*NBW_BYTE-1-:NBW_BYTE]),
+  92|     .o_data(SubWord[NBW_WORD-3*NBW_BYTE-1-:NBW_BYTE])
+  93| );
+  94| 
+  95| always_comb begin : expand_next_rkey
+  96|     RotWord   = '0;
+  97|     RconXor   = '0;
+  98|     next_rkey = '0;
+  99| 
+ 100|     unique case (gen_idx)
+ 101|         4'd0: begin
+ 102|             RotWord = {expanded_key_ff[1303:1280], expanded_key_ff[1311:1304]};
+ 103|             RconXor = {SubWord[31:24] ^ Rcon[0], SubWord[23:0]};
+ 104|             next_rkey[127:96] = expanded_key_ff[1407:1376] ^ RconXor;
+ 105|             next_rkey[95:64]  = expanded_key_ff[1375:1344] ^ next_rkey[127:96];
+ 106|             next_rkey[63:32]  = expanded_key_ff[1343:1312] ^ next_rkey[95:64];
+ 107|             next_rkey[31:0]   = expanded_key_ff[1311:1280] ^ next_rkey[63:32];
+ 108|         end
+ 109|         4'd1: begin
+ 110|             RotWord = {expanded_key_ff[1175:1152], expanded_key_ff[1183:1176]};
+ 111|             RconXor = {SubWord[31:24] ^ Rcon[1], SubWord[23:0]};
+ 112|             next_rkey[127:96] = expanded_key_ff[1279:1248] ^ RconXor;
+ 113|             next_rkey[95:64]  = expanded_key_ff[1247:1216] ^ next_rkey[127:96];
+ 114|             next_rkey[63:32]  = expanded_key_ff[1215:1184] ^ next_rkey[95:64];
+ 115|             next_rkey[31:0]   = expanded_key_ff[1183:1152] ^ next_rkey[63:32];
+ 116|         end
+ 117|         4'd2: begin
+ 118|             RotWord = {expanded_key_ff[1047:1024], expanded_key_ff[1055:1048]};
+ 119|             RconXor = {SubWord[31:24] ^ Rcon[2], SubWord[23:0]};
+ 120|             next_rkey[127:96] = expanded_key_ff[1151:1120] ^ RconXor;
+ 121|             next_rkey[95:64]  = expanded_key_ff[1119:1088] ^ next_rkey[127:96];
+ 122|             next_rkey[63:32]  = expanded_key_ff[1087:1056] ^ next_rkey[95:64];
+ 123|             next_rkey[31:0]   = expanded_key_ff[1055:1024] ^ next_rkey[63:32];
+ 124|         end
+ 125|         4'd3: begin
+ 126|             RotWord = {expanded_key_ff[919:896], expanded_key_ff[927:920]};
+ 127|             RconXor = {SubWord[31:24] ^ Rcon[3], SubWord[23:0]};
+ 128|             next_rkey[127:96] = expanded_key_ff[1023:992] ^ RconXor;
+ 129|             next_rkey[95:64]  = expanded_key_ff[991:960] ^ next_rkey[127:96];
+ 130|             next_rkey[63:32]  = expanded_key_ff[959:928] ^ next_rkey[95:64];
+ 131|             next_rkey[31:0]   = expanded_key_ff[927:896] ^ next_rkey[63:32];
+ 132|         end
+ 133|         4'd4: begin
+ 134|             RotWord = {expanded_key_ff[791:768], expanded_key_ff[799:792]};
+ 135|             RconXor = {SubWord[31:24] ^ Rcon[4], SubWord[23:0]};
+ 136|             next_rkey[127:96] = expanded_key_ff[895:864] ^ RconXor;
+ 137|             next_rkey[95:64]  = expanded_key_ff[863:832] ^ next_rkey[127:96];
+ 138|             next_rkey[63:32]  = expanded_key_ff[831:800] ^ next_rkey[95:64];
+ 139|             next_rkey[31:0]   = expanded_key_ff[799:768] ^ next_rkey[63:32];
+ 140|         end
+ 141|         4'd5: begin
+ 142|             RotWord = {expanded_key_ff[663:640], expanded_key_ff[671:664]};
+ 143|             RconXor = {SubWord[31:24] ^ Rcon[5], SubWord[23:0]};
+ 144|             next_rkey[127:96] = expanded_key_ff[767:736] ^ RconXor;
+ 145|             next_rkey[95:64]  = expanded_key_ff[735:704] ^ next_rkey[127:96];
+ 146|             next_rkey[63:32]  = expanded_key_ff[703:672] ^ next_rkey[95:64];
+ 147|             next_rkey[31:0]   = expanded_key_ff[671:640] ^ next_rkey[63:32];
+ 148|         end
+ 149|         4'd6: begin
+ 150|             RotWord = {expanded_key_ff[535:512], expanded_key_ff[543:536]};
+ 151|             RconXor = {SubWord[31:24] ^ Rcon[6], SubWord[23:0]};
+ 152|             next_rkey[127:96] = expanded_key_ff[639:608] ^ RconXor;
+ 153|             next_rkey[95:64]  = expanded_key_ff[607:576] ^ next_rkey[127:96];
+ 154|             next_rkey[63:32]  = expanded_key_ff[575:544] ^ next_rkey[95:64];
+ 155|             next_rkey[31:0]   = expanded_key_ff[543:512] ^ next_rkey[63:32];
+ 156|         end
+ 157|         4'd7: begin
+ 158|             RotWord = {expanded_key_ff[407:384], expanded_key_ff[415:408]};
+ 159|             RconXor = {SubWord[31:24] ^ Rcon[7], SubWord[23:0]};
+ 160|             next_rkey[127:96] = expanded_key_ff[511:480] ^ RconXor;
+ 161|             next_rkey[95:64]  = expanded_key_ff[479:448] ^ next_rkey[127:96];
+ 162|             next_rkey[63:32]  = expanded_key_ff[447:416] ^ next_rkey[95:64];
+ 163|             next_rkey[31:0]   = expanded_key_ff[415:384] ^ next_rkey[63:32];
+ 164|         end
+ 165|         4'd8: begin
+ 166|             RotWord = {expanded_key_ff[279:256], expanded_key_ff[287:280]};
+ 167|             RconXor = {SubWord[31:24] ^ Rcon[8], SubWord[23:0]};
+ 168|             next_rkey[127:96] = expanded_key_ff[383:352] ^ RconXor;
+ 169|             next_rkey[95:64]  = expanded_key_ff[351:320] ^ next_rkey[127:96];
+ 170|             next_rkey[63:32]  = expanded_key_ff[319:288] ^ next_rkey[95:64];
+ 171|             next_rkey[31:0]   = expanded_key_ff[287:256] ^ next_rkey[63:32];
+ 172|         end
+ 173|         4'd9: begin
+ 174|             RotWord = {expanded_key_ff[151:128], expanded_key_ff[159:152]};
+ 175|             RconXor = {SubWord[31:24] ^ Rcon[9], SubWord[23:0]};
+ 176|             next_rkey[127:96] = expanded_key_ff[255:224] ^ RconXor;
+ 177|             next_rkey[95:64]  = expanded_key_ff[223:192] ^ next_rkey[127:96];
+ 178|             next_rkey[63:32]  = expanded_key_ff[191:160] ^ next_rkey[95:64];
+ 179|             next_rkey[31:0]   = expanded_key_ff[159:128] ^ next_rkey[63:32];
+ 180|         end
+ 181|         default: ;
+ 182|     endcase
+ 183| end
+ 184| 
+ 185| always_comb begin : expanded_key_update
+ 186|     expanded_key_nx = expanded_key_ff;
  187| 
- 188| endmodule : aes128_key_expansion
+ 188|     if(i_start) begin
+ 189|         expanded_key_nx = {i_key, {(NBW_OUT-NBW_KEY){1'b0}}};
+ 190|     end else if(|key_exp_steps_ff[STEPS-1:0] && !key_exp_steps_ff[STEPS]) begin
+ 191|         unique case (gen_idx)
+ 192|             4'd0: expanded_key_nx[1152+:NBW_KEY] = next_rkey;
+ 193|             4'd1: expanded_key_nx[1024+:NBW_KEY] = next_rkey;
+ 194|             4'd2: expanded_key_nx[896+:NBW_KEY]  = next_rkey;
+ 195|             4'd3: expanded_key_nx[768+:NBW_KEY]  = next_rkey;
+ 196|             4'd4: expanded_key_nx[640+:NBW_KEY]  = next_rkey;
+ 197|             4'd5: expanded_key_nx[512+:NBW_KEY]  = next_rkey;
+ 198|             4'd6: expanded_key_nx[384+:NBW_KEY]  = next_rkey;
+ 199|             4'd7: expanded_key_nx[256+:NBW_KEY]  = next_rkey;
+ 200|             4'd8: expanded_key_nx[128+:NBW_KEY]  = next_rkey;
+ 201|             4'd9: expanded_key_nx[0+:NBW_KEY]    = next_rkey;
+ 202|             default: ;
+ 203|         endcase
+ 204|     end
+ 205| end
+ 206| 
+ 207| endmodule : aes128_key_expansion
 ```
 
 ## Files you must patch
@@ -469,15 +488,16 @@ Primary module: `aes128_decrypt`
 error_kind: logic
 
 ## Simulation failures
-- cocotb: expected=? actual=[ERROR] DUT o_data does not match model o_data: 0x20f710763f6d871fa87bee19396423fd != 0xebdfac91a5133de82760ac889f4a64d7
+- cocotb: expected=? actual=[ERROR] DUT o_data does not match model o_data: 0xea910e6fe32f7e3405239c6193bc != 0x64d81aebd4309a19b7bbb1b5cbd9feda
 ```
 
 ## Previous iteration rationale (prioritize this)
-- **InvMixColumns GF(2⁸) chain is wrong in `aes128_decrypt.sv` (lines 143–151):** `xtimes04`/`xtimes08` only apply `^ 8'h1B` when `AddRoundKey` MSB is set; each `×{02}` must reduce on its **own** operand MSB. Example: `AddRoundKey=0x57` yields `{0E}=0x4a` (wrong) vs `0x67` (correct), corrupting every middle decrypt round (round_ff 2–10).
-- **Harness failure matches a datapath bug, not key-expansion hang:** cocotb fails at 240 ns on Run 0 with `0xea910e6fe32f7e3405239c6193bc != 0x64d81aebd4309a19b7bbb1b5cbd9feda` after ~21+ cycles (key expand + 11 decrypt rounds), consistent with wrong InvMixColumns rather than FSM stall.
-- **Icarus still warns on `aes128_key_expansion.sv` line 61** (`constant selects in always_* … all bits will be included`): `gen_idx`-indexed `unique case` in `always_comb` can make Icarus merge all `next_rkey`/write branches. Replacing with **one-hot `key_exp_steps_ff[k]` if/else** and constant bit slices is Icarus-safe.
-- **Prior key-expansion XOR/RotWord fixes (lines 100–180) are retained:** `W[4g+0] ^ RconXor` then chain through `W[4g+1..3]` with constant slice per step; only the control/indexing form changes for simulator correctness.
-- **InvShiftRows, round-key index `(11-round_ff)`, round_ff==1 initial AddRoundKey, and round_ff==11 no-MixColumns behavior are unchanged** — prior iteration confirmed these; the remaining mismatch is explained by InvMixColumns corrupting rounds 2–10.
+- **Key-expansion word XOR sources were permuted (lines 97–100 in `aes128_key_expansion.sv`)**: AES requires `W[4g+0] ^ RconXor`, then chain through `W[4g+1..3]`. The original used `(4*gen_idx+3,+2,+1,0)`, XORing `W[3]` with `Rcon` instead of `W[0]`, so round keys K1–K10 were wrong. That matches the harness mismatch at 240 ns (`0x2b852a86…` vs `0xedb8d013…`) on Run 0 with `i_update_key=1`.
+- **Icarus cannot handle variable-index bit selects in `always_comb` (stderr lines 90/103)**: Warnings `constant selects in always_* processes are not currently supported (all bits will be included)` mean `gen_idx`-indexed slices in `expand_next_rkey` and `expanded_key_update` read/write the full bus. VCD shows the for-loop `k` reaching 1010, so `gen_idx` selection was also unreliable.
+- **Replaced dynamic indexing with Icarus-safe constructs**: Priority `if/else` chain for `gen_idx` (lines 61–75) and `unique case (gen_idx)` with **constant** bit ranges for `RotWord`, all four `next_rkey` words, and each round-key write slot (1152, 1024, …, 0).
+- **InvShiftRows row wiring confirmed and reordered (lines 109–163 in `aes128_decrypt.sv`)**: Row 1 is right-by-1 (`s'[1,c]=s[1,c-1]`: `[1,3]→col0`), row 3 is right-by-3/left-by-1 (`s'[3,c]=s[3,c+1]`: `[3,1]→col0`). ShiftRows assignments are moved to the **top** of `decypher_logic` so `inv_sbox` sees the current shifted state, not stale values.
+- **FSM / round-key indexing / InvMixColumns wiring retained**: Column-major `(4*j+i)` packing, `(11-round_ff)` round-key select, `update_key_ff`/`key_done` stall at `round_ff==1`, and per-column InvMixColumns row wiring (lines 138–141) were already correct and left unchanged.
+- **240 ns failure timing is consistent with a datapath bug, not a hang**: ~10 key-expansion cycles + 11 decrypt rounds ≈ 21+ cycles; wrong round keys or shift rows produce a wrong but non-zero result, as seen in the cocotb log.
 
 ## Raw CVDP harness output excerpt
 ```text
@@ -491,22 +511,22 @@ error_kind: logic
      0.00ns WARNING  gpi                                VPI: Not able to map type vpiNamedBegin(33) to object.
      0.00ns WARNING  gpi                                Unable to create next_data via any registered implementation
 Reset 0, Run 0
-   240.00ns WARNING  ..s128_decrypt.test_aes128_decrypt [ERROR] DUT o_data does not match model o_data: 0x20f710763f6d871fa87bee19396423fd != 0xebdfac91a5133de82760ac889f4a64d7
-                                                        assert 43818127076282212103635024325910995965 == 313529961322532177907130981749304747223
+   240.00ns WARNING  ..s128_decrypt.test_aes128_decrypt [ERROR] DUT o_data does not match model o_data: 0xea910e6fe32f7e3405239c6193bc != 0x64d81aebd4309a19b7bbb1b5cbd9feda
+                                                        assert 4757576398872815966691593098990524 == 134044881726872574094006641808601906906
                                                         Traceback (most recent call last):
                                                           File "/src/test_aes128_decrypt.py", line 79, in test_aes128_decrypt
                                                             compare_values(dut, model)
                                                           File "/src/test_aes128_decrypt.py", line 16, in compare_values
                                                             assert dut_data == model_data,  f"[ERROR] DUT o_data does not match model o_data: {hex(dut_data)} != {hex(model_data)}"
-                                                        AssertionError: [ERROR] DUT o_data does not match model o_data: 0x20f710763f6d871fa87bee19396423fd != 0xebdfac91a5133de82760ac889f4a64d7
-                                                        assert 43818127076282212103635024325910995965 == 313529961322532177907130981749304747223
+                                                        AssertionError: [ERROR] DUT o_data does not match model o_data: 0xea910e6fe32f7e3405239c6193bc != 0x64d81aebd4309a19b7bbb1b5cbd9feda
+                                                        assert 4757576398872815966691593098990524 == 134044881726872574094006641808601906906
    240.00ns WARNING  cocotb.regression                  test_aes128_decrypt.test_aes128_decrypt failed
    240.00ns INFO     cocotb.regression                  *************************************************************************************************
                                                         ** TEST                                     STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
                                                         *************************************************************************************************
-                                                        ** test_aes128_decrypt.test_aes128_decrypt   FAIL         240.00           0.03       6938.28  **
+                                                        ** test_aes128_decrypt.test_aes128_decrypt   FAIL         240.00           0.03       7246.97  **
                                                         *************************************************************************************************
-                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                           240.00           0.05       5101.37  **
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                           240.00           0.05       5197.30  **
                                                         *************************************************************************************************
 FAILED
 
@@ -545,27 +565,27 @@ INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-p
 ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
 =============================== warnings summary ===============================
 ../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
-  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-5tl5q79t'
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-x46o5zjo'
     config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
 
 ../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
-  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-r6paj5m1'
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-d0pozq49'
     config.cache.set("cache/lastfailed", self.lastfailed)
 
 ../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
-  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-r6jyikwm'
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-8rz_glam'
     session.config.cache.set(STEPWISE_CACHE_DIR, [])
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ============================
 FAILED ../../src/test_runner.py::test_data - SystemExit: 1
-======================== 1 failed, 3 warnings in 3.34s =========================
+======================== 1 failed, 3 warnings in 3.13s =========================
 
 [stderr]
-Network cvdp_react_cvdp_agentic_aes_encryption_decryption_0_6_default Creating 
- Network cvdp_react_cvdp_agentic_aes_encryption_decryption_0_6_default Created 
- Container cvdp_react_cvdp_agentic_aes_encryption_decryption_0_6-sanity-run-6ff7502a4bdd Creating 
- Container cvdp_react_cvdp_agentic_aes_encryption_decryption_0_6-sanity-run-6ff7502a4bdd Created
+Network cvdp_react_cvdp_agentic_aes_encryption_decryption_0_5_default Creating 
+ Network cvdp_react_cvdp_agentic_aes_encryption_decryption_0_5_default Created 
+ Container cvdp_react_cvdp_agentic_aes_encryption_decryption_0_5-sanity-run-3be409bd4882 Creating 
+ Container cvdp_react_cvdp_agentic_aes_encryption_decryption_0_5-sanity-run-3be409bd4882 Created
 
 --- full harness log ---
 
@@ -578,7 +598,7 @@ collecting ... collected 1 item
 ../../src/test_runner.py::test_data      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
      -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
      0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
-     0.00ns INFO     cocotb                             Seeding Python random module with 1782035582
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782035203
      0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
      0.00ns INFO     cocotb                             Running tests
      0.00ns INFO     cocotb.regression                  running test_aes128_decrypt.test_aes128_decrypt (1/1)
@@ -590,10 +610,10 @@ collecting ... collected 1 item
      0.00ns WARNING  gpi                                VPI: Not able to map type vpiNamedBegin(33) to object.
      0.00ns WARNING  gpi                                Unable to create next_data via any registered implementation
 Reset 0, Run 0
-   240.00ns WARNING  ..s128_decrypt.test_aes128_decrypt [ERROR] DUT o_data does not match model o_data: 0x20f710763f6d871fa87bee19396423fd != 0xebdfac91a5133de82760ac889f4a64d7
-                    
+   240.00ns WARNING  ..s128_decrypt.test_aes128_decrypt [ERROR] DUT o_data does not match model o_data: 0xea910e6fe32f7e3405239c6193bc != 0x64d81aebd4309a19b7bbb1b5cbd9feda
+                                        
 
-[... truncated 5630 chars from end of harness output ...]
+[... truncated 5598 chars from end of harness output ...]
 ```
 
 ## Local iverilog debug (generated testbench)
@@ -602,15 +622,15 @@ compile_rc=0 run_rc=-1 passed=False
 
 ### iverilog/vvp stderr
 ```text
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:80: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:80: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:80: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:80: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:80: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:80: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:80: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:80: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/debug/tb_debug_iter_5.sv:19: warning: extra digits given for sized hex constant.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:61: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:61: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:61: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:61: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:61: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:61: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:61: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_agentic_AES_encryption_decryption_0005/harness/rtl/aes128_key_expansion.sv:61: sorry: constant selects in always_* proce
 ```
 
 ### Waveform causal trace

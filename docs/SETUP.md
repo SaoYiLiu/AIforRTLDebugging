@@ -22,7 +22,7 @@ sudo apt install -y boolector yices2
 
 ### Create Python venv and install Python deps
 
-From the project root:
+From the project root (or run **`./install.sh`** to install EDA tools + venv in one step):
 
 ```bash
 # If you ever see `pip`/Python version mismatches inside the venv,

@@ -107,7 +107,6 @@ generate
 endgenerate
 
 always_comb begin : decypher_logic
-    // InvShiftRows first: row r cyclically shifted right by r positions
     ShiftRows[0][0] = current_data_ff[0][0];
     ShiftRows[0][1] = current_data_ff[0][1];
     ShiftRows[0][2] = current_data_ff[0][2];
@@ -140,15 +139,15 @@ always_comb begin : decypher_logic
 
     for(int i = 0; i < 4; i++) begin
         for(int j = 0; j < 4; j++) begin
-            if(AddRoundKey[i][j][NBW_BYTE-1]) begin
-                xtimes02[i][j] = {AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
-                xtimes04[i][j] = {xtimes02[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
-                xtimes08[i][j] = {xtimes04[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
-            end else begin
-                xtimes02[i][j] = {AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0};
-                xtimes04[i][j] = {xtimes02[i][j][NBW_BYTE-2:0], 1'b0};
-                xtimes08[i][j] = {xtimes04[i][j][NBW_BYTE-2:0], 1'b0};
-            end
+            xtimes02[i][j] = AddRoundKey[i][j][NBW_BYTE-1] ?
+                             ({AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B) :
+                             {AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0};
+            xtimes04[i][j] = xtimes02[i][j][NBW_BYTE-1] ?
+                             ({xtimes02[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B) :
+                             {xtimes02[i][j][NBW_BYTE-2:0], 1'b0};
+            xtimes08[i][j] = xtimes04[i][j][NBW_BYTE-1] ?
+                             ({xtimes04[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B) :
+                             {xtimes04[i][j][NBW_BYTE-2:0], 1'b0};
 
             xtimes0e[i][j] = xtimes08[i][j] ^ xtimes04[i][j] ^ xtimes02[i][j];
             xtimes0b[i][j] = xtimes08[i][j] ^ xtimes02[i][j] ^ AddRoundKey[i][j];

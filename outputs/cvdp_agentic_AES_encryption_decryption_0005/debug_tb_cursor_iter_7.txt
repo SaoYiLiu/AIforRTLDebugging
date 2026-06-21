@@ -1,0 +1,150 @@
+## Transport
+rest
+
+## Requested
+True
+
+## Rationale
+- The harness still reports a **logic** failure at 240 ns on Reset 0 / Run 0 (`0xe8a0e27d…` vs model `0x50aa02fc…`) after a full decrypt completes — not an elaboration hang or compile error.
+- Cocotb GPI warnings show it **cannot probe** named internal blocks (`decypher_logic`, `inv_cypher_regs`, `next_data`); VCD is the practical way to inspect `round_ff`, `key_done`, `expanded_key`, and per-round state bytes.
+- Prior RTL fixes (key-expansion Icarus-safe assigns, xtimes GF chain) **changed** the wrong output but did not pass, implying a remaining bug in round-key usage, FSM timing, or decrypt datapath that final `o_data` alone cannot isolate.
+- The DUT is a **multi-cycle FSM** (serial key expansion stall at `round_ff==1`, then 11 decrypt rounds); waveform evidence materially narrows whether K10/K0 indexing or a specific round transform is still wrong.
+- A focused iverilog TB can mirror the cocotb handshake exactly (10 ns clock, async reset, `i_update_key=1` on Run 0) using the harness-reported expected plaintext and vectors derived from the cocotb random seed line in the full log.
+
+## Raw
+## DebugSimDecision
+use: yes
+
+## Rationale
+- The harness still reports a **logic** failure at 240 ns on Reset 0 / Run 0 (`0xe8a0e27d…` vs model `0x50aa02fc…`) after a full decrypt completes — not an elaboration hang or compile error.
+- Cocotb GPI warnings show it **cannot probe** named internal blocks (`decypher_logic`, `inv_cypher_regs`, `next_data`); VCD is the practical way to inspect `round_ff`, `key_done`, `expanded_key`, and per-round state bytes.
+- Prior RTL fixes (key-expansion Icarus-safe assigns, xtimes GF chain) **changed** the wrong output but did not pass, implying a remaining bug in round-key usage, FSM timing, or decrypt datapath that final `o_data` alone cannot isolate.
+- The DUT is a **multi-cycle FSM** (serial key expansion stall at `round_ff==1`, then 11 decrypt rounds); waveform evidence materially narrows whether K10/K0 indexing or a specific round transform is still wrong.
+- A focused iverilog TB can mirror the cocotb handshake exactly (10 ns clock, async reset, `i_update_key=1` on Run 0) using the harness-reported expected plaintext and vectors derived from the cocotb random seed line in the full log.
+
+## DebugTestbench
+```verilog
+`timescale 1ns / 1ns
+
+module tb_debug;
+    localparam NBW = 128;
+
+    reg                 clk;
+    reg                 rst_async_n;
+    reg                 i_update_key;
+    reg  [NBW-1:0]      i_key;
+    reg                 i_start;
+    reg  [NBW-1:0]      i_data;
+    wire                o_done;
+    wire [NBW-1:0]      o_data;
+
+    // Harness Reset 0 / Run 0 — model golden plaintext (exact from failure log)
+    localparam [NBW-1:0] EXP_PT = 128'h50aa02fc1efbbd83e14756e3775a0607;
+
+    // Fill from cocotb log line:
+    //   "Seeding Python random module with <SEED>"
+    // then in Python: random.seed(SEED); key=random.randint(0,2**128-1); ct=random.randint(...)
+    // (first two random.randint calls after seed, before Run 0 loop body re-seeds)
+    localparam [NBW-1:0] RUN0_KEY = 128'h00000000000000000000000000000000; // <-- replace from seed
+    localparam [NBW-1:0] RUN0_CT  = 128'h00000000000000000000000000000000; // <-- replace from seed
+
+    // Harness-reported DUT output at ~240 ns (reference for wave compare)
+    localparam [NBW-1:0] HARNESS_DUT_ACTUAL = 128'he8a0e27d28e748ede962064b0b9d03da;
+
+    reg        check_enable;
+    reg        mismatch_reported;
+    wire       tb_mismatch;
+
+    aes128_decrypt dut (
+        .clk          (clk),
+        .rst_async_n  (rst_async_n),
+        .i_update_key (i_update_key),
+        .i_key        (i_key),
+        .i_start      (i_start),
+        .i_data       (i_data),
+        .o_done       (o_done),
+        .o_data       (o_data)
+    );
+
+    initial begin
+        $dumpfile("wave.vcd");
+        $dumpvars(0, tb_debug);
+    end
+
+    initial clk = 1'b0;
+    always #5 clk = ~clk;
+
+    assign tb_mismatch = check_enable && o_done && (o_data !== EXP_PT);
+
+    always @(posedge clk) begin
+        if (tb_mismatch && !mismatch_reported) begin
+            $display("First mismatch occurred at time %0t", $time);
+            $display("  expected (model) = 0x%0h", EXP_PT);
+            $display("  actual   (DUT)   = 0x%0h", o_data);
+            $display("  harness DUT snap = 0x%0h", HARNESS_DUT_ACTUAL);
+            mismatch_reported <= 1'b1;
+        end
+    end
+
+    initial begin
+        check_enable      = 1'b0;
+        mismatch_reported = 1'b0;
+        i_update_key      = 1'b0;
+        i_key             = {NBW{1'b0}};
+        i_start           = 1'b0;
+        i_data            = {NBW{1'b0}};
+        rst_async_n       = 1'b0;
+
+        // cocotb-style reset pulse
+        @(posedge clk);
+        rst_async_n = 1'b1;
+        @(posedge clk);
+
+        // Reset 0, Run 0: j==0 => update_key=1, i_start=1
+        i_key        = RUN0_KEY;
+        i_data       = RUN0_CT;
+        i_update_key = 1'b1;
+        i_start      = 1'b1;
+        check_enable = 1'b1;
+
+        $display("Run0 key=0x%0h ct=0x%0h", RUN0_KEY, RUN0_CT);
+
+        @(posedge clk);
+        i_update_key = 1'b0;
+        i_start      = 1'b0;
+        i_key        = {NBW{1'b0}};
+        i_data       = {NBW{1'b0}};
+
+        @(posedge clk);
+        while (!o_done)
+            @(posedge clk);
+
+        if (o_data !== EXP_PT)
+            $display("[ERROR] DUT o_data does not match model o_data: 0x%0h != 0x%0h at time %0t",
+                     o_data, EXP_PT, $time);
+        else
+            $display("PASS at time %0t", $time);
+
+        #50;
+        $finish;
+    end
+endmodule
+```
+
+**Before compile:** read `<SEED>` from the cocotb log and set `RUN0_KEY` / `RUN0_CT`:
+```python
+import random
+random.seed(<SEED>)          # from "Seeding Python random module with ..."
+print(hex(random.randint(0, 2**128-1)))  # RUN0_KEY
+print(hex(random.randint(0, 2**128-1)))  # RUN0_CT
+```
+
+**Compile/run:**
+```bash
+iverilog -g2012 -o sim.vvp -s tb_debug \
+  tb_debug.v rtl/aes128_decrypt.sv rtl/aes128_key_expansion.sv rtl/sbox.sv rtl/inv_sbox.sv
+vvp sim.vvp
+gtkwave wave.vcd
+```
+
+**Wave focus:** `dut.round_ff`, `dut.update_key_ff`, `dut.key_done`, `dut.uu_aes128_key_expansion.key_exp_steps_ff`, `dut.expanded_key[127:0]` (K10) and `dut.expanded_key[1407:1280]` (K0), plus `dut.current_data_ff` after each round — compare K10 application at `round_ff==1` and round-key bytes selected by `(11-round_ff)`.

@@ -3,15 +3,19 @@ from __future__ import annotations
 import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from react.connection_map import format_connection_map_for_llm  # noqa: E402
 from react.cursor_transport import cursor_prompt  # noqa: E402
+from react.formal_runner import format_formal_for_llm  # noqa: E402
 from react.parsers import (  # noqa: E402
     ErrorKind,
     StructuredFeedback,
     format_structured_feedback,
 )
+
+REPO_ROOT = Path(__file__).absolute().parents[1]
 
 
 @dataclass(frozen=True)
@@ -48,6 +52,11 @@ ERROR_PROMPTS: dict[ErrorKind, str] = {
         "The design compiles but fails simulation against the reference model. "
         "Use structured mismatch data and the causal waveform trace to find where DUT diverges from ref. "
         "Make minimal targeted logic fixes; preserve correct behavior elsewhere."
+    ),
+    "formal": (
+        "SymbiYosys found an assertion violation under unconstrained inputs. "
+        "Use the failing assertion name and formal counterexample (CEX) trace to locate the bug. "
+        "Fix TopModule so all spec properties hold; the CEX shows a minimal input sequence that breaks an invariant."
     ),
     "unknown": (
         "Review structured feedback and simulation evidence to identify whether the issue is "
@@ -142,6 +151,7 @@ def fix_with_cursor_sdk(
     error_kind: ErrorKind | None = None,
     prior_rationales: list[str] | None = None,
     model: str = "composer-2.5",
+    formal_summary: dict[str, Any] | None = None,
 ) -> FixResult:
     """
     Use Cursor (SDK bridge or REST API) to propose a corrected `TopModule`.
@@ -167,6 +177,7 @@ def fix_with_cursor_sdk(
 
     vcd_text = _format_vcd_summary(vcd_summary)
     map_text = format_connection_map_for_llm(connection_map)
+    formal_text = format_formal_for_llm(formal_summary)
 
     memory = ""
     if prior_rationales:
@@ -226,6 +237,11 @@ def fix_with_cursor_sdk(
 {vcd_text if vcd_text else "(no VCD summary available)"}
 ```
 
+## Formal verification evidence (SymbiYosys)
+```text
+{formal_text if formal_text else "(formal not run or passed)"}
+```
+
 {memory}
 
 ## Task
@@ -245,7 +261,7 @@ A FULL corrected `TopModule` implementation (verilog). Put it in a single fenced
         prompt,
         model=model,
         api_key=os.environ["CURSOR_API_KEY"],
-        workspace=os.getcwd(),
+        workspace=str(REPO_ROOT),
         timeout_s=600,
     )
     fixed = _extract_topmodule_sv(raw)
@@ -289,5 +305,12 @@ def _format_feedback_from_dict(data: dict[str, Any]) -> str:
             lines.append(
                 f"- {f.get('signal')}: expected={f.get('expected')} actual={f.get('actual')}"
             )
+
+    formal_block = data.get("formal")
+    if formal_block and formal_block.get("status") not in (None, "skipped", "pass"):
+        lines.append("\n## Formal verification")
+        lines.append(f"- status: {formal_block.get('status')}")
+        if formal_block.get("failing_assertion"):
+            lines.append(f"- failing_assertion: {formal_block['failing_assertion']}")
 
     return "\n".join(lines)

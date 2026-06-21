@@ -8,7 +8,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).absolute().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
@@ -89,6 +89,12 @@ def run_batch(
     max_iters: int = 3,
     build_connection_map: bool = True,
     connection_map_llm: bool = False,
+    auto_formal: bool = False,
+    formal_mode: str = "bmc",
+    formal_depth: int = 10,
+    formal_timeout_s: int = 600,
+    formal_on_pass: bool = False,
+    formal_regenerate: bool = False,
     prob_ids: list[str] | None = None,
 ) -> dict:
     dataset_path = Path(dataset_dir).resolve()
@@ -134,6 +140,12 @@ def run_batch(
                 cursor_model=cursor_model,
                 build_connection_map=build_connection_map,
                 connection_map_llm=connection_map_llm,
+                auto_formal=auto_formal,
+                formal_mode=formal_mode,
+                formal_depth=formal_depth,
+                formal_timeout_s=formal_timeout_s,
+                formal_on_pass=formal_on_pass,
+                formal_regenerate=formal_regenerate,
             )
             ok = bool(res.get("ok"))
             mismatches = res.get("mismatches")
@@ -235,6 +247,33 @@ if __name__ == "__main__":
         action="store_true",
         help="Enrich error-focused connection map with Cursor (slow; default is static only).",
     )
+    ap.add_argument(
+        "--auto-formal",
+        action="store_true",
+        help="Generate formal wrapper after 2nd sim failure; run SymbiYosys on later iterations.",
+    )
+    ap.add_argument(
+        "--formal-mode",
+        choices=["bmc", "prove"],
+        default="bmc",
+    )
+    ap.add_argument("--formal-depth", type=int, default=10)
+    ap.add_argument(
+        "--formal-timeout-s",
+        type=int,
+        default=600,
+        help="Max seconds per SymbiYosys run (default: 600). 0 = no limit.",
+    )
+    ap.add_argument(
+        "--formal-on-pass",
+        action="store_true",
+        help="Require formal prove pass when simulation passes.",
+    )
+    ap.add_argument(
+        "--formal-regenerate",
+        action="store_true",
+        help="Force regeneration of TopModule_formal.sv even if cached.",
+    )
     ap.add_argument("--top", default="tb")
     ap.add_argument(
         "--prob-ids",
@@ -257,5 +296,11 @@ if __name__ == "__main__":
         max_iters=args.max_iters,
         build_connection_map=not args.no_connection_map,
         connection_map_llm=args.connection_map_llm,
+        auto_formal=args.auto_formal,
+        formal_mode=args.formal_mode,
+        formal_depth=args.formal_depth,
+        formal_timeout_s=args.formal_timeout_s,
+        formal_on_pass=args.formal_on_pass,
+        formal_regenerate=args.formal_regenerate,
         prob_ids=args.prob_ids,
     )

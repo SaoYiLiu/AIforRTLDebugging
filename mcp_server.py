@@ -43,21 +43,38 @@ def _run(
     timeout_s: int | None = None,
     env: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    proc = subprocess.run(
-        args,
-        cwd=cwd,
-        env=env,
-        text=True,
-        capture_output=True,
-        timeout=timeout_s,
-    )
-    return {
-        "command": " ".join(shlex.quote(a) for a in args),
-        "cwd": cwd or os.getcwd(),
-        "returncode": proc.returncode,
-        "stdout": proc.stdout,
-        "stderr": proc.stderr,
-    }
+    try:
+        proc = subprocess.run(
+            args,
+            cwd=cwd,
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=timeout_s,
+        )
+        return {
+            "command": " ".join(shlex.quote(a) for a in args),
+            "cwd": cwd or os.getcwd(),
+            "returncode": proc.returncode,
+            "stdout": proc.stdout,
+            "stderr": proc.stderr,
+            "timed_out": False,
+        }
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout or ""
+        stderr = exc.stderr or ""
+        if isinstance(stdout, bytes):
+            stdout = stdout.decode(errors="replace")
+        if isinstance(stderr, bytes):
+            stderr = stderr.decode(errors="replace")
+        return {
+            "command": " ".join(shlex.quote(a) for a in args),
+            "cwd": cwd or os.getcwd(),
+            "returncode": -1,
+            "stdout": stdout,
+            "stderr": stderr,
+            "timed_out": True,
+        }
 
 
 @mcp.tool()

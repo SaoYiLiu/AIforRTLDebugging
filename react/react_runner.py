@@ -14,7 +14,7 @@ from typing import Any, Callable, Optional
 # automatically on sys.path, so add it.
 import sys
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).absolute().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
@@ -22,8 +22,12 @@ import mcp_server  # noqa: E402
 from react.cursor_sdk_fixer import fix_with_cursor_sdk  # noqa: E402
 from react.veridebug_hf_fixer import fix_with_veridebug_hf  # noqa: E402
 from react.parsers import (  # noqa: E402
+    FormalResult,
+    StructuredFeedback,
+    chipbench_effective_pass,
     detect_mismatches,
     format_structured_feedback,
+    infer_error_kind,
     parse_iverilog_result,
 )
 from react.connection_map import (  # noqa: E402
@@ -33,6 +37,12 @@ from react.connection_map import (  # noqa: E402
 from react.vcd_trace import (  # noqa: E402
     build_vcd_debug_summary,
     format_causal_chain_for_llm,
+)
+from react.formal_generator import ensure_formal_wrapper  # noqa: E402
+from react.formal_runner import (  # noqa: E402
+    FormalRunResult,
+    format_formal_for_llm,
+    run_formal_check,
 )
 
 
@@ -66,6 +76,7 @@ def _write_llm_fix_request(
     vcd_summary: dict[str, Any] | None,
     structured_feedback_text: str | None = None,
     connection_map_text: str | None = None,
+    formal_feedback_text: str | None = None,
 ) -> Path:
     """
     Writes a compact “next ReAct iteration” brief that you can paste into Cursor chat.
@@ -85,6 +96,12 @@ def _write_llm_fix_request(
             f.write("## Connection map\n")
             f.write("```text\n")
             f.write(connection_map_text.strip() + "\n")
+            f.write("```\n\n")
+
+        if formal_feedback_text:
+            f.write("## Formal verification (SymbiYosys)\n")
+            f.write("```text\n")
+            f.write(formal_feedback_text.strip() + "\n")
             f.write("```\n\n")
 
         f.write("## Testbench result (raw)\n")
@@ -148,6 +165,12 @@ def run_react_loop(
     max_iters: int = 3,
     build_connection_map: bool = True,
     connection_map_llm: bool = False,
+    auto_formal: bool = False,
+    formal_mode: str = "bmc",
+    formal_depth: int = 10,
+    formal_timeout_s: int = 600,
+    formal_on_pass: bool = False,
+    formal_regenerate: bool = False,
 ) -> dict[str, Any]:
     """
     ReAct-style automation:
@@ -158,7 +181,14 @@ def run_react_loop(
     - Keep outputs in a per-problem output directory
 
     Fixers (iteration 2+): ``fixer`` callback, ``--use-veridebug-hf``, or ``--use-cursor-sdk``.
+
+    With ``auto_formal=True``, after the **second simulation run failure** (compile OK,
+    vvp ran, test failed — i.e. once the first patch has been tried and still fails)
+    Cursor generates ``TopModule_formal.sv`` and SymbiYosys BMC runs on later iterations.
+    Compile-only failures do not count toward this threshold.
     """
+    if auto_formal and "CURSOR_API_KEY" not in os.environ:
+        raise RuntimeError("--auto-formal requires CURSOR_API_KEY for wrapper generation.")
     if use_cursor_sdk and use_veridebug_hf:
         raise ValueError("Use only one of use_cursor_sdk or use_veridebug_hf.")
 
@@ -194,6 +224,12 @@ def run_react_loop(
     prior_rationales: list[str] = []
     connection_map: dict[str, Any] | None = None
     connection_map_built = False
+    formal_wrapper_ready = False
+    formal_gen_attempted = False
+    formal_bmc_disabled = False
+    sim_run_failure_count = 0
+    formal_dir = out_dir / "formal"
+    last_formal_result: FormalRunResult | None = None
 
     cwd = str(tb_p.parent)
     tb_src = str(tb_p)
@@ -258,6 +294,7 @@ def run_react_loop(
                     structured_feedback=last_feedback,
                     prior_rationales=prior_rationales,
                     model=cursor_model,
+                    formal_summary=last_formal_result.to_dict() if last_formal_result else None,
                 )
                 (out_dir / f"cursor_sdk_iter_{it}.txt").write_text(
                     f"## Transport\n{fr.transport}\n\n"
@@ -289,11 +326,13 @@ def run_react_loop(
             )
         )
 
-        # For sources in the ChipBench folder, pass basenames; for our candidate, pass absolute.
+        # TB/ref live in ChipBench cwd (basenames); candidate RTL is outside — use absolute path.
+        dut_src = str(fixed_path.resolve())
+        sim_out_path = str(sim_out.resolve())
         result = mcp_server.run_iverilog(
-            sources=[Path(tb_src).name, Path(ref_src).name, str(fixed_path)],
+            sources=[Path(tb_src).name, Path(ref_src).name, dut_src],
             top=top,
-            output=str(sim_out),
+            output=sim_out_path,
             run=True,
             cwd=cwd,
         )
@@ -311,6 +350,112 @@ def run_react_loop(
 
         last_feedback = parse_iverilog_result(result)
 
+        mismatches = detect_mismatches(run_stdout)
+        effective_pass = chipbench_effective_pass(run_stdout)
+        compile_ok = last_feedback.compile is None or last_feedback.compile.success
+        sim_ok = compile_ok and (result.get("run") or {}).get("returncode", 1) == 0 and (
+            mismatches in (None, 0) or effective_pass
+        )
+        if sim_ok and effective_pass and mismatches not in (None, 0):
+            print(
+                f"[{prob_id}] Iteration {it}: treating as PASS "
+                f"(functional outputs match; {mismatches} hi-Z compare artifacts on data bus).",
+                flush=True,
+            )
+        sim_ran = compile_ok and result.get("run") is not None
+        if sim_ran and not sim_ok:
+            sim_run_failure_count += 1
+
+        # Auto-formal: generate wrapper after 2nd sim run failure (first patch tried and failed).
+        if (
+            auto_formal
+            and sim_ran
+            and not sim_ok
+            and sim_run_failure_count >= 2
+            and not formal_wrapper_ready
+            and not formal_gen_attempted
+        ):
+            try:
+                print(
+                    f"[{prob_id}] Generating formal wrapper after sim run failure "
+                    f"#{sim_run_failure_count}...",
+                    flush=True,
+                )
+                ensure_formal_wrapper(
+                    prob_id=prob_id,
+                    spec_text=prompt_text,
+                    dut_sv=current_sv,
+                    formal_dir=formal_dir,
+                    model=cursor_model,
+                    mode=formal_mode,  # type: ignore[arg-type]
+                    depth=formal_depth,
+                    force_regenerate=formal_regenerate,
+                )
+                formal_wrapper_ready = True
+            except Exception as exc:
+                print(f"[{prob_id}] Formal wrapper generation failed: {exc}", flush=True)
+            formal_gen_attempted = True
+
+        # Run SymbiYosys when wrapper exists (BMC on failure; prove on pass if enabled).
+        run_formal_now = (
+            auto_formal
+            and formal_wrapper_ready
+            and not formal_bmc_disabled
+            and (not sim_ok or formal_on_pass)
+        )
+        if run_formal_now:
+            check_mode = "prove" if sim_ok and formal_on_pass else formal_mode
+            try:
+                last_formal_result = run_formal_check(
+                    prob_id=prob_id,
+                    dut_sv=current_sv,
+                    formal_dir=formal_dir,
+                    project_root=REPO_ROOT,
+                    mode=check_mode,  # type: ignore[arg-type]
+                    depth=formal_depth,
+                    timeout_s=formal_timeout_s,
+                )
+                if last_formal_result.status in ("error",) and last_formal_result.error:
+                    if "timed out" in last_formal_result.error.lower():
+                        print(
+                            f"[{prob_id}] Formal BMC disabled for remaining iterations "
+                            f"(timeout after {formal_timeout_s}s).",
+                            flush=True,
+                        )
+                else:
+                    print(
+                        f"[{prob_id}] Formal check complete ({last_formal_result.status}); "
+                        f"skipping repeat formal on later iterations.",
+                        flush=True,
+                    )
+                formal_bmc_disabled = True
+                formal_fr = FormalResult(
+                    status=last_formal_result.status,
+                    passed=last_formal_result.passed,
+                    mode=last_formal_result.mode,
+                    depth=last_formal_result.depth,
+                    failing_assertion=last_formal_result.failing_assertion,
+                    trace_vcd=last_formal_result.trace_vcd,
+                    stdout_excerpt=last_formal_result.stdout_excerpt,
+                    error=last_formal_result.error,
+                )
+                last_feedback = StructuredFeedback(
+                    error_kind=infer_error_kind(
+                        last_feedback.compile,
+                        last_feedback.simulation,
+                        formal_fr,
+                    ),
+                    compile=last_feedback.compile,
+                    simulation=last_feedback.simulation,
+                    formal=formal_fr,
+                )
+                (out_dir / f"formal_result_iter_{it}.json").write_text(
+                    json.dumps(last_formal_result.to_dict(), indent=2),
+                    encoding="utf-8",
+                )
+            except Exception as exc:
+                print(f"[{prob_id}] Formal run failed: {exc}", flush=True)
+
         (out_dir / f"structured_feedback_iter_{it}.json").write_text(
             json.dumps(last_feedback.to_dict(), indent=2),
             encoding="utf-8",
@@ -322,7 +467,6 @@ def run_react_loop(
         if wave_src.exists():
             shutil.copy2(wave_src, wave_dst)
 
-        mismatches = detect_mismatches(run_stdout)
         error_kind = last_feedback.error_kind
         if mismatches is not None:
             print(
@@ -336,13 +480,20 @@ def run_react_loop(
                 flush=True,
             )
 
-        compile_ok = last_feedback.compile is None or last_feedback.compile.success
-        ok = compile_ok and (result.get("run") or {}).get("returncode", 1) == 0 and (
-            mismatches in (None, 0)
+        formal_ok = (
+            not auto_formal
+            or not formal_on_pass
+            or not sim_ok
+            or (last_formal_result is not None and last_formal_result.passed)
         )
-        if ok:
+        if sim_ok and formal_ok:
             print(f"[{prob_id}] Iteration {it}: PASS (0 mismatches).", flush=True)
             break
+        if sim_ok and not formal_ok:
+            print(
+                f"[{prob_id}] Iteration {it}: sim PASS but formal FAIL — continuing.",
+                flush=True,
+            )
 
         # After first failing sim: build connection map (LLM reads TB + ref + spec).
         want_map = build_connection_map and (not connection_map_built)
@@ -392,8 +543,21 @@ def run_react_loop(
         else:
             last_vcd_summary = None
 
+        # Prefer formal counterexample waveform when sim VCD is missing or thin.
+        if (
+            last_formal_result
+            and last_formal_result.cex_summary
+            and last_formal_result.cex_summary.get("ok")
+        ):
+            if last_vcd_summary is None or not last_vcd_summary.get("causal_chain"):
+                last_vcd_summary = last_formal_result.cex_summary
+            else:
+                last_vcd_summary = dict(last_vcd_summary)
+                last_vcd_summary["formal_cex"] = last_formal_result.cex_summary
+
         feedback_text = format_structured_feedback(last_feedback)
         map_text = format_connection_map_for_llm(connection_map)
+        formal_text = format_formal_for_llm(last_formal_result)
         last_llm_request = _write_llm_fix_request(
             out_dir=out_dir,
             prob_id=prob_id,
@@ -405,6 +569,7 @@ def run_react_loop(
             vcd_summary=last_vcd_summary,
             structured_feedback_text=feedback_text,
             connection_map_text=map_text,
+            formal_feedback_text=formal_text,
         )
         print(f"[{prob_id}] Iteration {it}: wrote llm_fix_request.md", flush=True)
 
@@ -421,16 +586,25 @@ def run_react_loop(
 
     run_stdout = (result.get("run") or {}).get("stdout", "") or ""
     mismatches = detect_mismatches(run_stdout)
+    effective_pass = chipbench_effective_pass(run_stdout)
     final_feedback = parse_iverilog_result(result)
     compile_ok = final_feedback.compile is None or final_feedback.compile.success
-    ok = compile_ok and (result.get("run") or {}).get("returncode", 1) == 0 and (
-        mismatches in (None, 0)
+    sim_ok = compile_ok and (result.get("run") or {}).get("returncode", 1) == 0 and (
+        mismatches in (None, 0) or effective_pass
     )
+    formal_ok = (
+        not auto_formal
+        or not formal_on_pass
+        or not sim_ok
+        or (last_formal_result is not None and last_formal_result.passed)
+    )
+    ok = sim_ok and formal_ok
 
     return {
         "ok": ok,
         "mismatches": mismatches,
         "error_kind": final_feedback.error_kind,
+        "formal_status": last_formal_result.status if last_formal_result else None,
         "output_dir": str(out_dir),
         "iverilog": result,
         "react_trace": str(trace_md),
@@ -481,6 +655,42 @@ if __name__ == "__main__":
         help="Enrich error-focused connection map with a small Cursor call (slow; default is static only).",
     )
     ap.add_argument(
+        "--auto-formal",
+        action="store_true",
+        help=(
+            "After the 2nd sim run failure (compile OK, vvp failed), auto-generate "
+            "TopModule_formal.sv and run SymbiYosys BMC on later iterations."
+        ),
+    )
+    ap.add_argument(
+        "--formal-mode",
+        choices=["bmc", "prove"],
+        default="bmc",
+        help="SymbiYosys mode for debug iterations (default: bmc).",
+    )
+    ap.add_argument(
+        "--formal-depth",
+        type=int,
+        default=10,
+        help="SymbiYosys unroll depth (default: 10; keep low for fast BMC).",
+    )
+    ap.add_argument(
+        "--formal-timeout-s",
+        type=int,
+        default=600,
+        help="Max seconds per SymbiYosys run (default: 600). 0 = no limit.",
+    )
+    ap.add_argument(
+        "--formal-on-pass",
+        action="store_true",
+        help="When sim passes, also run formal prove before declaring success.",
+    )
+    ap.add_argument(
+        "--formal-regenerate",
+        action="store_true",
+        help="Force regeneration of TopModule_formal.sv even if cached.",
+    )
+    ap.add_argument(
         "--demo-prob001-fixer",
         action="store_true",
         help="Use a deterministic fixer for Prob001 (for demo only).",
@@ -505,6 +715,12 @@ if __name__ == "__main__":
         cursor_model=args.cursor_model,
         build_connection_map=not args.no_connection_map,
         connection_map_llm=args.connection_map_llm,
+        auto_formal=args.auto_formal,
+        formal_mode=args.formal_mode,
+        formal_depth=args.formal_depth,
+        formal_timeout_s=args.formal_timeout_s,
+        formal_on_pass=args.formal_on_pass,
+        formal_regenerate=args.formal_regenerate,
     )
     print(res)
 

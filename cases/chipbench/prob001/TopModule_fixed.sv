@@ -28,8 +28,6 @@ module TopModule(
 			end
 		else 
 			begin
-				// Fix: shift register moves left, new bit into LSB.
 				a_tem <= {a_tem[6:0], a};
 			end
 endmodule
-

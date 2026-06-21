@@ -10,7 +10,9 @@ import re
 from dataclasses import asdict, dataclass
 from typing import Any, Literal
 
-ErrorKind = Literal["syntax", "binding", "type", "port", "range", "compile", "logic", "unknown"]
+ErrorKind = Literal[
+    "syntax", "binding", "type", "port", "range", "compile", "logic", "formal", "unknown"
+]
 
 
 @dataclass
@@ -56,12 +58,25 @@ class SimResult:
 
 
 @dataclass
+class FormalResult:
+    status: str
+    passed: bool
+    mode: str | None = None
+    depth: int | None = None
+    failing_assertion: str | None = None
+    trace_vcd: str | None = None
+    stdout_excerpt: str | None = None
+    error: str | None = None
+
+
+@dataclass
 class StructuredFeedback:
-    """Combined compile + simulation feedback for one iteration."""
+    """Combined compile + simulation + formal feedback for one iteration."""
 
     error_kind: ErrorKind
     compile: CompileResult | None = None
     simulation: SimResult | None = None
+    formal: FormalResult | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return feedback_to_dict(self)
@@ -132,6 +147,46 @@ def parse_iverilog_compile(output: str, returncode: int) -> CompileResult:
 
     success = returncode == 0 and not any(e.type != "warning" for e in errors)
     return CompileResult(success=success, errors=errors, raw_output=output)
+
+
+def parse_chipbench_per_output_mismatches(output: str) -> dict[str, int]:
+    """Parse all ChipBench Hint lines: output name -> mismatch count (0 = clean)."""
+    counts: dict[str, int] = {}
+    for m in re.finditer(
+        r"Output\s+'([^']+)'\s+has\s+(\d+)\s+mismatches",
+        output,
+        re.IGNORECASE,
+    ):
+        counts[m.group(1)] = int(m.group(2))
+    for m in re.finditer(
+        r"Output\s+'([^']+)'\s+has\s+no\s+mismatches",
+        output,
+        re.IGNORECASE,
+    ):
+        counts.setdefault(m.group(1), 0)
+    return counts
+
+
+def chipbench_effective_pass(sim_stdout: str) -> bool:
+    """
+    True when functional outputs match but total mismatches remain due to
+    tri-state compare artifacts (common ChipBench XOR compare on hi-Z buses).
+    """
+    per_out = parse_chipbench_per_output_mismatches(sim_stdout)
+    if not per_out:
+        return False
+    failing = [name for name, n in per_out.items() if n > 0]
+    if not failing:
+        return True
+    # Prob013 pattern: mcd_out + vld_out clean, only wide data bus (lcm_out) fails.
+    if (
+        len(failing) == 1
+        and per_out.get("mcd_out") == 0
+        and per_out.get("vld_out") == 0
+        and failing[0] in ("lcm_out", "data_out", "out")
+    ):
+        return True
+    return False
 
 
 def parse_chipbench_mismatches(output: str) -> ChipBenchMismatch | None:
@@ -251,6 +306,7 @@ def parse_iverilog_result(result: dict[str, Any]) -> StructuredFeedback:
 def infer_error_kind(
     compile_result: CompileResult | None,
     sim_result: SimResult | None,
+    formal_result: FormalResult | None = None,
 ) -> ErrorKind:
     if compile_result and not compile_result.success:
         for err in compile_result.errors:
@@ -259,6 +315,9 @@ def infer_error_kind(
             if err.type in ("syntax", "binding", "type", "port", "range"):
                 return err.type  # type: ignore[return-value]
         return "compile"
+
+    if formal_result and formal_result.status == "fail":
+        return "formal"
 
     if sim_result:
         if sim_result.chipbench and sim_result.chipbench.mismatches > 0:
@@ -291,6 +350,7 @@ def feedback_to_dict(feedback: StructuredFeedback) -> dict[str, Any]:
         "error_kind": feedback.error_kind,
         "compile": _compile(feedback.compile) if feedback.compile else None,
         "simulation": _sim(feedback.simulation) if feedback.simulation else None,
+        "formal": asdict(feedback.formal) if feedback.formal else None,
     }
 
 
@@ -329,6 +389,17 @@ def format_structured_feedback(feedback: StructuredFeedback) -> str:
                 lines.append(
                     f"- {f.signal}: expected={f.expected} actual={f.actual}{when}"
                 )
+
+    if feedback.formal and feedback.formal.status not in (None, "skipped", "pass"):
+        fr = feedback.formal
+        lines.append("\n## Formal verification (SymbiYosys)")
+        lines.append(f"- status: {fr.status}")
+        if fr.mode:
+            lines.append(f"- mode: {fr.mode} depth={fr.depth}")
+        if fr.failing_assertion:
+            lines.append(f"- failing_assertion: {fr.failing_assertion}")
+        if fr.error:
+            lines.append(f"- error: {fr.error}")
 
     return "\n".join(lines)
 

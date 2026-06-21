@@ -1,0 +1,6 @@
+ Network cvdp_react_cvdp_copilot_radix2_div_0001_2_default Creating 
+ Network cvdp_react_cvdp_copilot_radix2_div_0001_2_default Created 
+ Image cvdp_react_cvdp_copilot_radix2_div_0001_2-direct Building 
+ Image cvdp_react_cvdp_copilot_radix2_div_0001_2-direct Built 
+ Container cvdp_react_cvdp_copilot_radix2_div_0001_2-direct-run-e2e94a56168e Creating 
+ Container cvdp_react_cvdp_copilot_radix2_div_0001_2-direct-run-e2e94a56168e Created 

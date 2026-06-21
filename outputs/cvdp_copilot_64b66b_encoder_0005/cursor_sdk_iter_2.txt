@@ -1,0 +1,58 @@
+## Transport
+rest
+
+## Rationale
+- **Reset polarity is inverted (lines 12–13, 26–27).** The port comment says active-high reset, but both `always_ff` blocks use `negedge rst_in` and `if (~rst_in)`. TC2 shows `rst_in=1` should force `encoder_data_out=0` (actual `0x0A5A5A5A5A5A5A5A5`), and `rst_in=0` should allow normal operation (expected `0x1A5A5A5A5A5A5A5A5`, actual `0x0`). Fix: `posedge rst_in` and `if (rst_in)`.
+
+- **Sync header is never driven (line 37).** `sync_word` is updated in the first flop block but the output hardcodes `{2'b00, encoded_data}`, so TC3 gets `0x0123456789ABCDEF0` instead of `0x1123456789ABCDEF0` (data) and `0x20000000000000000` (control). Fix: `assign encoder_data_out = {sync_word, encoded_data};`.
+
+- **Control mode does not clear payload (lines 31–34).** When `encoder_control_in != 8'b00000000`, `encoded_data` is not updated, so prior data mode values persist. TC1/TC3 control cases expect zero payload (`0x20000000000000000`). Fix: add an `else` branch with `encoded_data <= 64'b0;`.
+
+- **Harness failures align with these three bugs.** Failures expecting non-zero sync+data (`0x1…`, `0x2…`, `0x11…`) with actual `0x0` match inverted reset; failure expecting `0x0` under reset with actual data matches the same; stuck sync bits explain `0x01…` vs `0x11…`.
+
+## PatchedFiles
+### rtl/encoder_64b66b.sv
+```verilog
+module encoder_64b66b (
+    input  logic         clk_in,              // Clock signal
+    input  logic         rst_in,              // Asynchronous reset (active high)
+    input  logic [63:0]  encoder_data_in,     // 64-bit data input
+    input  logic [7:0]   encoder_control_in,  // 8-bit control input
+    output logic [65:0]  encoder_data_out     // 66-bit encoded output
+);
+
+    logic [1:0] sync_word;
+    logic [63:0] encoded_data;
+
+    always_ff @(posedge clk_in or posedge rst_in) begin
+        if (rst_in) begin
+            sync_word <= 2'b00;
+        end
+        else begin
+            if (encoder_control_in == 8'b00000000) begin
+                sync_word <= 2'b01;
+            end
+            else begin
+                sync_word <= 2'b10;
+            end
+        end
+    end
+
+    always_ff @(posedge clk_in or posedge rst_in) begin
+        if (rst_in) begin
+            encoded_data <= 64'b0;
+        end
+        else begin
+            if (encoder_control_in == 8'b00000000) begin
+                encoded_data <= encoder_data_in;
+            end
+            else begin
+                encoded_data <= 64'b0;
+            end
+        end
+    end
+
+    assign encoder_data_out = {sync_word, encoded_data};
+
+endmodule
+```

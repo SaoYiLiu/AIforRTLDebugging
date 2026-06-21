@@ -1,0 +1,45 @@
+VCD info: dumpfile wave.vcd opened for output.
+t=25000 cycle=1 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x0 cnt=0
+t=35000 cycle=2 i_valid=1 out_data=0x0 enable=0 active=0 ff=0x0 cnt=0
+t=45000 cycle=3 i_valid=1 out_data=0x0 enable=0 active=0 ff=0x0 cnt=0
+t=55000 cycle=4 i_valid=1 out_data=0x0 enable=0 active=0 ff=0x0 cnt=0
+t=65000 cycle=5 i_valid=1 out_data=0x0 enable=0 active=0 ff=0x0 cnt=0
+t=75000 cycle=6 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x0 cnt=0
+t=85000 cycle=7 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x0 cnt=0
+t=95000 cycle=8 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x1 cnt=0
+t=105000 cycle=9 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x2 cnt=0
+t=115000 cycle=10 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x4 cnt=0
+t=125000 cycle=11 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x8 cnt=0
+t=135000 cycle=12 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x10 cnt=0
+t=145000 cycle=13 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x20 cnt=0
+First mismatch occurred at time 155000
+  cycle=14 out_data=0x0 (expected non-zero)
+  start_intra=0 start_intra_ff=0x40 output_active=0 enable_output=0
+  counter_output=0 counter_sub_out=0
+First mismatch occurred at time 155000
+  cycle=14 enable_output still low (delay chain bug)
+  start_intra_ff=0x40 DELAY_WIDTH=8 tap=0
+t=155000 cycle=14 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x40 cnt=0
+First mismatch occurred at time 165000
+  cycle=15 out_data=0x0 (expected non-zero)
+  start_intra=0 start_intra_ff=0x80 output_active=0 enable_output=0
+  counter_output=0 counter_sub_out=0
+t=165000 cycle=15 i_valid=0 out_data=0x0 enable=0 active=0 ff=0x80 cnt=0
+First mismatch occurred at time 175000
+  cycle=16 out_data=0x0 (expected non-zero)
+  start_intra=0 start_intra_ff=0x0 output_active=1 enable_output=1
+  counter_output=0 counter_sub_out=0
+t=175000 cycle=16 i_valid=0 out_data=0x0 enable=1 active=1 ff=0x0 cnt=0
+t=185000 cycle=17 i_valid=0 out_data=0x27 enable=1 active=1 ff=0x0 cnt=1
+t=195000 cycle=18 i_valid=0 out_data=0x52 enable=1 active=1 ff=0x0 cnt=2
+t=205000 cycle=19 i_valid=0 out_data=0x91 enable=1 active=1 ff=0x0 cnt=3
+t=215000 cycle=20 i_valid=0 out_data=0x59 enable=1 active=1 ff=0x0 cnt=4
+Summary: tb_mismatch=1, first event at time 175000
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_scrambler_0009/debug/tb_debug_iter_3.sv:43: warning: extra digits given for sized hex constant.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_scrambler_0009/debug/tb_debug_iter_3.sv:43: warning: Numeric constant truncated to 256 bits.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_scrambler_0009/debug/tb_debug_iter_3.sv:44: warning: extra digits given for sized hex constant.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_scrambler_0009/debug/tb_debug_iter_3.sv:44: warning: Numeric constant truncated to 256 bits.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_scrambler_0009/debug/tb_debug_iter_3.sv:45: warning: extra digits given for sized hex constant.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_scrambler_0009/debug/tb_debug_iter_3.sv:45: warning: Numeric constant truncated to 256 bits.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_scrambler_0009/debug/tb_debug_iter_3.sv:46: warning: extra digits given for sized hex constant.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_scrambler_0009/debug/tb_debug_iter_3.sv:46: warning: Numeric constant truncated to 256 bits.

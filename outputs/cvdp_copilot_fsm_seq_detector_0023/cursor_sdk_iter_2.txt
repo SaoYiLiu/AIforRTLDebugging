@@ -1,0 +1,135 @@
+## Transport
+rest
+
+## Rationale
+- **Root cause:** The `if (seq_in)` / `else` branches are swapped throughout the next-state logic. The FSM treats `1` where it should treat `0`, and vice versa, so prefix matching for `01001110` never completes.
+- **Harness evidence:** `test_detection_at_start` and `test_multiple_occurrences` both fail at step 8 with `assert Logic('0') == 1` — after eight bits `0,1,0,0,1,1,1,0`, `seq_detected` stays LOW instead of asserting for one cycle.
+- **S0–S1 (lines 29–47):** Correct behavior requires `0 → S1` (prefix `"0"`) and `1 → S0`. The RTL does the opposite (`0 → S0`, `1 → S1`), so the first bit of the target sequence never starts a match.
+- **S2–S5 (lines 49–87):** Each middle-state transition is inverted (e.g. S2: RTL sends `0 → S0` instead of `0 → S3` for prefix `"010"`). The machine resets or jumps to wrong states mid-sequence.
+- **S6 (lines 89–97):** From prefix `"010011"`, both `0` and `1` must go to S7 (`"0100110"` / `"0100111"`). RTL sends `seq_in==1` to S1, breaking the path before the final bit.
+- **S7 (lines 99–107):** Detection is on the wrong input polarity — RTL asserts `seq_detected` when `seq_in==1`, but the target ends in `0`. The fix asserts detect on `seq_in==0` and returns to S1 for overlap (`"0"` suffix after `...110`).
+- **Registered output (lines 117–122):** `seq_detected` is flopped from `seq_detected_w`; fixing combinational logic is sufficient — no change needed to the output register.
+
+## PatchedFiles
+### rtl/fsm_seq_detector.sv
+```verilog
+module fsm_seq_detector
+(
+    input  bit     clk_in,       // Free Running Clock
+    input  logic   rst_in,       // Active HIGH reset
+    input  logic   seq_in,       // Continuous 1-bit Sequence Input
+    output logic   seq_detected  // '0': Not Detected. '1': Detected. Will be HIGH for 1 Clock cycle Only
+);
+
+typedef enum logic [2:0] {S0, S1, S2, S3, S4, S5, S6, S7} state_t;
+state_t cur_state, next_state;
+
+logic seq_detected_w;
+
+always @ (posedge clk_in or posedge rst_in)
+begin
+    if (rst_in)
+        cur_state <= S0;
+    else
+        cur_state <= next_state;
+end
+
+always_comb begin
+    if (rst_in) begin
+        seq_detected_w = 1'b0;
+        next_state = S0;
+    end
+    else begin
+        case (cur_state)
+            S0: begin
+                if (seq_in) begin
+                    seq_detected_w = 1'b0;
+                    next_state = S0;
+                end
+                else begin
+                    next_state = S1;
+                    seq_detected_w = 1'b0;
+                end	
+            end
+            S1: begin
+                if (seq_in) begin
+                    next_state = S2;
+                    seq_detected_w = 1'b0;
+                end
+                else begin
+                    next_state = S1;
+                    seq_detected_w = 1'b0;
+                end
+            end
+            S2: begin
+                if (seq_in) begin
+                    next_state = S0;
+                    seq_detected_w = 1'b0;
+                end
+                else begin
+                    next_state = S3;
+                    seq_detected_w = 1'b0;
+                end
+            end
+            S3: begin
+                if (seq_in) begin
+                    next_state = S2;
+                    seq_detected_w = 1'b0;
+                end
+                else begin
+                    next_state = S4;
+                    seq_detected_w = 1'b0;
+                end
+            end
+            S4: begin
+                if (seq_in) begin
+                    next_state = S5;
+                    seq_detected_w = 1'b0;
+                end
+                else begin
+                    next_state = S1;
+                    seq_detected_w = 1'b0;
+                end
+            end
+            S5: begin
+                if (seq_in) begin
+                    next_state = S6;
+                    seq_detected_w = 1'b0;
+                end
+                else begin
+                    next_state = S3;
+                    seq_detected_w = 1'b0;
+                end
+            end
+            S6: begin
+                next_state = S7;
+                seq_detected_w = 1'b0;
+            end
+            S7: begin
+                if (seq_in) begin
+                    next_state = S0;
+                    seq_detected_w = 1'b0;
+                end
+                else begin
+                    next_state = S1;
+                    seq_detected_w = 1'b1;
+                end
+            end
+            default: begin
+                next_state = S0;
+                seq_detected_w = 1'b0;
+            end
+        endcase
+    end
+end
+
+always @ (posedge clk_in or posedge rst_in)
+begin
+    if (rst_in)
+        seq_detected <= 1'b0;
+    else
+        seq_detected <= seq_detected_w;
+end
+
+endmodule
+```

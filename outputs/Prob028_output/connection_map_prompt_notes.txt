@@ -1,0 +1,3 @@
+source=static_error_focused
+focus_net_count=11
+vcd_trace_signals=['tb_mismatch', 'tb.tb_mismatch', 'match_dut', 'match_ref', 'tb.match_dut', 'tb.match_ref', 'tb.number_ref', 'tb.zero_ref', 'tb.number_dut', 'tb.zero_dut']

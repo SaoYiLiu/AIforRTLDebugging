@@ -1,0 +1,36 @@
+## Transport
+rest
+
+## Rationale
+- **Suspected bug (L010–L020 vs original split blocks):** In the buggy RTL, `match` is updated in one `always` block from the **current** `a_tem` (lines comparing `a_tem == 8'b0111_0001`), while `a_tem` is shifted in a **second** `always` block. On each posedge, both blocks read the **pre-shift** register value, so `match` reflects whether the pattern was present **before** `a` is shifted in, not after.
+
+- **Why that causes exactly 2 mismatches:** When the final bit of `8'b0111_0001` is shifted in, the reference asserts `match` on that same clock edge (post-shift). The buggy DUT misses that edge (`match` stays 0) and instead asserts `match` one cycle **late**, after `a_tem` already holds the pattern at the start of the next edge—then `match_ref` is already back to 0. That yields a brief 2-sample disagreement window.
+
+- **Waveform evidence:** At **195 ps** (posedge, `a=1`), `match_ref` goes high but `match_dut` remains 0; `tb.tb_mismatch` asserts at 195 ps. The first reported failure is at **200 ps** (negedge sample), with only **2 / 455** total mismatches—consistent with a one-cycle timing skew, not a wrong pattern or shift direction (453 samples pass).
+
+- **Causal trace alignment:** The failure coincides with `tb.a @ 195: 1` and `tb.clk @ 195: 1`, i.e. the cycle where the shift completes. The DUT never evaluates `match` against the updated register contents on that edge.
+
+- **Fix applied:** Merge both updates into a **single** clocked `always` block (L010–L020) and drive `match` from the **next** shift-register value `{a, a_tem[6:0]}`—the same expression written to `a_tem`—so `match` and `a_tem` stay aligned on every posedge. Reset behavior is unchanged (`a_tem <= 8'b0`, `match <= 1'b0` when `!rst_n`).
+
+## FixedTopModule
+```verilog
+module TopModule(
+	input clk,
+	input rst_n,
+	input a,
+	output reg match
+);
+
+	reg [7:0] a_tem;
+
+	always @(posedge clk or negedge rst_n) begin
+		if (!rst_n) begin
+			a_tem <= 8'b0;
+			match <= 1'b0;
+		end else begin
+			a_tem <= {a, a_tem[6:0]};
+			match <= ({a, a_tem[6:0]} == 8'b0111_0001);
+		end
+	end
+endmodule
+```

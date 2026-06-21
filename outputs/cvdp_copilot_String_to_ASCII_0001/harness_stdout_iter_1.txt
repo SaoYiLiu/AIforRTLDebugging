@@ -1,0 +1,679 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 10 items
+
+../../src/test_runner.py::test_string_ascii[0]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011605
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       5084.78  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1896.57  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[1]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011606
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       4990.99  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1875.51  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[2]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011607
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       4601.92  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1828.00  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[3]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011608
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       5192.74  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1923.31  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[4]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011609
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       4433.02  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1636.19  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[5]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011610
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       4095.80  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1671.49  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[6]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011612
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       4637.28  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1818.67  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[7]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011613
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       4322.13  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1714.83  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[8]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011614
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       5359.62  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1912.04  **
+                                                        ***********************************************************************************************************************
+FAILED
+../../src/test_runner.py::test_string_ascii[9]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011615
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_String_to_ASCII_Converter.test_String_to_ASCII_Converter (1/1)
+     0.00ns WARNING  gpi                                VPI: Not able to map type vpiFunction(20) to object.
+     0.00ns WARNING  gpi                                Unable to create determine_char_type via any registered implementation
+    40.00ns WARNING  ..r.test_String_to_ASCII_Converter Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_String_to_ASCII_Converter.py", line 85, in test_String_to_ASCII_Converter
+                                                            ascii_out.append(int(dut.ascii_out[i].value))
+                                                                                 ~~~~~~~~~~~~~^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 1387, in __getitem__
+                                                            raise TypeError(
+                                                        TypeError: Packed objects, either arrays or structs, cannot be indexed.
+                                                        Try instead reading the whole value and slicing: `t = handle.value; t[0:3]`.
+                                                        If you need to use an element in an Edge Trigger, consider making the array or struct unpacked.
+                                                        Alternatively, use `ValueChange` on the whole object and check the bit(s) you care about for changes afterwards.
+    40.00ns WARNING  cocotb.regression                  test_String_to_ASCII_Converter.test_String_to_ASCII_Converter failed
+    40.00ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_String_to_ASCII_Converter.test_String_to_ASCII_Converter   FAIL          40.00           0.01       5209.02  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                                  40.00           0.02       1917.75  **
+                                                        ***********************************************************************************************************************
+FAILED
+
+=================================== FAILURES ===================================
+_____________________________ test_string_ascii[0] _____________________________
+
+test = 0
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[1] _____________________________
+
+test = 1
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[2] _____________________________
+
+test = 2
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[3] _____________________________
+
+test = 3
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[4] _____________________________
+
+test = 4
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[5] _____________________________
+
+test = 5
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[6] _____________________________
+
+test = 6
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[7] _____________________________
+
+test = 7
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[8] _____________________________
+
+test = 8
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_____________________________ test_string_ascii[9] _____________________________
+
+test = 9
+
+    @pytest.mark.parametrize("test", range(10))
+    def test_string_ascii(test):
+>           runner()
+
+/src/test_runner.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+plusargs = [], parameter = {}
+
+    def runner(plusargs=[], parameter={}):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave, plusargs=plusargs)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s String_to_ASCII_Converter -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/String_to_ASCII_Converter.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_string_ascii[0] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[1] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[2] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[3] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[4] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[5] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[6] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[7] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[8] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_string_ascii[9] - SystemExit: 1
+============================= 10 failed in 12.01s ==============================

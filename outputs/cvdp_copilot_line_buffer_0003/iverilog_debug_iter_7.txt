@@ -1,0 +1,3 @@
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_line_buffer_0003/debug/tb_debug_iter_7.sv:204: syntax error
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_line_buffer_0003/debug/tb_debug_iter_7.sv:321: warning: extra digits given for sized hex constant.
+/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_line_buffer_0003/debug/tb_debug_iter_7.sv:321: warning: Numeric constant truncated to 64 bits.

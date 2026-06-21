@@ -1,0 +1,152 @@
+## Transport
+rest
+
+## Rationale
+- **Line 24 — non-general `DELAY_TAP`:** `(WAIT_CYCLES == 4) ? WAIT_CYCLES : (DELAY_WIDTH - 1)` uses tap 17 for `WAIT=14`, but iverilog debug at loop_i=19 shows `start_intra_ff[14]=1` (`ff=0x4000`) while `delay_done=0` because the RTL checks bit 17.
+- **Harness at 240 ns:** `0x0 != 0xf7` with `WAIT_CYCLES=14` — the model expects output at loop_i=20, but enable does not assert until loop_i=22 (`tap_msb=17=1`), leaving `out_data=0` at 240 ns.
+- **Line 80 — correct tap:** The `start_intra` pulse enters bit 0 one cycle after `start_intra`; it reaches bit `WAIT_CYCLES` after exactly `WAIT_CYCLES` further shifts. `delay_done` should therefore use `start_intra_ff[WAIT_CYCLES]`.
+- **Timing check:** With `start_intra` at loop_i=4, tap `WAIT` enables output at loop_i=10 for `WAIT=4` (140 ns) and loop_i=20 for `WAIT=14` (240 ns), matching cocotb expectations.
+- **Lines 96, 115–135 unchanged:** Combinational `enable_output` and gated output counters are correct once `delay_done` uses the right tap.
+
+## PatchedFiles
+### rtl/deinter_block.sv
+```verilog
+module deinter_block #(
+    parameter ROW_COL_WIDTH = 16,
+    parameter SUB_BLOCKS    = 4,
+    parameter DATA_WIDTH    = ROW_COL_WIDTH*ROW_COL_WIDTH,
+    parameter OUT_DATA_WIDTH= 16,
+    parameter WAIT_CYCLES   = 4
+)(
+    input  logic clk,
+    input  logic rst_n,
+    input  logic i_valid,
+    input  logic [DATA_WIDTH-1:0] in_data, // Input: 256 bits
+    output logic [OUT_DATA_WIDTH-1:0] out_data // Output: 256 bits rearranged
+);
+
+localparam CHUNK = 8;
+localparam NBW_COUNTER = $clog2(SUB_BLOCKS) + 1;
+localparam NBW_COUNTER_SUB_OUT = 2;
+
+localparam OUT_CYCLES = 32;
+
+localparam N_CYCLES = SUB_BLOCKS*DATA_WIDTH/OUT_DATA_WIDTH;
+localparam NBW_COUNTER_OUTPUT = $clog2(N_CYCLES);
+localparam DELAY_WIDTH = WAIT_CYCLES + SUB_BLOCKS;
+localparam DELAY_TAP   = WAIT_CYCLES;
+logic [NBW_COUNTER_OUTPUT-1:0] counter_output;
+
+logic [NBW_COUNTER-1:0] counter_sub_blocks;
+logic [NBW_COUNTER_SUB_OUT-1:0] counter_sub_out;
+
+logic [DATA_WIDTH-1:0] in_data_reg [SUB_BLOCKS-1:0];
+logic [DATA_WIDTH-1:0] out_data_intra_block [SUB_BLOCKS-1:0];
+logic [DATA_WIDTH-1:0] out_data_intra_block_reg [SUB_BLOCKS-1:0];
+logic [DATA_WIDTH-1:0] out_data_aux [SUB_BLOCKS-1:0];
+logic start_intra;
+
+always_ff @(posedge clk or negedge rst_n ) begin
+   if(!rst_n) begin
+      counter_sub_blocks <= {NBW_COUNTER{1'b0}};
+      start_intra <= 0;
+      for(int i = 0; i < SUB_BLOCKS; i++) begin
+         in_data_reg[i] <= {DATA_WIDTH{1'b0}};
+      end
+   end
+   else begin
+      start_intra <= 0;
+      if(i_valid) begin
+         in_data_reg[counter_sub_blocks] <= in_data;
+
+         if(counter_sub_blocks == SUB_BLOCKS) begin
+            counter_sub_blocks <= {NBW_COUNTER{1'b0}};
+         end
+         else begin
+            counter_sub_blocks <= counter_sub_blocks + 1;
+         end
+      end
+      else if(counter_sub_blocks == SUB_BLOCKS) begin
+         start_intra        <= 1;
+         counter_sub_blocks <= {NBW_COUNTER{1'b0}};
+      end
+   end
+end
+
+always_ff @(posedge clk or negedge rst_n) begin
+   if(!rst_n) begin
+      for(int i = 0; i < SUB_BLOCKS; i++)
+         out_data_intra_block_reg[i] <= {DATA_WIDTH{1'b0}};
+   end
+   else begin
+      if(start_intra)
+         for(int i = 0; i < SUB_BLOCKS; i++) 
+            out_data_intra_block_reg[i] <= in_data_reg[i];
+   end
+end
+
+logic [DELAY_WIDTH-1:0] start_intra_ff;
+logic output_active;
+wire  delay_done;
+wire  enable_output;
+
+assign delay_done = start_intra_ff[DELAY_TAP];
+
+always_ff @(posedge clk or negedge rst_n) begin
+   if(!rst_n) begin
+      start_intra_ff <= 0;
+      output_active  <= 0;
+   end
+   else begin
+      if(!output_active && delay_done)
+         output_active <= 1;
+      if(output_active && counter_output >= N_CYCLES)
+         output_active <= 0;
+      start_intra_ff <= {start_intra_ff[DELAY_WIDTH-2:0], start_intra};
+   end
+end
+
+assign enable_output = output_active || (!output_active && delay_done);
+
+always_ff @(posedge clk or negedge rst_n) begin
+   if(!rst_n) begin
+      for(int i = 0; i < SUB_BLOCKS; i++)
+         out_data_aux[i] <= {DATA_WIDTH{1'b0}};
+   end
+   else begin
+      if(start_intra) begin
+         for(int i = 0; i < 32; i++) begin
+            out_data_aux[0][(i+1)*CHUNK-1-:CHUNK] <= in_data_reg[i%4][((i+1)*CHUNK)-1-:CHUNK];
+            out_data_aux[1][(i+1)*CHUNK-1-:CHUNK] <= in_data_reg[i%4][(((i+1)%OUT_CYCLES+1)*CHUNK)-1-:CHUNK];
+            out_data_aux[2][(i+1)*CHUNK-1-:CHUNK] <= in_data_reg[i%4][(((i+2)%OUT_CYCLES+1)*CHUNK)-1-:CHUNK];
+            out_data_aux[3][(i+1)*CHUNK-1-:CHUNK] <= in_data_reg[i%4][(((i+3)%OUT_CYCLES+1)*CHUNK)-1-:CHUNK];
+         end
+      end
+   end
+end
+
+always_ff @(posedge clk or negedge rst_n) begin
+   if(!rst_n) begin
+      out_data        <= {OUT_DATA_WIDTH{1'b0}};
+      counter_sub_out <= {NBW_COUNTER_SUB_OUT{1'b0}};
+      counter_output  <= {NBW_COUNTER_OUTPUT{1'b0}};
+   end
+   else if(enable_output) begin
+      if(counter_output < N_CYCLES) begin
+         out_data <= out_data_aux[counter_sub_out][((counter_output%(DATA_WIDTH/OUT_DATA_WIDTH) + 1))*OUT_DATA_WIDTH-1-:OUT_DATA_WIDTH];
+         counter_sub_out <= counter_sub_out + 1'b1;
+         counter_output  <= counter_output + 1'b1;
+      end
+      else begin
+         out_data <= {OUT_DATA_WIDTH{1'b0}};
+      end
+   end
+   else begin
+      out_data        <= {OUT_DATA_WIDTH{1'b0}};
+      counter_sub_out <= {NBW_COUNTER_SUB_OUT{1'b0}};
+      counter_output  <= {NBW_COUNTER_OUTPUT{1'b0}};
+   end
+end
+
+endmodule
+```

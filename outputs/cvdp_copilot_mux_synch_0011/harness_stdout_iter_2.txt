@@ -1,0 +1,47 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /rundir/harness/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_mux_synchronizer_bug[0] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s mux_synch -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/mux_synch.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -none in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016129
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_mux_synchronizer_bug.test_mux_synchronizer_bug (1/1)
+data_out before initialization = XXXXXXXX
+data_out after initialization   = XXXXXXXX
+data_out after reset  = 00000000
+data_out after enable =1, and 3 dst_clk clock = 00000000
+data_out after one more negedge of dst_clk  = 00000100
+ack_out after 2 more src_clk  = 1
+[INFO] Test 'test_mux_synchronizer' completed successfully.
+  1000.00ns INFO     cocotb.regression                  test_mux_synchronizer_bug.test_mux_synchronizer_bug passed
+  1000.00ns INFO     cocotb.regression                  *************************************************************************************************************
+                                                        ** TEST                                                 STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *************************************************************************************************************
+                                                        ** test_mux_synchronizer_bug.test_mux_synchronizer_bug   PASS        1000.00           0.01     173146.63  **
+                                                        *************************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                                      1000.00           0.01      77191.99  **
+                                                        *************************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_mux_synchronizer_bug[0].result.xml
+PASSED
+
+=============================== warnings summary ===============================
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-hgc8fgnq'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-abzjto3t'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 1 passed, 2 warnings in 1.57s =========================

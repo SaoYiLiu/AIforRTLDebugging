@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782013772" />
+    <testcase name="test_kogge_stone_adder" classname="test_kogge_stone_adder" file="/src/test_kogge_stone_adder.py" lineno="6" time="0.2826271057128906" sim_time_ns="7440.0" ratio_time="26324.438985544413" />
+  </testsuite>
+</testsuites>

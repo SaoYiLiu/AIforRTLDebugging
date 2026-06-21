@@ -1,0 +1,178 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_runner      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782019372
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_axi_alu.test_burst_write_transaction (1/10)
+     1.00ns WARNING  ..ion.test_burst_write_transaction axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 184, in test_burst_write_transaction
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+     1.00ns WARNING  cocotb.regression                  test_axi_alu.test_burst_write_transaction failed
+     1.00ns INFO     cocotb.regression                  running test_axi_alu.test_axi_alu_incremental_data (2/10)
+     3.00ns WARNING  ..ta.test_axi_alu_incremental_data axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 204, in test_axi_alu_incremental_data
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+     3.00ns WARNING  cocotb.regression                  test_axi_alu.test_axi_alu_incremental_data failed
+     3.00ns INFO     cocotb.regression                  running test_axi_alu.test_axi_alu_mac_operation_random_address (3/10)
+     5.00ns WARNING  ..alu_mac_operation_random_address axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 233, in test_axi_alu_mac_operation_random_address
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+     5.00ns WARNING  cocotb.regression                  test_axi_alu.test_axi_alu_mac_operation_random_address failed
+     5.00ns INFO     cocotb.regression                  running test_axi_alu.test_axi_alu_mult_operation_random_address (4/10)
+     7.00ns WARNING  ..lu_mult_operation_random_address axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 254, in test_axi_alu_mult_operation_random_address
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+     7.00ns WARNING  cocotb.regression                  test_axi_alu.test_axi_alu_mult_operation_random_address failed
+     7.00ns INFO     cocotb.regression                  running test_axi_alu.test_axi_alu_shift_operation_random_address (5/10)
+     9.00ns WARNING  ..u_shift_operation_random_address axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 275, in test_axi_alu_shift_operation_random_address
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+     9.00ns WARNING  cocotb.regression                  test_axi_alu.test_axi_alu_shift_operation_random_address failed
+     9.00ns INFO     cocotb.regression                  running test_axi_alu.test_axi_alu_div_operation_random_address (6/10)
+    11.00ns WARNING  ..alu_div_operation_random_address axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 296, in test_axi_alu_div_operation_random_address
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+    11.00ns WARNING  cocotb.regression                  test_axi_alu.test_axi_alu_div_operation_random_address failed
+    11.00ns INFO     cocotb.regression                  running test_axi_alu.test_random_memory_operands (7/10)
+Starting random memory operations...
+    13.00ns WARNING  ..ands.test_random_memory_operands axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 318, in test_random_memory_operands
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+    13.00ns WARNING  cocotb.regression                  test_axi_alu.test_random_memory_operands failed
+    13.00ns INFO     cocotb.regression                  running test_axi_alu.test_overlapping_dsp_sram_access (8/10)
+    15.00ns WARNING  ..test_overlapping_dsp_sram_access axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 345, in test_overlapping_dsp_sram_access
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+    15.00ns WARNING  cocotb.regression                  test_axi_alu.test_overlapping_dsp_sram_access failed
+    15.00ns INFO     cocotb.regression                  running test_axi_alu.test_unaligned_axi_access (9/10)
+    17.00ns WARNING  ..access.test_unaligned_axi_access axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 382, in test_unaligned_axi_access
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+    17.00ns WARNING  cocotb.regression                  test_axi_alu.test_unaligned_axi_access failed
+    17.00ns INFO     cocotb.regression                  running test_axi_alu.test_axi_burst_boundary_wrap (10/10)
+    19.00ns WARNING  ..rap.test_axi_burst_boundary_wrap axi_alu contains no child object named axi_awlen_i
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_axi_alu.py", line 402, in test_axi_burst_boundary_wrap
+                                                            await init_dut(dut)
+                                                          File "/src/test_axi_alu.py", line 11, in init_dut
+                                                            dut.axi_awlen_i.value = 0
+                                                            ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: axi_alu contains no child object named axi_awlen_i. Did you mean: 'axi_awaddr_i'?
+    19.00ns WARNING  cocotb.regression                  test_axi_alu.test_axi_burst_boundary_wrap failed
+    19.00ns INFO     cocotb.regression                  ******************************************************************************************************************
+                                                        ** TEST                                                      STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ******************************************************************************************************************
+                                                        ** test_axi_alu.test_burst_write_transaction                  FAIL           1.00           0.01         84.82  **
+                                                        ** test_axi_alu.test_axi_alu_incremental_data                 FAIL           1.00           0.01        161.64  **
+                                                        ** test_axi_alu.test_axi_alu_mac_operation_random_address     FAIL           1.00           0.01        175.85  **
+                                                        ** test_axi_alu.test_axi_alu_mult_operation_random_address    FAIL           1.00           0.01        171.29  **
+                                                        ** test_axi_alu.test_axi_alu_shift_operation_random_address   FAIL           1.00           0.01        184.52  **
+                                                        ** test_axi_alu.test_axi_alu_div_operation_random_address     FAIL           1.00           0.01        162.19  **
+                                                        ** test_axi_alu.test_random_memory_operands                   FAIL           1.00           0.01        165.30  **
+                                                        ** test_axi_alu.test_overlapping_dsp_sram_access              FAIL           1.00           0.01        167.77  **
+                                                        ** test_axi_alu.test_unaligned_axi_access                     FAIL           1.00           0.01        166.61  **
+                                                        ** test_axi_alu.test_axi_burst_boundary_wrap                  FAIL           1.00           0.01        190.44  **
+                                                        ******************************************************************************************************************
+                                                        ** TESTS=10 PASS=0 FAIL=10 SKIP=0                                           19.00           0.10        190.48  **
+                                                        ******************************************************************************************************************
+ERROR: /code/rtl/axi_alu.sv:267: $readmemh: Unable to open ../rom_data.mem for reading.
+FAILED
+
+=================================== FAILURES ===================================
+_________________________________ test_runner __________________________________
+
+    def test_runner():
+        runner = get_runner(sim)
+    
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+>       runner.test(hdl_toplevel=toplevel, test_module=module,waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:26: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s axi_alu -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/axi_alu.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 10 of 10 tests.
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_runner - SystemExit: 1
+============================== 1 failed in 1.61s ===============================

@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782016247" />
+    <testcase name="test_prim_max_find" classname="test_prim_max_find" file="/src/test_prim_max_find.py" lineno="8" time="0.04716157913208008" sim_time_ns="925.0" ratio_time="19613.42298164906" />
+  </testsuite>
+</testsuites>

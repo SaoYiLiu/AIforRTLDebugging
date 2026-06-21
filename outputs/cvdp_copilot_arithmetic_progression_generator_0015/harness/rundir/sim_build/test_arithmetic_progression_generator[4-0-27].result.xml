@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782011920" />
+    <testcase name="test_arithmetic_progression_generator" classname="test_arithmetic_progression_generator" file="/src/test_arithmetic_progression_generator.py" lineno="14" time="0.009529829025268555" sim_time_ns="430.0" ratio_time="45121.48107377849" />
+  </testsuite>
+</testsuites>

@@ -1,0 +1,4 @@
+ Network cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__2_default Creating 
+ Network cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__2_default Created 
+ Container cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__2-direct-run-2b80ba24b626 Creating 
+ Container cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__2-direct-run-2b80ba24b626 Created 

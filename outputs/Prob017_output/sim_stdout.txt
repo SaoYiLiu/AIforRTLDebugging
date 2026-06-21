@@ -1,0 +1,6 @@
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Output 'clk_out' has no mismatches.
+Hint: Total mismatched samples is 0 out of 2021 samples
+
+Simulation finished at 10106 ps
+Mismatches: 0 in 2021 samples

@@ -1,0 +1,46 @@
+RuntimeError: Cursor REST get run failed: HTTP 409: {"error":{"code":"internal_error","message":"Failed to get run"}}
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/user/Desktop/AIfordebugging/react_cvdp/cvdp_batch_runner.py", line 104, in run_batch
+    res = run_cvdp_react_loop(
+        spec,
+    ...<12 lines>...
+        debug_tb_min_iter=debug_tb_min_iter,
+    )
+  File "/mnt/c/Users/user/Desktop/AIfordebugging/react_cvdp/cvdp_react_runner.py", line 120, in run_cvdp_react_loop
+    fr = fix_with_cursor_sdk_cvdp(
+        problem_id=spec.problem_id,
+    ...<14 lines>...
+        debug_sim_section=debug_sim_section,
+    )
+  File "/mnt/c/Users/user/Desktop/AIfordebugging/react_cvdp/cvdp_cursor_fixer.py", line 437, in fix_with_cursor_sdk_cvdp
+    raw, transport = cursor_session.prompt(
+                     ~~~~~~~~~~~~~~~~~~~~~^
+        prompt,
+        ^^^^^^^
+    ...<2 lines>...
+        prompt_artifact_path=prompt_artifact_path,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/mnt/c/Users/user/Desktop/AIfordebugging/react/cursor_transport.py", line 297, in prompt
+    return _prompt_rest(
+           ~~~~~~~~~~~~^
+        prompt,
+        ^^^^^^^
+    ...<3 lines>...
+        prompt_artifact_path=prompt_artifact_path,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ), "rest"
+    ^
+  File "/mnt/c/Users/user/Desktop/AIfordebugging/react/cursor_transport.py", line 617, in _prompt_rest
+    return _wait_rest_run(
+        client,
+    ...<4 lines>...
+        archive_on_finish=True,
+    )
+  File "/mnt/c/Users/user/Desktop/AIfordebugging/react/cursor_transport.py", line 647, in _wait_rest_run
+    raise RuntimeError(
+    ...<2 lines>...
+    )
+RuntimeError: Cursor REST get run failed: HTTP 409: {"error":{"code":"internal_error","message":"Failed to get run"}}

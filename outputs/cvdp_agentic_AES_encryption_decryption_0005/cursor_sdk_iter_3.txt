@@ -1,0 +1,329 @@
+## Transport
+rest
+
+## Rationale
+- **InvMixColumns row wiring is incorrect (lines 138–141 in `aes128_decrypt.sv`)**: Row 0 must compute `{0E}·s0 ⊕ {0B}·s1 ⊕ {0D}·s2 ⊕ {09}·s3`, but the design XORs `xtimes0b[2][i]` and `xtimes09[0][i]` instead of `xtimes0b[1][i]` and `xtimes09[3][i]`. The same row-index rotation error affects rows 1–3. This corrupts rounds 2–10 while round 1 (AddRoundKey only) stays correct.
+
+- **Harness evidence matches a partial fix, not a clean pass (240 ns failure)**: The prior fix changed the failure from `0x600000000000000000` at 130 ns to `0xcc2eb1139d6f270ec7665952dec7d224 != 0x4c4d7f5ddd1874bc8e38e6979145294f` at 240 ns. The longer runtime indicates the FSM/key-expansion fixes work; the remaining mismatch is consistent with wrong InvMixColumns on the nine inner rounds.
+
+- **MixColumns input is now correct for the chosen datapath (lines 112–113, 144–162)**: With InvShiftRows → InvSubBytes → AddRoundKey → InvMixColumns, `xtimes**` must be built from `AddRoundKey[i][j]`. The bug is only in how those products are combined per output row, not in the GF(2⁸) multiply logic (lines 122–135).
+
+- **Serial key expansion and round FSM from the prior iteration are retained**: `{i_key, zeros}` at MSB (line 114), one `next_rkey` append per shift step (lines 115–116), `update_key_ff` wait at `round_ff==1` (lines 60–63, 83–88), and column-major `(4*j+i)` packing (lines 82, 113, 167) remain unchanged.
+
+- **Round 1 / round 11 special cases remain correct (lines 166–171)**: Round 1 is AddRoundKey-only with K10; round 11 is InvShiftRows → InvSubBytes → AddRoundKey with K0 and no InvMixColumns, matching the task specification.
+
+## PatchedFiles
+### rtl/aes128_decrypt.sv
+```verilog
+module aes128_decrypt #(
+    parameter NBW_KEY  = 'd128,
+    parameter NBW_DATA = 'd128
+) (
+    input  logic                clk,
+    input  logic                rst_async_n,
+    input  logic                i_update_key,
+    input  logic [NBW_KEY-1:0]  i_key,
+    input  logic                i_start,
+    input  logic [NBW_DATA-1:0] i_data,
+    output logic                o_done,
+    output logic [NBW_DATA-1:0] o_data
+);
+
+localparam NBW_BYTE   = 'd8;
+localparam NBW_EX_KEY = 'd1408;
+
+logic [NBW_BYTE-1:0]   current_data_nx[4][4];
+logic [NBW_BYTE-1:0]   current_data_ff[4][4];
+logic [NBW_BYTE-1:0]   AddRoundKey[4][4];
+logic [NBW_BYTE-1:0]   SubBytes[4][4];
+logic [NBW_BYTE-1:0]   ShiftRows[4][4];
+logic [NBW_BYTE-1:0]   xtimes02[4][4];
+logic [NBW_BYTE-1:0]   xtimes04[4][4];
+logic [NBW_BYTE-1:0]   xtimes08[4][4];
+logic [NBW_BYTE-1:0]   xtimes09[4][4];
+logic [NBW_BYTE-1:0]   xtimes0b[4][4];
+logic [NBW_BYTE-1:0]   xtimes0d[4][4];
+logic [NBW_BYTE-1:0]   xtimes0e[4][4];
+logic [NBW_BYTE-1:0]   MixColumns[4][4];
+logic [NBW_BYTE-1:0]   RoundOut[4][4];
+logic                  key_done;
+logic                  update_key_ff;
+logic [3:0]            round_ff;
+logic [NBW_EX_KEY-1:0] expanded_key;
+
+assign o_done = (round_ff == 4'd0);
+
+generate
+    for(genvar i = 0; i < 4; i++) begin : out_row
+        for(genvar j = 0; j < 4; j++) begin : out_col
+            assign o_data[NBW_DATA-(4*j+i)*NBW_BYTE-1-:NBW_BYTE] = current_data_ff[i][j];
+        end
+    end
+endgenerate
+
+always_ff @(posedge clk or negedge rst_async_n) begin : inv_cypher_regs
+    if(!rst_async_n) begin
+        round_ff      <= 4'd0;
+        update_key_ff <= 1'b0;
+        for(int i = 0; i < 4; i++) begin
+            for(int j = 0; j < 4; j++) begin
+                current_data_ff[i][j] <= 8'd0;
+            end
+        end
+    end else begin
+        if(i_start & o_done) begin
+            round_ff      <= 4'd1;
+            update_key_ff <= i_update_key;
+        end else if(round_ff == 4'd1) begin
+            if(!update_key_ff || key_done) begin
+                round_ff <= 4'd2;
+            end
+        end else if(round_ff > 4'd1 && round_ff < 4'd11) begin
+            round_ff <= round_ff + 4'd1;
+        end else if(round_ff == 4'd11) begin
+            round_ff <= 4'd0;
+        end
+
+        for(int i = 0; i < 4; i++) begin
+            for(int j = 0; j < 4; j++) begin
+                current_data_ff[i][j] <= current_data_nx[i][j];
+            end
+        end
+    end
+end
+
+always_comb begin : next_data
+    for(int i = 0; i < 4; i++) begin
+        for(int j = 0; j < 4; j++) begin
+            if(i_start & o_done) begin
+                current_data_nx[i][j] = i_data[NBW_DATA-(4*j+i)*NBW_BYTE-1-:NBW_BYTE];
+            end else if(round_ff == 4'd1) begin
+                if(!update_key_ff || key_done) begin
+                    current_data_nx[i][j] = RoundOut[i][j];
+                end else begin
+                    current_data_nx[i][j] = current_data_ff[i][j];
+                end
+            end else if(round_ff != 4'd0) begin
+                current_data_nx[i][j] = RoundOut[i][j];
+            end else begin
+                current_data_nx[i][j] = current_data_ff[i][j];
+            end
+        end
+    end
+end
+
+generate
+    for(genvar i = 0; i < 4; i++) begin : row
+        for(genvar j = 0; j < 4; j++) begin : col
+            inv_sbox uu_inv_sbox0 (
+                .i_data(ShiftRows[i][j]),
+                .o_data(SubBytes[i][j])
+            );
+        end
+    end
+endgenerate
+
+always_comb begin : decypher_logic
+    for(int i = 0; i < 4; i++) begin
+        for(int j = 0; j < 4; j++) begin
+            if(round_ff > 4'd0) begin
+                AddRoundKey[i][j] = SubBytes[i][j] ^ expanded_key[NBW_EX_KEY-(11-round_ff)*NBW_KEY-(4*j+i)*NBW_BYTE-1-:NBW_BYTE];
+            end else begin
+                AddRoundKey[i][j] = 8'd0;
+            end
+        end
+    end
+
+    for(int i = 0; i < 4; i++) begin
+        for(int j = 0; j < 4; j++) begin
+            if(AddRoundKey[i][j][NBW_BYTE-1]) begin
+                xtimes02[i][j] = {AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
+                xtimes04[i][j] = {xtimes02[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
+                xtimes08[i][j] = {xtimes04[i][j][NBW_BYTE-2:0], 1'b0} ^ 8'h1B;
+            end else begin
+                xtimes02[i][j] = {AddRoundKey[i][j][NBW_BYTE-2:0], 1'b0};
+                xtimes04[i][j] = {xtimes02[i][j][NBW_BYTE-2:0], 1'b0};
+                xtimes08[i][j] = {xtimes04[i][j][NBW_BYTE-2:0], 1'b0};
+            end
+
+            xtimes0e[i][j] = xtimes08[i][j] ^ xtimes04[i][j] ^ xtimes02[i][j];
+            xtimes0b[i][j] = xtimes08[i][j] ^ xtimes02[i][j] ^ AddRoundKey[i][j];
+            xtimes0d[i][j] = xtimes08[i][j] ^ xtimes04[i][j] ^ AddRoundKey[i][j];
+            xtimes09[i][j] = xtimes08[i][j] ^ AddRoundKey[i][j];
+        end
+
+        MixColumns[0][i] = xtimes0e[0][i] ^ xtimes0b[1][i] ^ xtimes0d[2][i] ^ xtimes09[3][i];
+        MixColumns[1][i] = xtimes09[0][i] ^ xtimes0e[1][i] ^ xtimes0b[2][i] ^ xtimes0d[3][i];
+        MixColumns[2][i] = xtimes0d[0][i] ^ xtimes09[1][i] ^ xtimes0e[2][i] ^ xtimes0b[3][i];
+        MixColumns[3][i] = xtimes0b[0][i] ^ xtimes0d[1][i] ^ xtimes09[2][i] ^ xtimes0e[3][i];
+    end
+
+    ShiftRows[0][0] = current_data_ff[0][0];
+    ShiftRows[0][1] = current_data_ff[0][1];
+    ShiftRows[0][2] = current_data_ff[0][2];
+    ShiftRows[0][3] = current_data_ff[0][3];
+
+    ShiftRows[1][0] = current_data_ff[1][1];
+    ShiftRows[1][1] = current_data_ff[1][2];
+    ShiftRows[1][2] = current_data_ff[1][3];
+    ShiftRows[1][3] = current_data_ff[1][0];
+
+    ShiftRows[2][0] = current_data_ff[2][2];
+    ShiftRows[2][1] = current_data_ff[2][3];
+    ShiftRows[2][2] = current_data_ff[2][0];
+    ShiftRows[2][3] = current_data_ff[2][1];
+
+    ShiftRows[3][0] = current_data_ff[3][3];
+    ShiftRows[3][1] = current_data_ff[3][0];
+    ShiftRows[3][2] = current_data_ff[3][1];
+    ShiftRows[3][3] = current_data_ff[3][2];
+
+    for(int i = 0; i < 4; i++) begin
+        for(int j = 0; j < 4; j++) begin
+            if(round_ff == 4'd1) begin
+                RoundOut[i][j] = current_data_ff[i][j] ^ expanded_key[NBW_EX_KEY-(11-round_ff)*NBW_KEY-(4*j+i)*NBW_BYTE-1-:NBW_BYTE];
+            end else if(round_ff >= 4'd2 && round_ff <= 4'd10) begin
+                RoundOut[i][j] = MixColumns[i][j];
+            end else if(round_ff == 4'd11) begin
+                RoundOut[i][j] = AddRoundKey[i][j];
+            end else begin
+                RoundOut[i][j] = current_data_ff[i][j];
+            end
+        end
+    end
+end
+
+aes128_key_expansion uu_aes128_key_expansion (
+    .clk           (clk                            ),
+    .rst_async_n   (rst_async_n                    ),
+    .i_start       (i_start & i_update_key & o_done),
+    .i_key         (i_key                          ),
+    .o_done        (key_done                       ),
+    .o_expanded_key(expanded_key                   )
+);
+
+endmodule : aes128_decrypt
+```
+### rtl/aes128_key_expansion.sv
+```verilog
+module aes128_key_expansion #(
+    parameter NBW_KEY = 'd128,
+    parameter NBW_OUT = 'd1408
+) (
+    input  logic               clk,
+    input  logic               rst_async_n,
+    input  logic               i_start,
+    input  logic [NBW_KEY-1:0] i_key,
+    output logic               o_done,
+    output logic [NBW_OUT-1:0] o_expanded_key
+);
+
+localparam NBW_BYTE = 'd8;
+localparam NBW_WORD = 'd32;
+localparam STEPS    = 'd10;
+
+logic [NBW_BYTE-1:0] Rcon   [STEPS];
+logic [NBW_OUT-1:0]  expanded_key_nx;
+logic [NBW_OUT-1:0]  expanded_key_ff;
+logic [NBW_KEY-1:0]  next_rkey;
+logic [3:0]          gen_idx;
+logic [STEPS:0]      key_exp_steps_ff;
+
+logic [NBW_WORD-1:0] RotWord;
+logic [NBW_WORD-1:0] SubWord;
+logic [NBW_WORD-1:0] RconXor;
+
+assign o_expanded_key = expanded_key_ff;
+assign o_done         = key_exp_steps_ff[STEPS];
+
+always_ff @(posedge clk or negedge rst_async_n) begin : reset_regs
+    if(~rst_async_n) begin
+        expanded_key_ff  <= {NBW_OUT{1'b0}};
+        key_exp_steps_ff <= '0;
+    end else begin
+        expanded_key_ff <= expanded_key_nx;
+
+        if(i_start) begin
+            key_exp_steps_ff <= {{(STEPS-1){1'b0}}, 1'b1};
+        end else begin
+            if(key_exp_steps_ff[STEPS]) begin
+                key_exp_steps_ff <= '0;
+            end else if(|key_exp_steps_ff[STEPS-1:0]) begin
+                key_exp_steps_ff <= key_exp_steps_ff << 1'b1;
+            end
+        end
+    end
+end
+
+assign Rcon[0] = 8'h01;
+assign Rcon[1] = 8'h02;
+assign Rcon[2] = 8'h04;
+assign Rcon[3] = 8'h08;
+assign Rcon[4] = 8'h10;
+assign Rcon[5] = 8'h20;
+assign Rcon[6] = 8'h40;
+assign Rcon[7] = 8'h80;
+assign Rcon[8] = 8'h1b;
+assign Rcon[9] = 8'h36;
+
+always_comb begin : gen_idx_select
+    unique case (1'b1)
+        key_exp_steps_ff[0]: gen_idx = 4'd0;
+        key_exp_steps_ff[1]: gen_idx = 4'd1;
+        key_exp_steps_ff[2]: gen_idx = 4'd2;
+        key_exp_steps_ff[3]: gen_idx = 4'd3;
+        key_exp_steps_ff[4]: gen_idx = 4'd4;
+        key_exp_steps_ff[5]: gen_idx = 4'd5;
+        key_exp_steps_ff[6]: gen_idx = 4'd6;
+        key_exp_steps_ff[7]: gen_idx = 4'd7;
+        key_exp_steps_ff[8]: gen_idx = 4'd8;
+        key_exp_steps_ff[9]: gen_idx = 4'd9;
+        default:             gen_idx = 4'd0;
+    endcase
+end
+
+sbox uu_sbox0 (
+    .i_data(RotWord[NBW_WORD-1-:NBW_BYTE]),
+    .o_data(SubWord[NBW_WORD-1-:NBW_BYTE])
+);
+
+sbox uu_sbox1 (
+    .i_data(RotWord[NBW_WORD-NBW_BYTE-1-:NBW_BYTE]),
+    .o_data(SubWord[NBW_WORD-NBW_BYTE-1-:NBW_BYTE])
+);
+
+sbox uu_sbox2 (
+    .i_data(RotWord[NBW_WORD-2*NBW_BYTE-1-:NBW_BYTE]),
+    .o_data(SubWord[NBW_WORD-2*NBW_BYTE-1-:NBW_BYTE])
+);
+
+sbox uu_sbox3 (
+    .i_data(RotWord[NBW_WORD-3*NBW_BYTE-1-:NBW_BYTE]),
+    .o_data(SubWord[NBW_WORD-3*NBW_BYTE-1-:NBW_BYTE])
+);
+
+always_comb begin : expand_next_rkey
+    RotWord = {
+        expanded_key_ff[NBW_OUT-(gen_idx+1)*NBW_KEY+NBW_WORD-NBW_BYTE-1-:(NBW_WORD-NBW_BYTE)],
+        expanded_key_ff[NBW_OUT-(gen_idx+1)*NBW_KEY+NBW_WORD-1-:NBW_BYTE]
+    };
+    RconXor = {SubWord[NBW_WORD-1-:NBW_BYTE] ^ Rcon[gen_idx], SubWord[NBW_WORD-NBW_BYTE-1-:(NBW_WORD-NBW_BYTE)]};
+
+    next_rkey[NBW_KEY-1-:NBW_WORD]            = expanded_key_ff[NBW_OUT-(4*gen_idx+3)*NBW_WORD-1-:NBW_WORD] ^ RconXor;
+    next_rkey[NBW_KEY-NBW_WORD-1-:NBW_WORD]   = expanded_key_ff[NBW_OUT-(4*gen_idx+2)*NBW_WORD-1-:NBW_WORD] ^ next_rkey[NBW_KEY-1-:NBW_WORD];
+    next_rkey[NBW_KEY-2*NBW_WORD-1-:NBW_WORD] = expanded_key_ff[NBW_OUT-(4*gen_idx+1)*NBW_WORD-1-:NBW_WORD] ^ next_rkey[NBW_KEY-NBW_WORD-1-:NBW_WORD];
+    next_rkey[NBW_KEY-3*NBW_WORD-1-:NBW_WORD] = expanded_key_ff[NBW_OUT-(4*gen_idx  )*NBW_WORD-1-:NBW_WORD] ^ next_rkey[NBW_KEY-2*NBW_WORD-1-:NBW_WORD];
+end
+
+always_comb begin : expanded_key_update
+    expanded_key_nx = expanded_key_ff;
+
+    if(i_start) begin
+        expanded_key_nx = {i_key, {(NBW_OUT-NBW_KEY){1'b0}}};
+    end else if(|key_exp_steps_ff[STEPS-1:0] && !key_exp_steps_ff[STEPS]) begin
+        expanded_key_nx[NBW_OUT-(gen_idx+2)*NBW_KEY +: NBW_KEY] = next_rkey;
+    end
+end
+
+endmodule : aes128_key_expansion
+```

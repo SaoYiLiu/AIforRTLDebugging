@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782015353" />
+    <testcase name="test_top_manchester" classname="test_manchester_enc" file="/src/test_manchester_enc.py" lineno="15" time="0.0018832683563232422" sim_time_ns="13.0" ratio_time="6902.893024433472" />
+  </testsuite>
+</testsuites>

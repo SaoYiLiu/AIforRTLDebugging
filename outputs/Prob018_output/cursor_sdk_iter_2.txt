@@ -1,0 +1,66 @@
+## Rationale
+- **Suspected bug (L021–L026):** `c1` is updated in a combinational `always @(*)` block with blocking assignments (`c1 = c`). That makes `c` visible to `slave_mod` s2 in the same cycle, while `c_out1` from s1 is registered on `posedge clk`.
+- **Spec / reference alignment:** The prompt says sequential logic should update on the positive clock edge. `RefModule` registers `c1` with `always @(posedge clk, negedge rst_n)` and `c1 <= c` (see ref L22–L27), matching the two-stage `slave_mod` pipeline.
+- **Waveform evidence:** First mismatch at 70 ps, right after test case 5 at t=65 (`a=5`, `b=5`, `c=10`). With combinational `c1`, s2’s `b` input becomes 10 immediately; with the reference, `c1` still holds the previous cycle’s value (100 from test 4) until the posedge register update.
+- **Mismatch stats:** 198/421 samples wrong on `d`, consistent with a systematic timing skew on the `c` path rather than a wrong min compare in `slave_mod`.
+- **`slave_mod` (L045–L053):** The compare `if (a>b) c_out <= b; else c_out <= a` is correct for unsigned minimum; no change needed there.
+- **Fix applied:** Replace the combinational `c1` block with a clocked, async-reset register using nonblocking assignments, so `c` is delayed one cycle like `c_out1` and the three-input minimum pipeline matches the reference.
+
+## FixedTopModule
+```verilog
+module TopModule(
+    input clk,
+    input rst_n,
+    input [7:0]a,
+    input [7:0]b,
+    input [7:0]c,
+    
+    output [7:0]d
+);
+
+    wire [7:0] c_out1;
+    slave_mod s1(
+        .clk(clk),
+        .rst_n(rst_n),
+        .a(a),
+        .b(b),
+        .c_out(c_out1)
+    );
+ 
+    reg [7:0] c1;
+    always @(posedge clk, negedge rst_n) begin
+        if (!rst_n)
+            c1 <= 8'b0;
+        else
+            c1 <= c;
+    end
+
+    slave_mod s2(
+        .clk(clk),
+        .rst_n(rst_n),
+        .a(c_out1),
+        .b(c1),
+        .c_out(d)
+    );   
+           
+endmodule
+
+module slave_mod(
+    input clk,
+    input rst_n,
+    input [7:0]a,
+    input [7:0]b,
+    output reg [7:0] c_out
+);
+    always @(posedge clk,negedge rst_n) begin
+        if(!rst_n)
+            c_out <= 8'b0;
+        else
+            if(a>b)
+                c_out <= b;
+            else
+                c_out <= a;
+    end
+            
+endmodule
+```

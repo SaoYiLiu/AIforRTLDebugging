@@ -1,0 +1,69 @@
+## Transport
+rest
+
+## Rationale
+- **Lines 22–24 are the root bug:** The `else` branch forces `pls_toggle <= 1'b0` whenever `src_pulse` is low. A toggle-based CDC synchronizer must **hold** its state between pulses; clearing it every idle cycle is incorrect.
+- **That produces two edges for one input pulse:** On the pulse cycle, `pls_toggle` toggles (e.g. 0→1). On the very next `src_clock` cycle (with `src_pulse` low), the `else` branch drives it back to 0 (1→0). One `src_pulse` therefore creates **two transitions** on `pls_toggle`.
+- **Line 55 turns both transitions into two output pulses:** `des_pulse = pls_toggle_syncc ^ pls_toggle_synca` detects any edge in the synchronized toggle. With two toggle edges, the destination domain correctly (per the RTL) generates **two** `des_pulse` pulses — matching the wavedrom bug waveform (`des_pulse(RTL Bug): 0......1.0...1.0...`).
+- **Harness evidence for the 100 MHz / 250 MHz case:** The problem statement reports two destination pulses for one source pulse, which is exactly the double-edge behavior from lines 22–24 plus line 55.
+- **Harness evidence for missed pulses:** In `test_random_clocks_and_reset` iteration 3 (50 MHz / 52.63 MHz) and `test_src_100MHz_des_1MHz`, `des_pulse` stays 0 and the test fails with *"des_pulse was not received within 4 des_clock cycles"*. When the destination clock is much slower (or sampling is unlucky), the brief 0→1→0 glitch on `pls_toggle` can be missed entirely by the synchronizer, so no edge is detected.
+- **Minimal fix:** Remove the `else` branch (lines 22–24) so `pls_toggle` only changes on reset or when `src_pulse` toggles it. This matches the standard toggle-CDC pulse synchronizer pattern and fixes both the double-pulse and missed-pulse failures.
+
+## PatchedFiles
+### rtl/cdc_pulse_synchronizer.sv
+```verilog
+module cdc_pulse_synchronizer (
+    input  logic src_clock,   // Source Clock Domain
+    input  logic des_clock,   // Destination Clock Domain
+    input  logic rst_in,      // Reset
+    input  logic src_pulse,   // Source Pulse
+    output logic des_pulse    // Destination Pulse
+);
+
+    logic pls_toggle;      
+    logic pls_toggle_synca;
+    logic pls_toggle_syncc;
+
+    //--------------------------------------------------
+    //   Toggle Flop Circuit
+    //---------------------------------------------------
+
+    always_ff @(posedge src_clock or posedge rst_in) begin
+        if (rst_in) begin
+            pls_toggle <= 1'b0;
+        end else if (src_pulse) begin
+            pls_toggle <= ~pls_toggle;
+        end
+    end
+
+    //--------------------------------------------------
+    //   Double Flop Bit Synchronizer
+    //---------------------------------------------------
+
+    always_ff @(posedge des_clock or posedge rst_in) begin
+        if (rst_in) begin
+            pls_toggle_synca <= 1'b0;
+        end else begin
+            pls_toggle_synca <= pls_toggle;
+        end
+    end
+
+    //--------------------------------------------------
+    //   Delay Logic of Output signal
+    //---------------------------------------------------
+
+    always_ff @(posedge des_clock or posedge rst_in) begin
+        if (rst_in) begin
+            pls_toggle_syncc <= 1'b0;
+        end else begin
+            pls_toggle_syncc <= pls_toggle_synca;
+        end
+    end
+
+    //--------------------------------------------------
+    //   Assign Statement for posedge and negedge detection
+    //---------------------------------------------------
+
+    assign des_pulse = pls_toggle_syncc ^ pls_toggle_synca; 
+endmodule
+```

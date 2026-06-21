@@ -1,0 +1,48 @@
+## Transport
+rest
+
+## Rationale
+- **Line 13 — root cause:** `RWIDTH = $clog2(R)+1` is one bit too wide. For `R = 256`, that gives `RWIDTH = 9`, so the design treats the radix as **512** instead of **256**.
+- **Line 22 — wrong `T mod R`:** `T_mod_R = T[RWIDTH-1:0]` uses 9 low bits, so `T mod R` is effectively `T mod 512`, not `T mod 256`. For `T = 14556`, both give 220 here, but the error shows up when the extra bit matters.
+- **Line 26 — wrong `m`:** `m = T_mod_R_X_N_PRIME[RWIDTH-1:0]` computes `(T mod R) * N' mod 512` instead of `mod R`. For `T = 14556`, `N = 109`, `R = 256`: correct `m = 52`, buggy `m = 308`.
+- **Line 28 — wrong division:** `t = (T + m * N) >> RWIDTH` divides by 512 instead of `R`. That gives `t = 94` vs expected **79**, matching the harness table (`14556 / 109 / 256 / 66 → expected 79, DUT 94`).
+- **Cross-check on second failing case:** For `T = 10839`, buggy logic gives `t = 58` (expected **7**), again matching the table.
+- **Harness evidence:** Random cocotb run with `N = 673`, `R = 1024`, `R_INVERSE = 441` fails with `assert 593 == 514`; the same off-by-one-radix bug applies (`RWIDTH = 11` instead of 10).
+- **Fix:** Set `RWIDTH = $clog2(R)` so bit-slicing and the right shift all use the true power-of-two radix `R`.
+
+## PatchedFiles
+### rtl/montgomery_redc.sv
+```verilog
+module montgomery_redc #
+(
+    parameter N = 7,              
+    parameter R = 8,              
+    parameter R_INVERSE = 1,
+    parameter NWIDTH = $clog2(N), 
+    parameter TWIDTH = $clog2(N*R)     
+)(
+    input  wire [TWIDTH-1:0] T,    
+    output wire [NWIDTH-1:0] result 
+);
+    // Derived parameters
+    localparam RWIDTH = $clog2(R);         
+              
+    localparam [RWIDTH-1:0] N_PRIME = (R * R_INVERSE - 1) / N;       
+
+    wire [RWIDTH-1:0] T_mod_R;               
+    wire [2*RWIDTH-1:0] T_mod_R_X_N_PRIME;      
+    wire [RWIDTH-1:0] m;                     
+    wire [NWIDTH:0] t;                      
+
+    assign T_mod_R = T[RWIDTH-1:0]; 
+
+    assign T_mod_R_X_N_PRIME = T_mod_R * N_PRIME;
+
+    assign m = T_mod_R_X_N_PRIME[RWIDTH-1:0];
+
+    assign t = (T + m * N) >> RWIDTH;
+
+    assign result = (t >= N) ? (t - N) : t;
+
+endmodule
+```

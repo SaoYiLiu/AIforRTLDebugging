@@ -1,0 +1,50 @@
+## Transport
+bridge
+
+## Rationale
+- **Suspected bug (L031):** The shift update `a_tem <= {a, a_tem[6:0]};` inserts `a` at the **MSB** (bit 7). The spec requires shifting `a` into the **LSB** (bit 0), as in the reference model’s `{a_tem[6:0], a}`.
+
+- **Why `match` logic (L015–L021) is not the root cause:** The reference uses the same two-block structure and compares the pre-update `a_tem`. With the correct shift direction, that logic passes all 455 samples; the split-block timing is not what causes the failure here.
+
+- **Waveform evidence:** First mismatch at **200 ps** (2 total). At **195 ps** (posedge), `match_ref=1` but `match_dut=0`, and `tb.tb_mismatch` asserts. That aligns with Test Case 2 completing pattern `8'b0111_0001`: the reference shift register holds the pattern, but the DUT’s reversed shift produces a different window.
+
+- **Causal trace:** The failure follows `a=1` at 195 ps after the matching sequence (`a=0,1,1,1,0,0,0,1` from the testbench). With MSB-first shifting, `a_tem` never equals `8'b0111_0001` when the reference asserts `match`.
+
+- **Fix applied:** Change L031 to `a_tem <= {a_tem[6:0], a};` so each new bit enters the LSB and older bits shift toward the MSB. Verified: **0 mismatches / 455 samples**.
+
+## FixedTopModule
+```verilog
+module TopModule(
+	input clk,
+	input rst_n,
+	input a,
+	output reg match
+	);
+
+	reg [7:0] a_tem;
+	
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n)
+			begin 
+				match <= 1'b0;
+			end
+		else if (a_tem == 8'b0111_0001)
+			begin
+				match <= 1'b1;
+			end
+		else 
+			begin	
+				match <= 1'b0;
+			end
+		
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n)
+			begin 
+				a_tem <= 8'b0;
+			end
+		else 
+			begin
+				a_tem <= {a_tem[6:0], a};
+			end
+endmodule
+```

@@ -1,0 +1,5 @@
+- The harness **`error_kind` is `compile`**, not logic — iverilog exits with status 12 before any simulation runs, so a VCD testbench cannot elaborate or produce useful waves.
+- The failure is **`iverilog ... /code/rtl/line_buffer.sv` returned non-zero exit status 12`** across all parameter sets; that is a syntax/elaboration problem, not a runtime mismatch on `o_image_window`.
+- The truncated DUT shows a new **`function automatic get_window_pixel(..., input logic buf [NS_ROW][NS_COLUMN], ...)`** — Icarus Verilog (-g2012) commonly rejects **unpacked array ports on functions**, especially with parameterized dimensions; the fix is to remove or inline that helper, not to debug waveforms.
+- A `tb_debug` module **depends on the same DUT elaboration** and will fail with the identical compile error, adding no information beyond re-running `iverilog rtl/line_buffer.sv`.
+- The next iteration should **replace the function with inline `always_comb` logic** (as in earlier passing-elaboration revisions) while keeping the output mux / snapshot / capture structure — compile-first, then re-run cocotb for logic.

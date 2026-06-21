@@ -1,0 +1,10 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782013674" />
+    <testcase name="test_basic" classname="test_image_stego" file="/src/test_image_stego.py" lineno="38" time="0.001359701156616211" sim_time_ns="2.0" ratio_time="1470.9114501139752" />
+    <testcase name="test_edgecase_all_zeros" classname="test_image_stego" file="/src/test_image_stego.py" lineno="82" time="0.0008714199066162109" sim_time_ns="2.0" ratio_time="2295.1047879616963" />
+    <testcase name="test_edgecase_all_ones" classname="test_image_stego" file="/src/test_image_stego.py" lineno="119" time="0.0007677078247070312" sim_time_ns="2.0" ratio_time="2605.1577639751554" />
+    <testcase name="test_edgecase_alternating_bits" classname="test_image_stego" file="/src/test_image_stego.py" lineno="156" time="0.0008370876312255859" sim_time_ns="2.0" ratio_time="2389.2361150669326" />
+    <testcase name="test_random" classname="test_image_stego" file="/src/test_image_stego.py" lineno="193" time="0.002248048782348633" sim_time_ns="10.0" ratio_time="4448.302046876657" />
+  </testsuite>
+</testsuites>

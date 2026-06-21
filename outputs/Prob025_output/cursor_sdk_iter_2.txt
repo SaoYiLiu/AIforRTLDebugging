@@ -1,0 +1,55 @@
+## Rationale
+- **Suspected bug (L043):** `assign data_out = Q_buff1 & Q_slow;` uses AND instead of edge detection. After the synchronizer chain, `Q_slow` holds the previous value of `Q_buff1`, so a valid toggle pulse should be `Q_buff1 ^ Q_slow` (XOR), not AND.
+- **Why AND is wrong:** On the slow-clock edge where the synchronized flag first changes, `Q_buff1` updates to the new value while `Q_slow` still holds the old value. For a 0→1 toggle, AND gives `1 & 0 = 0`; for 1→0, AND gives `0 & 1 = 0`. AND never asserts on the correct edge.
+- **Waveform evidence:** First mismatch at **155 ps** — `data_out_ref` goes high at **150 ps**, but `data_out_dut` stays low until **250 ps** (one slow-clock cycle late). That matches AND firing when both `Q_buff1` and `Q_slow` are 1, instead of when they differ.
+- **Causal trace:** At t=150, `clk_slow` is high and the reference output transitions; the DUT misses that cycle because `Q_buff1 & Q_slow` is still 0 when only `Q_buff1` has changed.
+- **Rest of design is correct:** Fast-domain toggle on `data_in` (L009–L020), two-flop synchronizer (L021–L032), and delayed copy `Q_slow <= Q_buff1` (L033–L041) match the spec and the reference model.
+- **Fix applied:** Change L043 from `Q_buff1 & Q_slow` to `Q_buff1 ^ Q_slow` to produce a single-cycle pulse on any detected toggle in the slow domain. Verified: **0 mismatches** in simulation.
+
+## FixedTopModule
+```verilog
+module TopModule(
+    input              clk_fast    , 
+    input              clk_slow    ,   
+    input              rst_n       ,
+    input               data_in     ,
+ 
+    output           data_out
+);
+reg     Q_fast;
+always @(posedge clk_fast or negedge rst_n) begin
+    if(~rst_n) begin
+        Q_fast <= 'd0;
+    end 
+    else if(data_in)begin
+        Q_fast <= ~Q_fast;
+    end
+    else if(~data_in)begin
+        Q_fast <= Q_fast;
+    end
+end
+reg    Q_buff0;
+reg    Q_buff1;
+always @(posedge clk_slow or negedge rst_n) begin 
+    if(~rst_n) begin
+        Q_buff0 <= 'd0;
+        Q_buff1 <= 'd0;
+    end 
+    else begin
+        Q_buff0 <= Q_fast;
+        Q_buff1 <= Q_buff0;
+    end
+end
+reg     Q_slow;
+always @(posedge clk_slow or negedge rst_n) begin
+    if(~rst_n) begin
+        Q_slow <= 'd0;
+    end 
+    else begin
+        Q_slow <= Q_buff1;
+    end
+end
+ 
+assign data_out = Q_buff1 ^ Q_slow;
+endmodule
+```

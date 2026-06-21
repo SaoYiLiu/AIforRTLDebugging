@@ -1,0 +1,3 @@
+source=cursor_sdk_error_focused
+focus_net_count=14
+vcd_trace_signals=['tb.tb_mismatch', 'tb.rempty_ref', 'tb.rempty_dut', 'tb.rdata_ref', 'tb.rdata_dut', 'tb.wfull_ref', 'tb.wfull_dut', 'tb.clk', 'tb.rst_n', 'tb.winc', 'tb.rinc', 'tb.wdata']

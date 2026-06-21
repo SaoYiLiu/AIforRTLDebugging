@@ -1,0 +1,16 @@
+services:
+
+  direct:
+    #image: nvidia/cvdp-sim:v1.0.0
+    image: nvidia/cvdp-sim:v1.0.0
+
+    volumes:
+      - ./src/:/src/:ro # Infrastructure location
+      - ./rtl:/code/rtl
+      - ./rundir:/code/rundir
+      - ./docs:/code/docs:ro
+      - ./verif:/code/verif:ro
+    env_file    : ./src/.env
+    command     : pytest -s --log-cli-level=INFO -o cache_dir=/rundir/harness/.cache /src/test_runner.py -v
+    # command     : python3 /src/test_runner.py
+    working_dir: /code/rundir

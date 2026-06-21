@@ -1,0 +1,27 @@
+{
+  "format": "Yosys Witness Trace",
+  "generator": "smtbmc",
+  "clocks": [],
+  "signals": [
+    {"path": ["\\a"], "width": 1, "offset": 0, "init_only": false},
+    {"path": ["\\clk"], "width": 1, "offset": 0, "init_only": false},
+    {"path": ["\\rst_n"], "width": 1, "offset": 0, "init_only": false},
+    {"path": ["\\_witness_", "\\anyinit_procdff_74"], "width": 1, "offset": 0, "init_only": true},
+    {"path": ["\\_witness_", "\\anyinit_procdff_75"], "width": 1, "offset": 0, "init_only": true},
+    {"path": ["\\_witness_", "\\anyinit_procdff_76"], "width": 7, "offset": 0, "init_only": true},
+    {"path": ["\\_witness_", "\\anyinit_procdff_77"], "width": 8, "offset": 0, "init_only": true},
+    {"path": ["\\gold_a_tem"], "width": 8, "offset": 0, "init_only": true}
+  ],
+  "steps": [
+    {"bits": "0000000000000000000000011010"},
+    {"bits": "111"},
+    {"bits": "111"},
+    {"bits": "111"},
+    {"bits": "110"},
+    {"bits": "100"},
+    {"bits": "110"},
+    {"bits": "111"},
+    {"bits": "111"},
+    {"bits": "100"}
+  ]
+}

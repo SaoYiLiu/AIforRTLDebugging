@@ -1,0 +1,83 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /rundir/harness/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_runner 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s conv3x3 -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/conv3x3.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782013604
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_conv3x3.test_bug_detection (1/1)
+                                                            Test the conv3x3 module for bug detection.
+   120.00ns WARNING  ..bug_detection.test_bug_detection Error in Row 2 summation!
+                                                        assert 2 == 3
+                                                         +  where 2 = int(LogicArray('00000000000000000010', Range(19, 'downto', 0)))
+                                                         +    where LogicArray('00000000000000000010', Range(19, 'downto', 0)) = LogicArrayObject(conv3x3.pipeline_sum_stage11).value
+                                                         +      where LogicArrayObject(conv3x3.pipeline_sum_stage11) = HierarchyObject(conv3x3).pipeline_sum_stage11
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_conv3x3.py", line 55, in test_bug_detection
+                                                            assert int(dut.pipeline_sum_stage11.value) == expected_pipeline_sum_stage11, "Error in Row 2 summation!"
+                                                        AssertionError: Error in Row 2 summation!
+                                                        assert 2 == 3
+                                                         +  where 2 = int(LogicArray('00000000000000000010', Range(19, 'downto', 0)))
+                                                         +    where LogicArray('00000000000000000010', Range(19, 'downto', 0)) = LogicArrayObject(conv3x3.pipeline_sum_stage11).value
+                                                         +      where LogicArrayObject(conv3x3.pipeline_sum_stage11) = HierarchyObject(conv3x3).pipeline_sum_stage11
+   120.00ns WARNING  cocotb.regression                  test_conv3x3.test_bug_detection failed
+   120.00ns INFO     cocotb.regression                  *****************************************************************************************
+                                                        ** TEST                             STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************
+                                                        ** test_conv3x3.test_bug_detection   FAIL         120.00           0.01      12867.94  **
+                                                        *****************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                   120.00           0.02       5425.66  **
+                                                        *****************************************************************************************
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+FAILED
+
+=================================== FAILURES ===================================
+_________________________________ test_runner __________________________________
+
+    def test_runner():
+    
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="build.log")
+    
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:27: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s conv3x3 -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/conv3x3.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+=============================== warnings summary ===============================
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-0hp7h_nt'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-4asfuy6c'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-jruggkmi'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_runner - SystemExit: 1
+======================== 1 failed, 3 warnings in 1.42s =========================

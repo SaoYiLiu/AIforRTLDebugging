@@ -1,0 +1,4 @@
+ Network cvdp_react_cvdp_copilot_sobel_filter_0011_4_default Creating 
+ Network cvdp_react_cvdp_copilot_sobel_filter_0011_4_default Created 
+ Container cvdp_react_cvdp_copilot_sobel_filter_0011_4-direct-run-e1c6a3524cda Creating 
+ Container cvdp_react_cvdp_copilot_sobel_filter_0011_4-direct-run-e1c6a3524cda Created 

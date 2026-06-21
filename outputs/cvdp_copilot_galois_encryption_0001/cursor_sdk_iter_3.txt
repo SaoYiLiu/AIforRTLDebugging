@@ -1,0 +1,203 @@
+## Transport
+rest
+
+## Rationale
+- **Lines 159–173 (`out_mapping`) — harness `ValueError: Can't convert LogicArray to int: it contains non-0/1 values` at 70 ns**: On the first cycle `valid_ff[LATENCY-1]` is high, `data_out_ff` has never been written (sim initializes to X). `out_mapping` reads `data_out_ff` combinationally while the NBA update from line 91 happens in the same timestep, so `o_data` is X when cocotb calls `int(dut.o_data.value)`.
+
+- **Fix: drive `o_data` from `data_out_nx` and default `o_data = '0`**: `data_out_nx` is fully defined from registered pipeline state when `o_valid` asserts. Defaulting all bits in `always_comb` avoids undriven-X on inactive cycles.
+
+- **Lines 106–108 (`multiply_gf2_4_8`)**: GF×2 must XOR `0x1B` only when MSB=1; ×4/×8 must chain ×2 (not raw shifts). Required for correct encrypt/decrypt math per spec and `harness_library.py`.
+
+- **Lines 78, 80, 163–166 (index)**: Mapping must use `column*32 + line*8` (spec table / harness), not swapped strides.
+
+- **Line 129 (`data_xtimesE_nx`)**: `0x0E = ×8 ^ ×4 ^ ×2`; must not XOR `data_in_ff` (that would be ×0F).
+
+- **Lines 160, 175 (`o_valid`)**: `valid_ff[LATENCY-1]` gives 3-cycle latency; `valid_ff[LATENCY]` was one cycle late vs cocotb’s 3-edge wait.
+
+- **New `encrypt_op_ff` (registered on `i_valid`)**: Latches operation mode with captured data so `out_matrix` / `out_mapping` use the pipeline’s encrypt/decrypt mode, not a stale combinatorial `i_encrypt`.
+
+## PatchedFiles
+### rtl/galois_encryption.sv
+```verilog
+/*
+Galois field (2^8) matrix-based encryption/decryption system using AES's polynomial to perform galois field operations
+*/
+
+module galois_encryption #(
+    parameter NBW_DATA = 'd128,
+    parameter NBW_KEY  = 'd32
+) (
+    input  logic                clk,
+    input  logic                rst_async_n,
+    input  logic                i_encrypt,
+    input  logic                i_valid,
+    input  logic [NBW_DATA-1:0] i_data,
+    input  logic                i_update_key,
+    input  logic [NBW_KEY-1:0]  i_key,
+    output logic                o_valid,
+    output logic [NBW_DATA-1:0] o_data
+);
+
+// ----------------------------------------
+// - Internal Parameters
+// ----------------------------------------
+localparam LATENCY  = 'd3;
+localparam NBW_WORD = 'd8;
+localparam MOD_POLY = 8'h1B;
+localparam LINES    = 'd4;
+localparam COLUMNS  = 'd4;
+
+// ----------------------------------------
+// - Wires/Registers creation
+// ----------------------------------------
+logic [LATENCY:0]    valid_ff;
+logic                encrypt_op_ff;
+logic [NBW_KEY-1:0]  key_ff;
+logic [NBW_WORD-1:0] data_in_ff      [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimes2_nx [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimes3_nx [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimes9_nx [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimesB_nx [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimesD_nx [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimesE_nx [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_out_nx     [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimes2_ff [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimes3_ff [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimes9_ff [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimesB_ff [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimesD_ff [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimesE_ff [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_out_ff     [LINES][COLUMNS];
+
+logic [NBW_WORD-1:0] data_xtimes2 [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimes4 [LINES][COLUMNS];
+logic [NBW_WORD-1:0] data_xtimes8 [LINES][COLUMNS];
+
+// ----------------------------------------
+// - Control registers
+// ----------------------------------------
+always_ff @(posedge clk or negedge rst_async_n) begin : ctrl_regs
+    if (!rst_async_n) begin
+        valid_ff      <= '0;
+        encrypt_op_ff <= 1'b0;
+        key_ff        <= '0;
+    end else begin
+        valid_ff[0]         <= i_valid;
+        valid_ff[LATENCY:1] <= valid_ff[LATENCY-1:0];
+        if (i_valid) begin
+            encrypt_op_ff <= i_encrypt;
+        end
+        if (i_update_key) begin
+            key_ff <= i_key;
+        end
+    end
+end
+
+// ----------------------------------------
+// - Data registers
+// ----------------------------------------
+always_ff @(posedge clk) begin : data_regs
+    for (int line = 0; line < LINES; line++) begin
+        for (int column = 0; column < COLUMNS; column++) begin
+            if (i_valid) begin
+                if (i_encrypt) begin
+                    data_in_ff[line][column] <= i_data[NBW_DATA-1-(column*NBW_WORD*LINES + line*NBW_WORD)-:NBW_WORD];
+                end else begin
+                    data_in_ff[line][column] <= i_data[NBW_DATA-1-(column*NBW_WORD*LINES + line*NBW_WORD)-:NBW_WORD] ^ key_ff[NBW_KEY-line*NBW_WORD-1-:NBW_WORD];
+                end
+            end
+
+            data_xtimes2_ff[line][column] <= data_xtimes2_nx[line][column];
+            data_xtimes3_ff[line][column] <= data_xtimes3_nx[line][column];
+            data_xtimes9_ff[line][column] <= data_xtimes9_nx[line][column];
+            data_xtimesB_ff[line][column] <= data_xtimesB_nx[line][column];
+            data_xtimesD_ff[line][column] <= data_xtimesD_nx[line][column];
+            data_xtimesE_ff[line][column] <= data_xtimesE_nx[line][column];
+
+            if (valid_ff[LATENCY-1]) begin
+                data_out_ff[line][column] <= data_out_nx[line][column];
+            end
+        end
+    end
+end
+
+// ----------------------------------------
+// - Intermediary steps
+// ----------------------------------------
+
+// Calculate GF(2^8) multiplication by 2, 4 and 8
+always_comb begin : multiply_gf2_4_8
+    for (int line = 0; line < LINES; line++) begin
+        for (int column = 0; column < COLUMNS; column++) begin
+            data_xtimes2[line][column] = (data_in_ff[line][column] << 1) ^ (data_in_ff[line][column][7] ? MOD_POLY : 8'h00);
+            data_xtimes4[line][column] = (data_xtimes2[line][column] << 1) ^ (data_xtimes2[line][column][7] ? MOD_POLY : 8'h00);
+            data_xtimes8[line][column] = (data_xtimes4[line][column] << 1) ^ (data_xtimes4[line][column][7] ? MOD_POLY : 8'h00);
+        end
+    end
+end
+
+// Calculate GF(2^8) multiplications by the values in the polynomial
+always_comb begin : multiply_gf
+    for (int line = 0; line < LINES; line++) begin
+        for (int column = 0; column < COLUMNS; column++) begin
+            data_xtimes2_nx[line][column] = data_xtimes2[line][column];
+            if (encrypt_op_ff) begin
+                data_xtimes3_nx[line][column] = data_xtimes2[line][column] ^ data_in_ff[line][column];
+                data_xtimes9_nx[line][column] = data_xtimes9_ff[line][column];
+                data_xtimesB_nx[line][column] = data_xtimesB_ff[line][column];
+                data_xtimesD_nx[line][column] = data_xtimesD_ff[line][column];
+                data_xtimesE_nx[line][column] = data_xtimesE_ff[line][column];
+            end else begin
+                data_xtimes3_nx[line][column] = data_xtimes3_ff[line][column];
+                data_xtimes9_nx[line][column] = data_xtimes8[line][column] ^ data_in_ff[line][column];
+                data_xtimesB_nx[line][column] = data_xtimes8[line][column] ^ data_xtimes2[line][column] ^ data_in_ff[line][column];
+                data_xtimesD_nx[line][column] = data_xtimes8[line][column] ^ data_xtimes4[line][column] ^ data_in_ff[line][column];
+                data_xtimesE_nx[line][column] = data_xtimes8[line][column] ^ data_xtimes4[line][column] ^ data_xtimes2[line][column];
+            end
+        end
+    end
+end
+
+// Calculate output matrix
+always_comb begin : out_matrix
+    if (encrypt_op_ff) begin
+        for (int column = 0; column < COLUMNS; column++) begin
+            data_out_nx[0][column] = data_xtimes2_ff[0][column] ^ data_xtimes3_ff[1][column] ^ data_in_ff[2][column] ^ data_in_ff[3][column];
+            data_out_nx[1][column] = data_xtimes2_ff[1][column] ^ data_xtimes3_ff[2][column] ^ data_in_ff[3][column] ^ data_in_ff[0][column];
+            data_out_nx[2][column] = data_xtimes2_ff[2][column] ^ data_xtimes3_ff[3][column] ^ data_in_ff[0][column] ^ data_in_ff[1][column];
+            data_out_nx[3][column] = data_xtimes2_ff[3][column] ^ data_xtimes3_ff[0][column] ^ data_in_ff[1][column] ^ data_in_ff[2][column];
+        end
+    end else begin
+        for (int column = 0; column < COLUMNS; column++) begin
+            data_out_nx[0][column] = data_xtimesE_ff[0][column] ^ data_xtimesB_ff[1][column] ^ data_xtimesD_ff[2][column] ^ data_xtimes9_ff[3][column];
+            data_out_nx[1][column] = data_xtimesE_ff[1][column] ^ data_xtimesB_ff[2][column] ^ data_xtimesD_ff[3][column] ^ data_xtimes9_ff[0][column];
+            data_out_nx[2][column] = data_xtimesE_ff[2][column] ^ data_xtimesB_ff[3][column] ^ data_xtimesD_ff[0][column] ^ data_xtimes9_ff[1][column];
+            data_out_nx[3][column] = data_xtimesE_ff[3][column] ^ data_xtimesB_ff[0][column] ^ data_xtimesD_ff[1][column] ^ data_xtimes9_ff[2][column];
+        end
+    end
+end
+
+// ----------------------------------------
+// - Assign outputs
+// ----------------------------------------
+
+// Map output values from lines x columns to a single dimension
+always_comb begin : out_mapping
+    o_data = '0;
+    if (valid_ff[LATENCY-1]) begin
+        for (int line = 0; line < LINES; line++) begin
+            for (int column = 0; column < COLUMNS; column++) begin
+                if (encrypt_op_ff) begin
+                    o_data[NBW_DATA-(column*NBW_WORD*LINES + line*NBW_WORD)-1-:NBW_WORD] = data_out_nx[line][column] ^ key_ff[NBW_KEY-line*NBW_WORD-1-:NBW_WORD];
+                end else begin
+                    o_data[NBW_DATA-(column*NBW_WORD*LINES + line*NBW_WORD)-1-:NBW_WORD] = data_out_nx[line][column];
+                end
+            end
+        end
+    end
+end
+
+assign o_valid = valid_ff[LATENCY-1];
+
+endmodule : galois_encryption
+```

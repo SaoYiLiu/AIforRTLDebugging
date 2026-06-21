@@ -1,0 +1,80 @@
+## Transport
+rest
+
+## Rationale
+- **Lines 42–44 — uppercase encryption lacks mod-26 wrap:** The DUT uses `current_char + current_key` instead of modular arithmetic. For TC1 (`XYZ`, key `5`), `Z + 5` becomes ASCII `95` (`_`) instead of wrapping to `E`. Harness evidence: numeric-key test maps `'U'` (key 19) to `'h'` instead of `'N'` because `85 + 19 = 104` with no wrap.
+
+- **Lines 28–30 — uppercase decryption adds the key:** Decrypt uses `(current_char - "A" + current_key + 26) % 26`, which shifts forward. Lowercase decrypt on lines 32–34 correctly subtracts. TC2 (`CDE`, key `5`, decrypt) expects `XYZ` but gets forward-shifted output. Harness encryption–decryption round-trip fails: expected `kueYkApI`, got `kueskUpI` (`Y→s`, `A→U` from wrong uppercase decrypt).
+
+- **Lines 51–52 — non-alphabetic `key == 0` forces `+1`:** When the key is zero, `current_char + 1` runs instead of leaving the character unchanged. TC3 expects `!` and `@` to pass through with key `0`, but the DUT increments them (actual `d0"Ae` vs expected `d2!@e`).
+
+- **Lines 54–55 — non-alphabetic encrypt subtracts instead of adding:** For `key != 0`, encrypt uses `current_char - current_key`, while the cocotb reference uses `char + key` (with key negated only in decrypt). Special-characters test (`!@#$%^&*`) expects `9A(80w'<` via addition (e.g. `'!' + 24 = '9'`), but subtract/wrong-key logic produces garbage (`\t?\x1e...`).
+
+- **Line 37 — non-alphabetic decrypt is already correct:** `current_char - current_key` matches the reference (`key = -key` then add). No change needed there.
+
+- **Fix aligns all three character classes with the SW model:** Uppercase encrypt/decrypt use the same mod-26 formulas as lowercase; non-alphabetic encrypt uses `current_char + current_key` with no special case for key `0`.
+
+---
+
+## PatchedFiles
+### rtl/caesar_cipher.sv
+```verilog
+module caesar_cipher #(
+    parameter PHRASE_WIDTH = 32,  // e.g., enough for 4 chars (4×8=32)
+    parameter PHRASE_LEN   = PHRASE_WIDTH / 8
+)(
+    input  wire [PHRASE_WIDTH-1:0]       input_phrase,
+    input  wire [(PHRASE_LEN * 5) - 1:0] key_phrase,
+    input  wire                          decrypt,
+    output reg  [PHRASE_WIDTH-1:0]       output_phrase
+);
+
+    integer i;
+    reg [7:0] current_char;
+    reg [4:0] current_key;
+
+    always @(*) begin
+        // Initialize output to zero
+        output_phrase = {PHRASE_WIDTH{1'b0}};
+
+        
+        if (PHRASE_LEN > 0) begin
+            for (i = 0; i < PHRASE_LEN; i = i + 1) begin
+                // Extract current character & key
+                current_char = input_phrase[i * 8 +: 8];
+                current_key  = key_phrase[i * 5 +: 5];
+
+             
+                if (decrypt) begin
+                    if (current_char >= "A" && current_char <= "Z") begin
+                        output_phrase[i * 8 +: 8]
+                            = ((current_char - "A" - current_key + 26) % 26) + "A";
+                    end
+                    else if (current_char >= "a" && current_char <= "z") begin
+                        output_phrase[i * 8 +: 8]
+                            = ((current_char - "a" - current_key + 26) % 26) + "a";
+                    end
+                    else begin
+                        output_phrase[i * 8 +: 8] = current_char - current_key;
+                    end
+                end
+
+                else begin
+                    if (current_char >= "A" && current_char <= "Z") begin
+                        output_phrase[i * 8 +: 8]
+                            = ((current_char - "A" + current_key) % 26) + "A";
+                    end
+                    else if (current_char >= "a" && current_char <= "z") begin
+                        output_phrase[i * 8 +: 8]
+                            = ((current_char - "a" + current_key) % 26) + "a";
+                    end
+                    else begin
+                        output_phrase[i * 8 +: 8] = current_char + current_key;
+                    end
+                end
+            end
+        end
+    end
+
+endmodule
+```

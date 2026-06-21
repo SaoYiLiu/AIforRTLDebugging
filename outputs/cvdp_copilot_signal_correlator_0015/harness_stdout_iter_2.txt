@@ -1,0 +1,258 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /rundir/harness/.cache
+rootdir: /src
+collecting ... collected 10 items
+
+../../src/test_runner.py::test_moving_run[0] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=175 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017315
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      15377.16  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2757.68  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[0].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[1] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=67 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017316
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      13760.41  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2455.48  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[1].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[2] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=87 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017317
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      12832.22  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2427.26  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[2].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[3] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=118 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017318
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      14702.12  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2404.86  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[3].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[4] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=225 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017320
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      15953.70  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2834.35  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[4].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[5] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=38 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017321
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      15097.77  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2533.96  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[5].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[6] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=199 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017322
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      15586.69  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2537.10  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[6].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[7] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=37 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017323
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      15310.34  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2535.93  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[7].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[8] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=242 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017324
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      13698.35  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2648.00  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[8].result.xml
+PASSED
+../../src/test_runner.py::test_moving_run[9] 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signal_correlator -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/signal_correlator.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp +encoder_in=135 -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017325
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signal_correlator.test_clamping_logic (1/1)
+                                                            Test to verify that the clamping logic works correctly in signal_correlator.
+    21.00ns INFO     test                               Clamping logic test passed: Output correctly clamps to 15.
+    21.00ns INFO     cocotb.regression                  test_signal_correlator.test_clamping_logic passed
+    21.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_signal_correlator.test_clamping_logic   PASS          21.00           0.00      12856.57  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                               21.00           0.01       2651.51  **
+                                                        ****************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_moving_run[9].result.xml
+PASSED
+
+=============================== warnings summary ===============================
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-mn3oktjn'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-02tpbx51'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 10 passed, 2 warnings in 10.64s ========================

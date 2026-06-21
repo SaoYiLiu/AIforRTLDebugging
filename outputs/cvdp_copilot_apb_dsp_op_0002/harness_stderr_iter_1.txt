@@ -1,0 +1,7 @@
+ Network cvdp_react_cvdp_copilot_apb_dsp_op_0002_1_default Creating 
+ Network cvdp_react_cvdp_copilot_apb_dsp_op_0002_1_default Created 
+ Image cvdp_react_cvdp_copilot_apb_dsp_op_0002_1-direct Building 
+ Image cvdp_react_cvdp_copilot_apb_dsp_op_0002_1-direct Built 
+ Container cvdp_react_cvdp_copilot_apb_dsp_op_0002_1-direct-run-7a70f10e9e8c Creating 
+ Container cvdp_react_cvdp_copilot_apb_dsp_op_0002_1-direct-run-7a70f10e9e8c Created 
+

@@ -1,0 +1,39 @@
+## Transport
+rest
+
+## Rationale
+- **Root cause (lines 14–18):** The ternary uses `bpp[1] == 1'b0` for embedding and the `else` branch assigns `img_in[(i*8)+7:(i*8)]` unchanged. That means `bpp=2'b10` and `bpp=2'b11` both pass through `img_in`, which matches TC 3/4 and the cocotb failures where actual equals `img_in`.
+- **Harness evidence:** For `bpp=10`, the alternating-bits test reports actual `0b10101010010101011010101001010101` (same as `img_in`) vs expected `0b10101101010100101010110101010010`. Random Trial 1 shows the same passthrough behavior.
+- **Reference model:** The cocotb `compute_expected_output` defines `bpp=10` as replacing 3 LSBs with `data_in[3*i+2:3*i]`, and `bpp=11` as replacing 4 LSBs with `data_in[4*i+3:4*i]`. The existing RTL only implements the `bpp=00` and `bpp=01` cases.
+- **TC 3 check:** With `img_in=0x01` per pixel and `data_in` all ones, `bpp=10` should produce `0x07` per pixel (`00000111`), giving `00000111000001110000011100000111` — not passthrough.
+- **TC 4 check:** With the same inputs, `bpp=11` should produce `0x0F` per pixel (`00001111`), giving `00001111000011110000111100001111`.
+- **Fix:** Extend the `bpp[1]==1'b1` branch with a nested ternary on `bpp[0]`, mirroring the pattern used for `bpp=00`/`bpp=01`: keep upper pixel bits from `img_in` and splice in 3 or 4 bits from `data_in` at the correct indices.
+
+## PatchedFiles
+### rtl/image_stego.sv
+```verilog
+module image_stego #(
+  parameter row = 2,
+  parameter col = 2
+)(
+  input  [(row*col*8)-1:0] img_in,
+  input  [(row*col*4)-1:0] data_in,
+  input  [1:0]             bpp,
+  output [(row*col*8)-1:0] img_out
+);
+
+  genvar i;
+  generate
+    for(i = 0; i < row*col; i++) begin
+      assign img_out[(i*8)+7:(i*8)] = (bpp[1] == 1'b0)
+                                      ? (bpp[0] == 1'b0
+                                         ? {img_in[(i*8)+7 : (i*8)+1], data_in[i]}
+                                         : {img_in[(i*8)+7 : (i*8)+2], data_in[(2*i)+1], data_in[2*i]})
+                                      : (bpp[0] == 1'b0
+                                         ? {img_in[(i*8)+7 : (i*8)+3], data_in[3*i+2], data_in[3*i+1], data_in[3*i]}
+                                         : {img_in[(i*8)+7 : (i*8)+4], data_in[4*i+3], data_in[4*i+2], data_in[4*i+1], data_in[4*i]});
+    end
+  endgenerate
+
+endmodule
+```

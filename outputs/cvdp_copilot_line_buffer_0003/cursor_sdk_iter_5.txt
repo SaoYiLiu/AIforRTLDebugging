@@ -1,0 +1,160 @@
+## Transport
+rest
+
+## Rationale
+- **Root cause:** `image_window_ff <= o_image_window` (line 151) creates a feedback loop where, when `i_valid` and `i_update_window` are both 1, the comb path re-evaluates **after** the buffer NBA using the post-shift `image_buffer_ff`, while cocotb’s model calls `update_inputs()` **before** `add_line()`. The latched `image_window_ff` can therefore capture the wrong window and corrupt later held cycles.
+- **Harness evidence:** Failures like `0x61d8aa0fa234000000000000 != 0xfa234000000000000000000` show extra stale non-zero bytes in the DUT output while the model expects mostly zeros — consistent with a bad hold value in `image_window_ff`, not indexing or packing.
+- **Suffix truncation** (`0xa23475 != 0xa23475d8aa3d`) fits the same pattern: when `i_update_window=0`, `o_image_window` is driven from a corrupted `image_window_ff` missing lower fields that the model still has from a correct prior update.
+- **Snapshot mux is insufficient:** Using `image_buffer_snapshot` in comb when `i_valid && i_update_window` (lines 39–42) still leaves `image_window_ff <= o_image_window` sampling the glitched comb value at the posedge instant (before snapshot NBA settles), so hold behavior remains broken on the next `i_update_window=0` cycle.
+- **Fix:** Compute the packed window combinationally from `image_buffer_ff`, latch into `image_window_ff` only when `i_update_window` is asserted at posedge (**before** the `i_valid` shift in the same `always_ff` block), and drive `o_image_window` directly from `image_window_ff`. Remove snapshot/buffer_view and the per-slice comb output mux.
+- **Window indexing and border logic** (lines 58–108) remain correct; only the output timing/capture path changes.
+
+## PatchedFiles
+### rtl/line_buffer.sv
+```verilog
+module line_buffer #(
+    parameter NBW_DATA  = 'd8,  // Bit width of grayscale input/output data
+    parameter NS_ROW    = 'd10, // Number of rows
+    parameter NS_COLUMN = 'd8,  // Number of columns
+    parameter NBW_ROW   = 'd4,  // log2(NS_ROW). Bit width of i_image_row_start
+    parameter NBW_COL   = 'd3,  // log2(NS_COLUMN). Bit width of i_image_col_start
+    parameter NBW_MODE  = 'd3,  // Bit width of mode input
+    parameter NS_R_OUT  = 'd4,  // Number of rows of the output window
+    parameter NS_C_OUT  = 'd3,  // Number of columns of the output window
+    parameter CONSTANT  = 'd255 // Constant value to use in PAD_CONSTANT mode
+) (
+    input  logic                                  clk,
+    input  logic                                  rst_async_n,
+    input  logic [NBW_MODE-1:0]                   i_mode,
+    input  logic                                  i_valid,
+    input  logic                                  i_update_window,
+    input  logic [NBW_DATA*NS_COLUMN-1:0]         i_row_image,
+    input  logic [NBW_ROW-1:0]                    i_image_row_start,
+    input  logic [NBW_COL-1:0]                    i_image_col_start,
+    output logic [NBW_DATA*NS_R_OUT*NS_C_OUT-1:0] o_image_window
+);
+
+// ----------------------------------------
+// - Wires/Registers creation
+// ----------------------------------------
+logic [NBW_DATA-1:0] image_buffer_ff [NS_ROW][NS_COLUMN];
+logic [NBW_DATA-1:0] row_image [NS_COLUMN];
+logic [NBW_DATA-1:0] window [NS_R_OUT][NS_C_OUT];
+logic [NBW_DATA*NS_R_OUT*NS_C_OUT-1:0] packed_window;
+logic [NBW_DATA*NS_R_OUT*NS_C_OUT-1:0] image_window_ff;
+
+// ----------------------------------------
+// - Output generation
+// ----------------------------------------
+always_comb begin : window_assignment
+    for (int row = 0; row < NS_R_OUT; row++) begin
+        for (int col = 0; col < NS_C_OUT; col++) begin
+            int src_row;
+            int src_col;
+            int row_dist;
+            int col_dist;
+
+            src_row = i_image_row_start + row;
+            src_col = i_image_col_start + col;
+
+            case (i_mode)
+                3'd0: begin // NO_BOUND_PROCESS
+                    if (src_row >= NS_ROW || src_col >= NS_COLUMN)
+                        window[row][col] = 0;
+                    else
+                        window[row][col] = image_buffer_ff[src_row][src_col];
+                end
+                3'd1: begin // PAD_CONSTANT
+                    if (src_row >= NS_ROW || src_col >= NS_COLUMN)
+                        window[row][col] = CONSTANT;
+                    else
+                        window[row][col] = image_buffer_ff[src_row][src_col];
+                end
+                3'd2: begin // EXTEND_NEAR
+                    if (src_row >= NS_ROW)
+                        src_row = NS_ROW - 1;
+                    if (src_col >= NS_COLUMN)
+                        src_col = NS_COLUMN - 1;
+                    window[row][col] = image_buffer_ff[src_row][src_col];
+                end
+                3'd3: begin // MIRROR_BOUND
+                    if (src_row >= NS_ROW) begin
+                        row_dist = src_row - (NS_ROW - 1);
+                        if (row_dist < (NS_ROW - 1))
+                            src_row = (NS_ROW - 1) - row_dist;
+                        else
+                            src_row = 2 * (NS_ROW - 1) - row_dist;
+                    end
+                    if (src_col >= NS_COLUMN) begin
+                        col_dist = src_col - (NS_COLUMN - 1);
+                        if (col_dist < (NS_COLUMN - 1))
+                            src_col = (NS_COLUMN - 1) - col_dist;
+                        else
+                            src_col = 2 * (NS_COLUMN - 1) - col_dist;
+                    end
+                    window[row][col] = image_buffer_ff[src_row][src_col];
+                end
+                3'd4: begin // WRAP_AROUND
+                    if (src_row >= NS_ROW)
+                        src_row = src_row - NS_ROW;
+                    if (src_col >= NS_COLUMN)
+                        src_col = src_col - NS_COLUMN;
+                    window[row][col] = image_buffer_ff[src_row][src_col];
+                end
+                default: begin
+                    window[row][col] = 0;
+                end
+            endcase
+        end
+    end
+end
+
+always_comb begin : window_pack
+    for (int row = 0; row < NS_R_OUT; row++) begin
+        for (int col = 0; col < NS_C_OUT; col++) begin
+            packed_window[(row*NS_C_OUT+col+1)*NBW_DATA-1-:NBW_DATA] = window[row][col];
+        end
+    end
+end
+
+assign o_image_window = image_window_ff;
+
+// ----------------------------------------
+// - Input control
+// ----------------------------------------
+generate
+    for (genvar col = 0; col < NS_COLUMN; col++) begin : unpack_row_image
+        assign row_image[NS_COLUMN-col-1] = i_row_image[(col+1)*NBW_DATA-1-:NBW_DATA];
+    end
+endgenerate
+
+always_ff @(posedge clk or negedge rst_async_n) begin : ctrl_regs
+    if(~rst_async_n) begin
+        image_window_ff <= 0;
+        for (int row = 0; row < NS_ROW; row++) begin
+            for (int col = 0; col < NS_COLUMN; col++) begin
+                image_buffer_ff[row][col] <= 0;
+            end
+        end
+    end else begin
+        // Capture window from pre-shift buffer before any valid-driven shift
+        if(i_update_window) begin
+            image_window_ff <= packed_window;
+        end
+
+        if(i_valid) begin
+            for (int col = 0; col < NS_COLUMN; col++) begin
+                image_buffer_ff[0][col] <= row_image[col];
+            end
+
+            for (int row = 1; row < NS_ROW; row++) begin
+                for (int col = 0; col < NS_COLUMN; col++) begin
+                    image_buffer_ff[row][col] <= image_buffer_ff[row-1][col];
+                end
+            end
+        end
+    end
+end
+
+endmodule : line_buffer
+```

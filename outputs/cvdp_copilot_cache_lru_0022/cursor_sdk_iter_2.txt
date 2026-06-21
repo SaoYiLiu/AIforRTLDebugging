@@ -1,0 +1,51 @@
+## Transport
+rest
+
+## Rationale
+- **Root cause (lines 26–29):** The update condition is only `if (access)`, so `fifo_array[index]` increments on every access, including cache hits.
+- **Spec requirement:** Updates must occur only on a miss: `access && ~hit`. Hits must leave `fifo_array` unchanged.
+- **Harness evidence:** `test_fifo_hit_increment` fails with `assert 1 == 0` and message `"no replace is expected after hit"` — after a hit, `way_replace` is `01` (1) instead of staying `00` (0).
+- **Table evidence (cycle 10):** Expected `way_replace` unchanged at `0x01`; observed `0x02` after a hit — one erroneous increment.
+- **Table evidence (cycle 30):** Same pattern: expected unchanged `0x03`; observed `0x04` after a hit.
+- **Table evidence (cycle 20):** Miss correctly updates `0x03` — miss path works; only the hit guard is missing.
+- **Minimal fix:** Change the condition to `if (access && !hit)` so FIFO state advances only on misses.
+
+## PatchedFiles
+### rtl/fifo_policy.sv
+```verilog
+module fifo_policy #(
+    parameter NWAYS = 4,
+    parameter NINDEXES = 32
+)(
+    input clock,
+    input reset,
+    input [$clog2(NINDEXES)-1:0] index,
+    input [$clog2(NWAYS)-1:0] way_select,
+    input access,
+    input hit,
+    output [$clog2(NWAYS)-1:0] way_replace
+);
+
+    // FIFO array to track next way to be replaced
+    reg [$clog2(NWAYS)-1:0] fifo_array [NINDEXES-1:0];
+
+    integer i;
+
+    // Sequential logic for reset and fifo_array updates
+    always_ff @ (posedge clock or posedge reset) begin
+        if (reset) begin
+            for (i = 0; i < NINDEXES; i++) begin
+                fifo_array[i] <= $clog2(NWAYS)'(0);
+            end
+        end else begin
+            if (access && !hit) begin
+                // Set the fifo_array position for the next replacement
+                fifo_array[index] <= fifo_array[index] + $clog2(NWAYS)'(1);
+            end
+        end
+    end
+
+    assign way_replace = fifo_array[index];
+
+endmodule : fifo_policy
+```

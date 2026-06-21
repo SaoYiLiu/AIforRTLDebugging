@@ -1,0 +1,190 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0
+cachedir: /rundir/harness/.cache
+rootdir: /src
+collected 2 items
+
+../../src/test_runner.py      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016368
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_scrambler.test_complex_scrambler (1/1)
+                                                            Test the Complex Scrambler module with random inputs and multiple modes.
+     0.00ns INFO     test                               
+                                                         [INFO] Testing Mode=0
+    10.00ns INFO     test                               dut   out reset = 0x4000
+    10.00ns INFO     test                               model out reset = 0x4000
+    30.00ns INFO     test                               [Test 1]
+    30.00ns INFO     test                               Input data_in = 0xb83d
+    30.00ns INFO     test                               DUT   Feedback        = 0
+    30.00ns INFO     test                               DUT   Output data_out = 0xb83d
+    30.00ns INFO     test                               Model Output data_out = 0xb83e
+    30.00ns WARNING  ..scrambler.test_complex_scrambler Mismatch, expected data = 47166 vs dut data = 47165
+                                                        assert 47165 == 47166
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_scrambler.py", line 71, in test_complex_scrambler
+                                                            assert dut_data_out == exp_data, f"Mismatch, expected data = {exp_data} vs dut data = {dut_data_out}"
+                                                        AssertionError: Mismatch, expected data = 47166 vs dut data = 47165
+                                                        assert 47165 == 47166
+    30.00ns WARNING  cocotb.regression                  test_scrambler.test_complex_scrambler failed
+    30.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_scrambler.test_complex_scrambler   FAIL          30.00           0.01       3565.17  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          30.00           0.02       1411.35  **
+                                                        ***********************************************************************************************
+[DEBUG] Running simulation with DATA_WIDTH=16
+[DEBUG] Parameters: {'DATA_WIDTH': 16}
+F     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016370
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_scrambler.test_complex_scrambler (1/1)
+                                                            Test the Complex Scrambler module with random inputs and multiple modes.
+     0.00ns INFO     test                               
+                                                         [INFO] Testing Mode=0
+    10.00ns INFO     test                               dut   out reset = 0x40004000
+    10.00ns INFO     test                               model out reset = 0x40004000
+    30.00ns INFO     test                               [Test 1]
+    30.00ns INFO     test                               Input data_in = 0x447dd48b
+    30.00ns INFO     test                               DUT   Feedback        = 0
+    30.00ns INFO     test                               DUT   Output data_out = 0x447dd48b
+    30.00ns INFO     test                               Model Output data_out = 0x447ed488
+    30.00ns WARNING  ..scrambler.test_complex_scrambler Mismatch, expected data = 1149162632 vs dut data = 1149097099
+                                                        assert 1149097099 == 1149162632
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_scrambler.py", line 71, in test_complex_scrambler
+                                                            assert dut_data_out == exp_data, f"Mismatch, expected data = {exp_data} vs dut data = {dut_data_out}"
+                                                        AssertionError: Mismatch, expected data = 1149162632 vs dut data = 1149097099
+                                                        assert 1149097099 == 1149162632
+    30.00ns WARNING  cocotb.regression                  test_scrambler.test_complex_scrambler failed
+    30.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_scrambler.test_complex_scrambler   FAIL          30.00           0.01       3734.47  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          30.00           0.02       1367.04  **
+                                                        ***********************************************************************************************
+[DEBUG] Running simulation with DATA_WIDTH=32
+[DEBUG] Parameters: {'DATA_WIDTH': 32}
+F
+
+=================================== FAILURES ===================================
+_______________________________ test_data[0-16] ________________________________
+
+DATA_WIDTH = 16, test = 0
+
+    @pytest.mark.parametrize("DATA_WIDTH", random_data_width)
+    @pytest.mark.parametrize("test", range(1))
+    def test_data(DATA_WIDTH, test):
+        # Run the simulation with specified parameters
+>       runner(DATA_WIDTH=DATA_WIDTH)
+
+/src/test_runner.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+DATA_WIDTH = 16
+
+    def runner(DATA_WIDTH: int = 128):
+        # Simulation parameters
+        parameter = {
+            "DATA_WIDTH": DATA_WIDTH
+        }
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with DATA_WIDTH={DATA_WIDTH}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        # Configure and run the simulation
+        sim_runner = get_runner(sim)
+        sim_runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+    
+        # Run the test
+>       sim_runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:39: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s scrambler -g2012 -Pscrambler.DATA_WIDTH=16 -f /code/rundir/sim_build/cmds.f /code/rtl/scrambler.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_______________________________ test_data[0-32] ________________________________
+
+DATA_WIDTH = 32, test = 0
+
+    @pytest.mark.parametrize("DATA_WIDTH", random_data_width)
+    @pytest.mark.parametrize("test", range(1))
+    def test_data(DATA_WIDTH, test):
+        # Run the simulation with specified parameters
+>       runner(DATA_WIDTH=DATA_WIDTH)
+
+/src/test_runner.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+DATA_WIDTH = 32
+
+    def runner(DATA_WIDTH: int = 128):
+        # Simulation parameters
+        parameter = {
+            "DATA_WIDTH": DATA_WIDTH
+        }
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with DATA_WIDTH={DATA_WIDTH}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        # Configure and run the simulation
+        sim_runner = get_runner(sim)
+        sim_runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters=parameter,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+    
+        # Run the test
+>       sim_runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:39: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s scrambler -g2012 -Pscrambler.DATA_WIDTH=32 -f /code/rundir/sim_build/cmds.f /code/rtl/scrambler.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+=============================== warnings summary ===============================
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-f68uw29n'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-rdkzkm9w'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-n2a5srm5'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_data[0-16] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_data[0-32] - SystemExit: 1
+======================== 2 failed, 3 warnings in 3.41s =========================

@@ -1,0 +1,3 @@
+source=static_error_focused_cursor_parse_failed
+focus_net_count=8
+vcd_trace_signals=['tb_mismatch', 'tb.tb_mismatch', 'match_dut', 'match_ref', 'tb.match_dut', 'tb.match_ref', 'tb.Q_ref', 'tb.Q_dut']

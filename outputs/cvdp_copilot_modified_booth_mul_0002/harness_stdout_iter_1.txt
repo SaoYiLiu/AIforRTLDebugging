@@ -1,0 +1,378 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /rundir/harness/.cache
+rootdir: /src
+collecting ... collected 5 items
+
+../../src/test_runner.py::test[4]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782015358
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier (1/2)
+                                                            Testbench for the signed sequential booth multiplier using cocotb.
+    70.00ns WARNING  ..gned_sequential_booth_multiplier Latency FAIL: Expected 6.0, got 5
+                                                        assert 5 == ((4 / 2) + 4)
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 60, in test_signed_sequential_booth_multiplier
+                                                            assert latency == WIDTH/2+4, f"Latency FAIL: Expected {WIDTH/2+4}, got {latency}"
+                                                        AssertionError: Latency FAIL: Expected 6.0, got 5
+                                                        assert 5 == ((4 / 2) + 4)
+    70.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier failed
+    70.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.verify_specific_scenarios (2/2)
+                                                            Test specific scenarios derived from result tables.
+   151.00ns WARNING  ..narios.verify_specific_scenarios Latency FAIL for A=-7, B=-7: Expected 6, got 5
+                                                        assert 5 == 6
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 299, in verify_specific_scenarios
+                                                            assert latency == expected_latency, f"Latency FAIL for A={A}, B={B}: Expected {expected_latency}, got {latency}"
+                                                        AssertionError: Latency FAIL for A=-7, B=-7: Expected 6, got 5
+                                                        assert 5 == 6
+   151.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.verify_specific_scenarios failed
+   151.00ns INFO     cocotb.regression                  *****************************************************************************************************************************************
+                                                        ** TEST                                                                             STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************************************
+                                                        ** test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier   FAIL          70.00           0.01       8694.15  **
+                                                        ** test_signed_sequential_booth_multiplier.verify_specific_scenarios                 FAIL          80.00           0.00      22607.76  **
+                                                        *****************************************************************************************************************************************
+                                                        ** TESTS=2 PASS=0 FAIL=2 SKIP=0                                                                   151.00           0.03       4839.83  **
+                                                        *****************************************************************************************************************************************
+Running with: WIDTH = 4
+FAILED
+../../src/test_runner.py::test[8]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782015359
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier (1/2)
+                                                            Testbench for the signed sequential booth multiplier using cocotb.
+    70.00ns WARNING  ..gned_sequential_booth_multiplier Latency FAIL: Expected 8.0, got 5
+                                                        assert 5 == ((8 / 2) + 4)
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 60, in test_signed_sequential_booth_multiplier
+                                                            assert latency == WIDTH/2+4, f"Latency FAIL: Expected {WIDTH/2+4}, got {latency}"
+                                                        AssertionError: Latency FAIL: Expected 8.0, got 5
+                                                        assert 5 == ((8 / 2) + 4)
+    70.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier failed
+    70.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.verify_specific_scenarios (2/2)
+                                                            Test specific scenarios derived from result tables.
+   151.00ns WARNING  ..narios.verify_specific_scenarios Latency FAIL for A=120, B=-64: Expected 8, got 5
+                                                        assert 5 == 8
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 261, in verify_specific_scenarios
+                                                            assert latency == expected_latency, f"Latency FAIL for A={A}, B={B}: Expected {expected_latency}, got {latency}"
+                                                        AssertionError: Latency FAIL for A=120, B=-64: Expected 8, got 5
+                                                        assert 5 == 8
+   151.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.verify_specific_scenarios failed
+   151.00ns INFO     cocotb.regression                  *****************************************************************************************************************************************
+                                                        ** TEST                                                                             STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************************************
+                                                        ** test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier   FAIL          70.00           0.01       9326.30  **
+                                                        ** test_signed_sequential_booth_multiplier.verify_specific_scenarios                 FAIL          80.00           0.00      21127.33  **
+                                                        *****************************************************************************************************************************************
+                                                        ** TESTS=2 PASS=0 FAIL=2 SKIP=0                                                                   151.00           0.04       3889.17  **
+                                                        *****************************************************************************************************************************************
+Running with: WIDTH = 8
+FAILED
+../../src/test_runner.py::test[16]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782015360
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier (1/2)
+                                                            Testbench for the signed sequential booth multiplier using cocotb.
+    70.00ns WARNING  ..gned_sequential_booth_multiplier Latency FAIL: Expected 12.0, got 5
+                                                        assert 5 == ((16 / 2) + 4)
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 60, in test_signed_sequential_booth_multiplier
+                                                            assert latency == WIDTH/2+4, f"Latency FAIL: Expected {WIDTH/2+4}, got {latency}"
+                                                        AssertionError: Latency FAIL: Expected 12.0, got 5
+                                                        assert 5 == ((16 / 2) + 4)
+    70.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier failed
+    70.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.verify_specific_scenarios (2/2)
+                                                            Test specific scenarios derived from result tables.
+   151.00ns WARNING  ..narios.verify_specific_scenarios Latency FAIL for A=120, B=-64: Expected 12, got 5
+                                                        assert 5 == 12
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 261, in verify_specific_scenarios
+                                                            assert latency == expected_latency, f"Latency FAIL for A={A}, B={B}: Expected {expected_latency}, got {latency}"
+                                                        AssertionError: Latency FAIL for A=120, B=-64: Expected 12, got 5
+                                                        assert 5 == 12
+   151.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.verify_specific_scenarios failed
+   151.00ns INFO     cocotb.regression                  *****************************************************************************************************************************************
+                                                        ** TEST                                                                             STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************************************
+                                                        ** test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier   FAIL          70.00           0.01       9055.90  **
+                                                        ** test_signed_sequential_booth_multiplier.verify_specific_scenarios                 FAIL          80.00           0.00      21406.34  **
+                                                        *****************************************************************************************************************************************
+                                                        ** TESTS=2 PASS=0 FAIL=2 SKIP=0                                                                   151.00           0.03       4834.51  **
+                                                        *****************************************************************************************************************************************
+Running with: WIDTH = 16
+FAILED
+../../src/test_runner.py::test[32]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782015361
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier (1/2)
+                                                            Testbench for the signed sequential booth multiplier using cocotb.
+    70.00ns WARNING  ..gned_sequential_booth_multiplier Latency FAIL: Expected 20.0, got 5
+                                                        assert 5 == ((32 / 2) + 4)
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 60, in test_signed_sequential_booth_multiplier
+                                                            assert latency == WIDTH/2+4, f"Latency FAIL: Expected {WIDTH/2+4}, got {latency}"
+                                                        AssertionError: Latency FAIL: Expected 20.0, got 5
+                                                        assert 5 == ((32 / 2) + 4)
+    70.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier failed
+    70.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.verify_specific_scenarios (2/2)
+                                                            Test specific scenarios derived from result tables.
+   151.00ns WARNING  ..narios.verify_specific_scenarios Latency FAIL for A=120, B=-64: Expected 20, got 5
+                                                        assert 5 == 20
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 261, in verify_specific_scenarios
+                                                            assert latency == expected_latency, f"Latency FAIL for A={A}, B={B}: Expected {expected_latency}, got {latency}"
+                                                        AssertionError: Latency FAIL for A=120, B=-64: Expected 20, got 5
+                                                        assert 5 == 20
+   151.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.verify_specific_scenarios failed
+   151.00ns INFO     cocotb.regression                  *****************************************************************************************************************************************
+                                                        ** TEST                                                                             STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************************************
+                                                        ** test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier   FAIL          70.00           0.01       9550.80  **
+                                                        ** test_signed_sequential_booth_multiplier.verify_specific_scenarios                 FAIL          80.00           0.00      21354.57  **
+                                                        *****************************************************************************************************************************************
+                                                        ** TESTS=2 PASS=0 FAIL=2 SKIP=0                                                                   151.00           0.03       5003.40  **
+                                                        *****************************************************************************************************************************************
+Running with: WIDTH = 32
+FAILED
+../../src/test_runner.py::test[64]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782015362
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier (1/2)
+                                                            Testbench for the signed sequential booth multiplier using cocotb.
+    70.00ns WARNING  ..gned_sequential_booth_multiplier Latency FAIL: Expected 36.0, got 5
+                                                        assert 5 == ((64 / 2) + 4)
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 60, in test_signed_sequential_booth_multiplier
+                                                            assert latency == WIDTH/2+4, f"Latency FAIL: Expected {WIDTH/2+4}, got {latency}"
+                                                        AssertionError: Latency FAIL: Expected 36.0, got 5
+                                                        assert 5 == ((64 / 2) + 4)
+    70.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier failed
+    70.00ns INFO     cocotb.regression                  running test_signed_sequential_booth_multiplier.verify_specific_scenarios (2/2)
+                                                            Test specific scenarios derived from result tables.
+   151.00ns WARNING  ..narios.verify_specific_scenarios Latency FAIL for A=120, B=-64: Expected 36, got 5
+                                                        assert 5 == 36
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_signed_sequential_booth_multiplier.py", line 261, in verify_specific_scenarios
+                                                            assert latency == expected_latency, f"Latency FAIL for A={A}, B={B}: Expected {expected_latency}, got {latency}"
+                                                        AssertionError: Latency FAIL for A=120, B=-64: Expected 36, got 5
+                                                        assert 5 == 36
+   151.00ns WARNING  cocotb.regression                  test_signed_sequential_booth_multiplier.verify_specific_scenarios failed
+   151.00ns INFO     cocotb.regression                  *****************************************************************************************************************************************
+                                                        ** TEST                                                                             STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************************************
+                                                        ** test_signed_sequential_booth_multiplier.test_signed_sequential_booth_multiplier   FAIL          70.00           0.01       7678.86  **
+                                                        ** test_signed_sequential_booth_multiplier.verify_specific_scenarios                 FAIL          80.00           0.01      10484.78  **
+                                                        *****************************************************************************************************************************************
+                                                        ** TESTS=2 PASS=0 FAIL=2 SKIP=0                                                                   151.00           0.04       3824.15  **
+                                                        *****************************************************************************************************************************************
+Running with: WIDTH = 64
+FAILED
+
+=================================== FAILURES ===================================
+___________________________________ test[4] ____________________________________
+
+WIDTH = 4
+
+    @pytest.mark.parametrize("WIDTH",pairs)
+    def test(WIDTH):
+        print(f'Running with: WIDTH = {WIDTH}')
+>       runner(WIDTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+WIDTH = 4
+
+    def runner(WIDTH):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters= {'WIDTH': WIDTH},
+            always=True,
+            clean=True,
+            verbose=False,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signed_sequential_booth_multiplier -g2012 -Psigned_sequential_booth_multiplier.WIDTH=4 -f /code/rundir/sim_build/cmds.f /code/rtl/signed_sequential_booth_multiplier.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 2 of 2 tests.
+___________________________________ test[8] ____________________________________
+
+WIDTH = 8
+
+    @pytest.mark.parametrize("WIDTH",pairs)
+    def test(WIDTH):
+        print(f'Running with: WIDTH = {WIDTH}')
+>       runner(WIDTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+WIDTH = 8
+
+    def runner(WIDTH):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters= {'WIDTH': WIDTH},
+            always=True,
+            clean=True,
+            verbose=False,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signed_sequential_booth_multiplier -g2012 -Psigned_sequential_booth_multiplier.WIDTH=8 -f /code/rundir/sim_build/cmds.f /code/rtl/signed_sequential_booth_multiplier.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 2 of 2 tests.
+___________________________________ test[16] ___________________________________
+
+WIDTH = 16
+
+    @pytest.mark.parametrize("WIDTH",pairs)
+    def test(WIDTH):
+        print(f'Running with: WIDTH = {WIDTH}')
+>       runner(WIDTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+WIDTH = 16
+
+    def runner(WIDTH):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters= {'WIDTH': WIDTH},
+            always=True,
+            clean=True,
+            verbose=False,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signed_sequential_booth_multiplier -g2012 -Psigned_sequential_booth_multiplier.WIDTH=16 -f /code/rundir/sim_build/cmds.f /code/rtl/signed_sequential_booth_multiplier.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 2 of 2 tests.
+___________________________________ test[32] ___________________________________
+
+WIDTH = 32
+
+    @pytest.mark.parametrize("WIDTH",pairs)
+    def test(WIDTH):
+        print(f'Running with: WIDTH = {WIDTH}')
+>       runner(WIDTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+WIDTH = 32
+
+    def runner(WIDTH):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters= {'WIDTH': WIDTH},
+            always=True,
+            clean=True,
+            verbose=False,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signed_sequential_booth_multiplier -g2012 -Psigned_sequential_booth_multiplier.WIDTH=32 -f /code/rundir/sim_build/cmds.f /code/rtl/signed_sequential_booth_multiplier.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 2 of 2 tests.
+___________________________________ test[64] ___________________________________
+
+WIDTH = 64
+
+    @pytest.mark.parametrize("WIDTH",pairs)
+    def test(WIDTH):
+        print(f'Running with: WIDTH = {WIDTH}')
+>       runner(WIDTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+WIDTH = 64
+
+    def runner(WIDTH):
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters= {'WIDTH': WIDTH},
+            always=True,
+            clean=True,
+            verbose=False,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=wave)
+E       SystemExit: 1
+
+/src/test_runner.py:23: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s signed_sequential_booth_multiplier -g2012 -Psigned_sequential_booth_multiplier.WIDTH=64 -f /code/rundir/sim_build/cmds.f /code/rtl/signed_sequential_booth_multiplier.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 2 of 2 tests.
+=============================== warnings summary ===============================
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-0ufz8n58'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-t5ue7nx5'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-ccrjokhp'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test[4] - SystemExit: 1
+FAILED ../../src/test_runner.py::test[8] - SystemExit: 1
+FAILED ../../src/test_runner.py::test[16] - SystemExit: 1
+FAILED ../../src/test_runner.py::test[32] - SystemExit: 1
+FAILED ../../src/test_runner.py::test[64] - SystemExit: 1
+======================== 5 failed, 3 warnings in 5.87s =========================

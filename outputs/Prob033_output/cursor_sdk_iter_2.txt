@@ -1,0 +1,109 @@
+## Rationale
+- **Suspected bug (L043–L056):** After red, the FSM jumps to yellow (`s3_yellow`) instead of green (`s2_green`), and after green it jumps to red (`s1_red`) instead of yellow (`s3_yellow`). That breaks the required sequence Red → Green → Yellow → Red.
+- **Evidence at first mismatch (220 ps):** The causal trace at 215 ps shows `green_ref=1` and `clock_ref=60` (green phase starting) while `yellow_dut=1` and `clock_dut=5` (yellow phase). The DUT skipped green and went red → yellow.
+- **Structured feedback:** 444/517 sample mismatches; first on `clock` at 220 ps, with `yellow` and `green` also wrong from that point — consistent with wrong state transitions, not counter or pedestrian logic.
+- **What was kept:** The `cnt==3` early-transition timing, counter reloads (10/60/5), pedestrian shorten (`pass_request && green && cnt>10`), and the `p_*` → output register pipeline are unchanged; only the two wrong `state` targets were corrected.
+- **Change made:** In `s1_red`, `state <= s3_yellow` → `state <= s2_green` (L044). In `s2_green`, `state <= s1_red` → `state <= s3_yellow` (L054). `s3_yellow` → `s1_red` was already correct.
+
+## FixedTopModule
+```verilog
+module TopModule
+    (
+		input rst_n, //Asynchronous reset signal, active low
+        input clk, //Clock signal
+        input pass_request,
+		output wire[7:0]clock,
+        output reg red,
+		output reg yellow,
+		output reg green
+    );
+	
+	parameter 	idle = 2'd0,
+				s1_red = 2'd1,
+				s2_green = 2'd2,
+				s3_yellow = 2'd3;
+	reg [7:0] cnt;
+	reg [1:0] state;
+	reg p_red,p_yellow,p_green;		//Buffer previous signal light values for rising edge detection
+
+
+always @(posedge clk or negedge rst_n) 
+    begin
+        if(!rst_n)
+        begin
+			state <= idle;
+			p_red <= 1'b0;
+			p_green <= 1'b0;
+			p_yellow <= 1'b0;			
+        end
+        else case(state)
+		idle:
+			begin
+				p_red <= 1'b0;
+				p_green <= 1'b0;
+				p_yellow <= 1'b0;
+				state <= s1_red;
+			end
+		s1_red:
+			begin
+				p_red <= 1'b1;
+				p_green <= 1'b0;
+				p_yellow <= 1'b0;
+				if (cnt == 3) 
+					state <= s2_green;
+				else
+					state <= s1_red;
+			end
+		s2_green:
+			begin
+				p_red <= 1'b0;
+				p_green <= 1'b1;
+				p_yellow <= 1'b0;
+				if (cnt == 3) 
+					state <= s3_yellow;
+				else
+					state <= s2_green;
+			end
+		s3_yellow:
+			begin
+				p_red <= 1'b0;
+				p_green <= 1'b0;
+				p_yellow <= 1'b1;
+				if (cnt == 3) 
+					state <= s1_red;
+				else
+					state <= s3_yellow;
+			end
+		endcase
+	end
+ 
+always @(posedge clk or negedge rst_n) 
+      if(!rst_n)
+			cnt <= 7'd10;
+		else if (pass_request&&green&&(cnt>10))
+			cnt <= 7'd10;
+		else if (!green&&p_green)
+			cnt <= 7'd60;
+		else if (!yellow&&p_yellow)
+			cnt <= 7'd5;
+		else if (!red&&p_red)
+			cnt <= 7'd10;	
+		else cnt <= cnt -1;
+ assign clock = cnt;
+
+always @(posedge clk or negedge rst_n) 
+        if(!rst_n)
+			begin
+				yellow <= 1'd0;
+				red <= 1'd0;
+				green <= 1'd0;
+			end
+		else 
+			begin
+				yellow <= p_yellow;
+				red <= p_red;
+				green <= p_green;
+			end		
+
+endmodule
+```

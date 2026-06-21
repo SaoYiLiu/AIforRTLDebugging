@@ -1,0 +1,64 @@
+## Transport
+bridge
+
+## Rationale
+- **Suspected bug (L47):** The shift register uses `{a, a_tem[7:0]}`, which shifts the new input into bit 8 (MSB). The spec expects bit 8 to hold the oldest sample (prefix `011` at `[8:6]`) and bit 0 the newest (suffix `110` at `[2:0]`).
+- **Why that breaks detection:** With MSB-first shifting, `[8:6]` tracks the three most recent bits and `[2:0]` the three oldest. Prefix and suffix checks operate on incompatible parts of the window, so `match_f && match_b` (L50) rarely goes high together.
+- **Waveform evidence:** First mismatch at 110 ps; `match_ref` asserts at 105 ps while `match_dut` stays 0. That matches the first test vector completing `011101110` — the reference detects it, the DUT does not.
+- **Regression data:** 8/237 samples fail, all on `match`, consistent with missed detections rather than false positives.
+- **Fix applied:** Change L47 to `{a_tem[7:0], a}` so new bits enter at bit 0 and shift toward bit 8, aligning `[8:6]` with the prefix and `[2:0]` with the suffix. Verified: 0 mismatches in simulation.
+
+## FixedTopModule
+```verilog
+module TopModule(
+	input clk,
+	input rst_n,
+	input a,
+	output match
+	);
+
+	reg [8:0] a_tem;
+	reg match_f;
+	reg match_b;
+	
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n)
+			begin 
+				match_f <= 1'b0;
+			end
+		else if (a_tem[8:6] == 3'b011)
+			begin
+				match_f <= 1'b1;
+			end
+		else 
+			begin	
+				match_f <= 1'b0;
+			end
+
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n)
+			begin 
+				match_b <= 1'b0;
+			end
+		else if (a_tem[2:0] == 3'b110)
+			begin
+				match_b <= 1'b1;
+			end
+		else 
+			begin	
+				match_b <= 1'b0;
+			end
+			
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n)
+			begin 
+				a_tem <= 9'b0;
+			end
+		else 
+			begin
+				a_tem <= {a_tem[7:0], a};
+			end
+			
+	assign match = match_b && match_f;
+endmodule
+```

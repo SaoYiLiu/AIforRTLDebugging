@@ -1,0 +1,494 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 5 items
+
+../../src/test_runner.py::test_runner [DEBUG] Running simulation with DATA_WIDTH=8, FILO_DEPTH=16
+[DEBUG] Parameters: {'DATA_WIDTH': 8, 'FILO_DEPTH': 16}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=8 -PFILO_RTL.FILO_DEPTH=16 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782012708
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_filo.test_filo_dynamic (1/1)
+                                                            Test FILO_RTL behavior with parameters dynamically retrieved from DUT 
+     0.00ns INFO     cocotb.FILO_RTL                    Starting Initial Reset...
+    35.00ns INFO     cocotb.FILO_RTL                    After initial reset: full = 0, empty = 1
+    35.00ns INFO     cocotb.FILO_RTL                    Starting Push Test with random data width 8 and FILO depth 16...
+    45.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x4a
+    65.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xa4
+    85.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xc7
+   105.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xbb
+   125.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x8a
+   145.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x81
+   165.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x22
+   185.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xa9
+   205.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x66
+   225.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xd1
+   245.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x74
+   265.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x94
+   285.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x7f
+   305.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x78
+   325.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x99
+   345.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xba
+   365.00ns INFO     cocotb.FILO_RTL                    After pushing: full = 1, empty = 0
+   365.00ns INFO     cocotb.FILO_RTL                    Starting Pop Test...
+   395.00ns INFO     cocotb.FILO_RTL                    Popped value: 0xba
+   415.00ns INFO     cocotb.FILO_RTL                    Popped value: 0xba
+   415.00ns WARNING  ..t_filo_dynamic.test_filo_dynamic Expected 0x99, but got 0xba
+                                                        assert 186 == 153
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_filo.py", line 101, in test_filo_dynamic
+                                                            await pop_data(dut, expected_value, DATA_WIDTH)
+                                                          File "/src/test_filo.py", line 55, in pop_data
+                                                            assert popped_value == expected_value, f"Expected {hex(expected_value)}, but got {hex(popped_value)}"
+                                                        AssertionError: Expected 0x99, but got 0xba
+                                                        assert 186 == 153
+   415.00ns WARNING  cocotb.regression                  test_filo.test_filo_dynamic failed
+   415.00ns INFO     cocotb.regression                  **************************************************************************************
+                                                        ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **************************************************************************************
+                                                        ** test_filo.test_filo_dynamic    FAIL         415.00           0.02      19753.24  **
+                                                        **************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                415.00           0.03      12059.03  **
+                                                        **************************************************************************************
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+FAILED
+../../src/test_runner.py::test_filo[8-8] [DEBUG] Running simulation with DATA_WIDTH=8, FILO_DEPTH=8
+[DEBUG] Parameters: {'DATA_WIDTH': 8, 'FILO_DEPTH': 8}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=8 -PFILO_RTL.FILO_DEPTH=8 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782012709
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_filo.test_filo_dynamic (1/1)
+                                                            Test FILO_RTL behavior with parameters dynamically retrieved from DUT 
+     0.00ns INFO     cocotb.FILO_RTL                    Starting Initial Reset...
+    35.00ns INFO     cocotb.FILO_RTL                    After initial reset: full = 0, empty = 1
+    35.00ns INFO     cocotb.FILO_RTL                    Starting Push Test with random data width 8 and FILO depth 8...
+    45.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x20
+    65.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x35
+    85.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xa6
+   105.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xe
+   125.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xcd
+   145.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x2e
+   165.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x27
+   185.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x32
+   205.00ns INFO     cocotb.FILO_RTL                    After pushing: full = 1, empty = 0
+   205.00ns INFO     cocotb.FILO_RTL                    Starting Pop Test...
+   235.00ns INFO     cocotb.FILO_RTL                    Popped value: 0x32
+   255.00ns INFO     cocotb.FILO_RTL                    Popped value: 0x32
+   255.00ns WARNING  ..t_filo_dynamic.test_filo_dynamic Expected 0x27, but got 0x32
+                                                        assert 50 == 39
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_filo.py", line 101, in test_filo_dynamic
+                                                            await pop_data(dut, expected_value, DATA_WIDTH)
+                                                          File "/src/test_filo.py", line 55, in pop_data
+                                                            assert popped_value == expected_value, f"Expected {hex(expected_value)}, but got {hex(popped_value)}"
+                                                        AssertionError: Expected 0x27, but got 0x32
+                                                        assert 50 == 39
+   255.00ns WARNING  cocotb.regression                  test_filo.test_filo_dynamic failed
+   255.00ns INFO     cocotb.regression                  **************************************************************************************
+                                                        ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **************************************************************************************
+                                                        ** test_filo.test_filo_dynamic    FAIL         255.00           0.02      16117.84  **
+                                                        **************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                255.00           0.03       8672.52  **
+                                                        **************************************************************************************
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+FAILED
+../../src/test_runner.py::test_filo[8-12] [DEBUG] Running simulation with DATA_WIDTH=12, FILO_DEPTH=8
+[DEBUG] Parameters: {'DATA_WIDTH': 12, 'FILO_DEPTH': 8}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=12 -PFILO_RTL.FILO_DEPTH=8 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782012710
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_filo.test_filo_dynamic (1/1)
+                                                            Test FILO_RTL behavior with parameters dynamically retrieved from DUT 
+     0.00ns INFO     cocotb.FILO_RTL                    Starting Initial Reset...
+    35.00ns INFO     cocotb.FILO_RTL                    After initial reset: full = 0, empty = 1
+    35.00ns INFO     cocotb.FILO_RTL                    Starting Push Test with random data width 12 and FILO depth 8...
+    45.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xb74
+    65.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x539
+    85.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x8e6
+   105.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xc52
+   125.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xfac
+   145.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x8b3
+   165.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x72d
+   185.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x2cd
+   205.00ns INFO     cocotb.FILO_RTL                    After pushing: full = 1, empty = 0
+   205.00ns INFO     cocotb.FILO_RTL                    Starting Pop Test...
+   235.00ns INFO     cocotb.FILO_RTL                    Popped value: 0x2cd
+   255.00ns INFO     cocotb.FILO_RTL                    Popped value: 0x2cd
+   255.00ns WARNING  ..t_filo_dynamic.test_filo_dynamic Expected 0x72d, but got 0x2cd
+                                                        assert 717 == 1837
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_filo.py", line 101, in test_filo_dynamic
+                                                            await pop_data(dut, expected_value, DATA_WIDTH)
+                                                          File "/src/test_filo.py", line 55, in pop_data
+                                                            assert popped_value == expected_value, f"Expected {hex(expected_value)}, but got {hex(popped_value)}"
+                                                        AssertionError: Expected 0x72d, but got 0x2cd
+                                                        assert 717 == 1837
+   255.00ns WARNING  cocotb.regression                  test_filo.test_filo_dynamic failed
+   255.00ns INFO     cocotb.regression                  **************************************************************************************
+                                                        ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **************************************************************************************
+                                                        ** test_filo.test_filo_dynamic    FAIL         255.00           0.01      17583.14  **
+                                                        **************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                255.00           0.03       9274.04  **
+                                                        **************************************************************************************
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+FAILED
+../../src/test_runner.py::test_filo[16-8] [DEBUG] Running simulation with DATA_WIDTH=8, FILO_DEPTH=16
+[DEBUG] Parameters: {'DATA_WIDTH': 8, 'FILO_DEPTH': 16}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=8 -PFILO_RTL.FILO_DEPTH=16 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782012711
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_filo.test_filo_dynamic (1/1)
+                                                            Test FILO_RTL behavior with parameters dynamically retrieved from DUT 
+     0.00ns INFO     cocotb.FILO_RTL                    Starting Initial Reset...
+    35.00ns INFO     cocotb.FILO_RTL                    After initial reset: full = 0, empty = 1
+    35.00ns INFO     cocotb.FILO_RTL                    Starting Push Test with random data width 8 and FILO depth 16...
+    45.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x8c
+    65.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x15
+    85.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x31
+   105.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x33
+   125.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x52
+   145.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x58
+   165.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x99
+   185.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xbe
+   205.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x58
+   225.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x32
+   245.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x1c
+   265.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x75
+   285.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xff
+   305.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x41
+   325.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x14
+   345.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xf4
+   365.00ns INFO     cocotb.FILO_RTL                    After pushing: full = 1, empty = 0
+   365.00ns INFO     cocotb.FILO_RTL                    Starting Pop Test...
+   395.00ns INFO     cocotb.FILO_RTL                    Popped value: 0xf4
+   415.00ns INFO     cocotb.FILO_RTL                    Popped value: 0xf4
+   415.00ns WARNING  ..t_filo_dynamic.test_filo_dynamic Expected 0x14, but got 0xf4
+                                                        assert 244 == 20
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_filo.py", line 101, in test_filo_dynamic
+                                                            await pop_data(dut, expected_value, DATA_WIDTH)
+                                                          File "/src/test_filo.py", line 55, in pop_data
+                                                            assert popped_value == expected_value, f"Expected {hex(expected_value)}, but got {hex(popped_value)}"
+                                                        AssertionError: Expected 0x14, but got 0xf4
+                                                        assert 244 == 20
+   415.00ns WARNING  cocotb.regression                  test_filo.test_filo_dynamic failed
+   415.00ns INFO     cocotb.regression                  **************************************************************************************
+                                                        ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **************************************************************************************
+                                                        ** test_filo.test_filo_dynamic    FAIL         415.00           0.02      21829.72  **
+                                                        **************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                415.00           0.03      12611.20  **
+                                                        **************************************************************************************
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+FAILED
+../../src/test_runner.py::test_filo[16-12] [DEBUG] Running simulation with DATA_WIDTH=12, FILO_DEPTH=16
+[DEBUG] Parameters: {'DATA_WIDTH': 12, 'FILO_DEPTH': 16}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=12 -PFILO_RTL.FILO_DEPTH=16 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782012713
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_filo.test_filo_dynamic (1/1)
+                                                            Test FILO_RTL behavior with parameters dynamically retrieved from DUT 
+     0.00ns INFO     cocotb.FILO_RTL                    Starting Initial Reset...
+    35.00ns INFO     cocotb.FILO_RTL                    After initial reset: full = 0, empty = 1
+    35.00ns INFO     cocotb.FILO_RTL                    Starting Push Test with random data width 12 and FILO depth 16...
+    45.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xc68
+    65.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x83
+    85.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xac6
+   105.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x2e5
+   125.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xab
+   145.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xb7a
+   165.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x629
+   185.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xcda
+   205.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xe2f
+   225.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x32e
+   245.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x666
+   265.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x8f0
+   285.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x743
+   305.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x3d7
+   325.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0xf80
+   345.00ns INFO     cocotb.FILO_RTL                    Pushed random value: 0x523
+   365.00ns INFO     cocotb.FILO_RTL                    After pushing: full = 1, empty = 0
+   365.00ns INFO     cocotb.FILO_RTL                    Starting Pop Test...
+   395.00ns INFO     cocotb.FILO_RTL                    Popped value: 0x523
+   415.00ns INFO     cocotb.FILO_RTL                    Popped value: 0x523
+   415.00ns WARNING  ..t_filo_dynamic.test_filo_dynamic Expected 0xf80, but got 0x523
+                                                        assert 1315 == 3968
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_filo.py", line 101, in test_filo_dynamic
+                                                            await pop_data(dut, expected_value, DATA_WIDTH)
+                                                          File "/src/test_filo.py", line 55, in pop_data
+                                                            assert popped_value == expected_value, f"Expected {hex(expected_value)}, but got {hex(popped_value)}"
+                                                        AssertionError: Expected 0xf80, but got 0x523
+                                                        assert 1315 == 3968
+   415.00ns WARNING  cocotb.regression                  test_filo.test_filo_dynamic failed
+   415.00ns INFO     cocotb.regression                  **************************************************************************************
+                                                        ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **************************************************************************************
+                                                        ** test_filo.test_filo_dynamic    FAIL         415.00           0.02      20522.74  **
+                                                        **************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                415.00           0.04      11009.23  **
+                                                        **************************************************************************************
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+FAILED
+
+=================================== FAILURES ===================================
+_________________________________ test_runner __________________________________
+
+DATA_WIDTH = 8, FILO_DEPTH = 16
+
+    def test_runner(DATA_WIDTH: int=8, FILO_DEPTH: int=16 ):
+        parameter = {"DATA_WIDTH":DATA_WIDTH, "FILO_DEPTH":FILO_DEPTH}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with DATA_WIDTH={DATA_WIDTH}, FILO_DEPTH={FILO_DEPTH}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            verbose=True,
+            parameters=parameter,
+            timescale=("1ns", "1ns"),
+            log_file="build.log")
+    
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:33: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=8 -PFILO_RTL.FILO_DEPTH=16 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+________________________________ test_filo[8-8] ________________________________
+
+DATA_WIDTH = 8, FILO_DEPTH = 8
+
+    @pytest.mark.parametrize("DATA_WIDTH", [8,12])
+    @pytest.mark.parametrize("FILO_DEPTH", [8,16])
+    
+    #@pytest.mark.parametrize("test", range(1))
+    def test_filo(DATA_WIDTH, FILO_DEPTH):
+        # Run the simulation with specified parameters
+>       test_runner(DATA_WIDTH=DATA_WIDTH, FILO_DEPTH=FILO_DEPTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+DATA_WIDTH = 8, FILO_DEPTH = 8
+
+    def test_runner(DATA_WIDTH: int=8, FILO_DEPTH: int=16 ):
+        parameter = {"DATA_WIDTH":DATA_WIDTH, "FILO_DEPTH":FILO_DEPTH}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with DATA_WIDTH={DATA_WIDTH}, FILO_DEPTH={FILO_DEPTH}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            verbose=True,
+            parameters=parameter,
+            timescale=("1ns", "1ns"),
+            log_file="build.log")
+    
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:33: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=8 -PFILO_RTL.FILO_DEPTH=8 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_______________________________ test_filo[8-12] ________________________________
+
+DATA_WIDTH = 12, FILO_DEPTH = 8
+
+    @pytest.mark.parametrize("DATA_WIDTH", [8,12])
+    @pytest.mark.parametrize("FILO_DEPTH", [8,16])
+    
+    #@pytest.mark.parametrize("test", range(1))
+    def test_filo(DATA_WIDTH, FILO_DEPTH):
+        # Run the simulation with specified parameters
+>       test_runner(DATA_WIDTH=DATA_WIDTH, FILO_DEPTH=FILO_DEPTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+DATA_WIDTH = 12, FILO_DEPTH = 8
+
+    def test_runner(DATA_WIDTH: int=8, FILO_DEPTH: int=16 ):
+        parameter = {"DATA_WIDTH":DATA_WIDTH, "FILO_DEPTH":FILO_DEPTH}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with DATA_WIDTH={DATA_WIDTH}, FILO_DEPTH={FILO_DEPTH}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            verbose=True,
+            parameters=parameter,
+            timescale=("1ns", "1ns"),
+            log_file="build.log")
+    
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:33: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=12 -PFILO_RTL.FILO_DEPTH=8 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_______________________________ test_filo[16-8] ________________________________
+
+DATA_WIDTH = 8, FILO_DEPTH = 16
+
+    @pytest.mark.parametrize("DATA_WIDTH", [8,12])
+    @pytest.mark.parametrize("FILO_DEPTH", [8,16])
+    
+    #@pytest.mark.parametrize("test", range(1))
+    def test_filo(DATA_WIDTH, FILO_DEPTH):
+        # Run the simulation with specified parameters
+>       test_runner(DATA_WIDTH=DATA_WIDTH, FILO_DEPTH=FILO_DEPTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+DATA_WIDTH = 8, FILO_DEPTH = 16
+
+    def test_runner(DATA_WIDTH: int=8, FILO_DEPTH: int=16 ):
+        parameter = {"DATA_WIDTH":DATA_WIDTH, "FILO_DEPTH":FILO_DEPTH}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with DATA_WIDTH={DATA_WIDTH}, FILO_DEPTH={FILO_DEPTH}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            verbose=True,
+            parameters=parameter,
+            timescale=("1ns", "1ns"),
+            log_file="build.log")
+    
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:33: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=8 -PFILO_RTL.FILO_DEPTH=16 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+_______________________________ test_filo[16-12] _______________________________
+
+DATA_WIDTH = 12, FILO_DEPTH = 16
+
+    @pytest.mark.parametrize("DATA_WIDTH", [8,12])
+    @pytest.mark.parametrize("FILO_DEPTH", [8,16])
+    
+    #@pytest.mark.parametrize("test", range(1))
+    def test_filo(DATA_WIDTH, FILO_DEPTH):
+        # Run the simulation with specified parameters
+>       test_runner(DATA_WIDTH=DATA_WIDTH, FILO_DEPTH=FILO_DEPTH)
+
+/src/test_runner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+DATA_WIDTH = 12, FILO_DEPTH = 16
+
+    def test_runner(DATA_WIDTH: int=8, FILO_DEPTH: int=16 ):
+        parameter = {"DATA_WIDTH":DATA_WIDTH, "FILO_DEPTH":FILO_DEPTH}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with DATA_WIDTH={DATA_WIDTH}, FILO_DEPTH={FILO_DEPTH}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        runner = get_runner(sim)
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            verbose=True,
+            parameters=parameter,
+            timescale=("1ns", "1ns"),
+            log_file="build.log")
+    
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:33: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s FILO_RTL -g2012 -PFILO_RTL.DATA_WIDTH=12 -PFILO_RTL.FILO_DEPTH=16 -f /code/rundir/sim_build/cmds.f /code/rtl/FILO_RTL.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_runner - SystemExit: 1
+FAILED ../../src/test_runner.py::test_filo[8-8] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_filo[8-12] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_filo[16-8] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_filo[16-12] - SystemExit: 1
+============================== 5 failed in 6.00s ===============================

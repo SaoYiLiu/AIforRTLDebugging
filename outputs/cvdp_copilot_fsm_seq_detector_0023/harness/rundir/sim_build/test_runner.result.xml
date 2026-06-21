@@ -1,0 +1,11 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782012826" />
+    <testcase name="test_reset" classname="test_fsm_seq_det" file="/src/test_fsm_seq_det.py" lineno="15" time="0.005488157272338867" sim_time_ns="145.0" ratio_time="26420.525652721666" />
+    <testcase name="test_detection_at_start" classname="test_fsm_seq_det" file="/src/test_fsm_seq_det.py" lineno="40" time="0.005395412445068359" sim_time_ns="145.0" ratio_time="26874.68316394167" />
+    <testcase name="test_detection_at_end" classname="test_fsm_seq_det" file="/src/test_fsm_seq_det.py" lineno="67" time="0.010082721710205078" sim_time_ns="165.0" ratio_time="16364.628990305036" />
+    <testcase name="test_multiple_occurrences" classname="test_fsm_seq_det" file="/src/test_fsm_seq_det.py" lineno="93" time="0.007545948028564453" sim_time_ns="195.0" ratio_time="25841.683412322276" />
+    <testcase name="test_noise_before_after" classname="test_fsm_seq_det" file="/src/test_fsm_seq_det.py" lineno="118" time="0.007173061370849609" sim_time_ns="195.0" ratio_time="27185.04553612976" />
+    <testcase name="test_rtl_bug_seq" classname="test_fsm_seq_det" file="/src/test_fsm_seq_det.py" lineno="143" time="0.008495330810546875" sim_time_ns="225.0" ratio_time="26485.13695554558" />
+  </testsuite>
+</testsuites>

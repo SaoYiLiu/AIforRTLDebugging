@@ -1,0 +1,1025 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 682B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 180B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/nvidia/cvdp-sim:v1.0.0
+#3 DONE 0.2s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B 0.0s done
+#4 DONE 0.0s
+
+#5 [1/1] FROM docker.io/nvidia/cvdp-sim:v1.0.0@sha256:5460a1246ec7c3fbd34328936868bc8d7bc671ad54c7c08c9346fc103da713ee
+#5 resolve docker.io/nvidia/cvdp-sim:v1.0.0@sha256:5460a1246ec7c3fbd34328936868bc8d7bc671ad54c7c08c9346fc103da713ee 0.1s done
+#5 CACHED
+
+#6 exporting to image
+#6 exporting layers done
+#6 exporting manifest sha256:32635c4633a04380841d9a32c8a96bf51d52bff2b4039db019943fc5af7868e6 0.0s done
+#6 exporting config sha256:c039081609cd32c3d8429e4f8d1c5f3a713fa67e022572b8f98ec1c36098ea43 0.0s done
+#6 exporting attestation manifest sha256:e6bfe58fcf047b2e3d20687a0085f50b81679c21fab688444b2cc40f574dba19 0.1s done
+#6 exporting manifest list sha256:f1705459c4957976096cfebd889dd3a4da6ba86ff015a76e1a7f800dc95fe945
+#6 exporting manifest list sha256:f1705459c4957976096cfebd889dd3a4da6ba86ff015a76e1a7f800dc95fe945 0.0s done
+#6 naming to docker.io/library/cvdp_react_cvdp_copilot_prim_max_0001_1-direct:latest done
+#6 unpacking to docker.io/library/cvdp_react_cvdp_copilot_prim_max_0001_1-direct:latest 0.0s done
+#6 DONE 0.2s
+
+#7 resolving provenance for metadata file
+#7 DONE 0.0s
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 12 items
+
+../../src/test_runner.py::test_prim_max_find[4-8] FAILED                 [  8%]
+../../src/test_runner.py::test_prim_max_find[4-16] FAILED                [ 16%]
+../../src/test_runner.py::test_prim_max_find[4-24] FAILED                [ 25%]
+../../src/test_runner.py::test_prim_max_find[4-32] FAILED                [ 33%]
+../../src/test_runner.py::test_prim_max_find[8-8] FAILED                 [ 41%]
+../../src/test_runner.py::test_prim_max_find[8-16] FAILED                [ 50%]
+../../src/test_runner.py::test_prim_max_find[8-24] FAILED                [ 58%]
+../../src/test_runner.py::test_prim_max_find[8-32] FAILED                [ 66%]
+../../src/test_runner.py::test_prim_max_find[16-8] FAILED                [ 75%]
+../../src/test_runner.py::test_prim_max_find[16-16] FAILED               [ 83%]
+../../src/test_runner.py::test_prim_max_find[16-24] FAILED               [ 91%]
+../../src/test_runner.py::test_prim_max_find[16-32] FAILED               [100%]
+
+=================================== FAILURES ===================================
+___________________________ test_prim_max_find[4-8] ____________________________
+
+NumSrc = 4, Width = 8
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 4, Width = 8
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016137
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=4, Width=8
+    65.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    65.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    65.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          65.00           0.04       1690.87  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          65.00           0.05       1182.55  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=4 -Pprim_max_find.Width=8 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+___________________________ test_prim_max_find[4-16] ___________________________
+
+NumSrc = 4, Width = 16
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 4, Width = 16
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016139
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=4, Width=16
+    65.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    65.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    65.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          65.00           0.03       1895.54  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          65.00           0.05       1309.45  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=4 -Pprim_max_find.Width=16 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+___________________________ test_prim_max_find[4-24] ___________________________
+
+NumSrc = 4, Width = 24
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 4, Width = 24
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016140
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=4, Width=24
+    65.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    65.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    65.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          65.00           0.03       2478.43  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          65.00           0.04       1560.17  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=4 -Pprim_max_find.Width=24 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+___________________________ test_prim_max_find[4-32] ___________________________
+
+NumSrc = 4, Width = 32
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 4, Width = 32
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016142
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=4, Width=32
+    65.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    65.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    65.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          65.00           0.03       2053.49  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          65.00           0.08        779.82  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=4 -Pprim_max_find.Width=32 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+___________________________ test_prim_max_find[8-8] ____________________________
+
+NumSrc = 8, Width = 8
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 8, Width = 8
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016143
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=8, Width=8
+    75.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    75.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    75.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          75.00           0.03       2610.13  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          75.00           0.05       1638.19  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=8 -Pprim_max_find.Width=8 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+___________________________ test_prim_max_find[8-16] ___________________________
+
+NumSrc = 8, Width = 16
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 8, Width = 16
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016145
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=8, Width=16
+    75.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    75.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    75.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          75.00           0.03       2376.57  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          75.00           0.05       1514.51  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=8 -Pprim_max_find.Width=16 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+___________________________ test_prim_max_find[8-24] ___________________________
+
+NumSrc = 8, Width = 24
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 8, Width = 24
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016146
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=8, Width=24
+    75.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    75.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    75.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          75.00           0.02       3035.66  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          75.00           0.04       1861.41  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=8 -Pprim_max_find.Width=24 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+___________________________ test_prim_max_find[8-32] ___________________________
+
+NumSrc = 8, Width = 32
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 8, Width = 32
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016148
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=8, Width=32
+    75.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    75.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    75.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          75.00           0.04       2115.24  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          75.00           0.05       1462.58  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=8 -Pprim_max_find.Width=32 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+___________________________ test_prim_max_find[16-8] ___________________________
+
+NumSrc = 16, Width = 8
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 16, Width = 8
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016149
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=16, Width=8
+    85.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    85.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    85.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          85.00           0.03       2524.15  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          85.00           0.05       1744.29  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=16 -Pprim_max_find.Width=8 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+__________________________ test_prim_max_find[16-16] ___________________________
+
+NumSrc = 16, Width = 16
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 16, Width = 16
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016151
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=16, Width=16
+    85.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    85.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    85.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          85.00           0.03       2624.62  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          85.00           0.05       1772.98  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=16 -Pprim_max_find.Width=16 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+__________________________ test_prim_max_find[16-24] ___________________________
+
+NumSrc = 16, Width = 24
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 16, Width = 24
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016152
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=16, Width=24
+    85.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    85.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    85.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          85.00           0.04       1889.09  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          85.00           0.07       1285.37  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=16 -Pprim_max_find.Width=24 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+__________________________ test_prim_max_find[16-32] ___________________________
+
+NumSrc = 16, Width = 32
+
+    @pytest.mark.parametrize("NumSrc, Width", parameter_combinations)
+    def test_prim_max_find(NumSrc, Width):
+        """
+        Parameterized test_runner to verify the prim_max_find module for multiple NumSrc and Width values.
+        """
+        print(f"Running simulation with NumSrc = {NumSrc}, Width = {Width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build and simulate with parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={
+                'NumSrc': NumSrc,
+                'Width': Width
+            },
+            always=True,      # Rebuild every simulation run
+            clean=True,       # Clean up previous simulation data
+            waves=True,       # Generate waveform files
+            verbose=True,     # Enable verbose logging
+            timescale=("1ns", "1ps"),  # Set timescale
+            log_file=f"sim_NumSrc_{NumSrc}_Width_{Width}.log"  # Unique log file per parameter set
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=True
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:62: SystemExit
+----------------------------- Captured stdout call -----------------------------
+Running simulation with NumSrc = 16, Width = 32
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782016154
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_prim_max_find.test_prim_max_find (1/1)
+                                                            Generic Testbench for the prim_max_find module using cocotb.
+     0.00ns INFO     cocotb.prim_max_find               Running test with NumSrc=16, Width=32
+    85.00ns WARNING  ..prim_max_find.test_prim_max_find Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_prim_max_find.py", line 173, in test_prim_max_find
+                                                            await apply_test(
+                                                          File "/src/test_prim_max_find.py", line 94, in apply_test
+                                                            dut_max_value = int(int(dut.max_value_o.value))
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+    85.00ns WARNING  cocotb.regression                  test_prim_max_find.test_prim_max_find failed
+    85.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_prim_max_find.test_prim_max_find   FAIL          85.00           0.03       3205.44  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                          85.00           0.04       2006.64  **
+                                                        ***********************************************************************************************
+FST info: dumpfile /code/rundir/sim_build/prim_max_find.fst opened for output.
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s prim_max_find -g2012 -Pprim_max_find.NumSrc=16 -Pprim_max_find.Width=32 -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/prim_max_find.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_prim_max_find[4-8] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[4-16] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[4-24] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[4-32] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[8-8] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[8-16] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[8-24] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[8-32] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[16-8] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[16-16] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[16-24] - SystemExit: 1
+FAILED ../../src/test_runner.py::test_prim_max_find[16-32] - SystemExit: 1
+============================= 12 failed in 18.47s ==============================

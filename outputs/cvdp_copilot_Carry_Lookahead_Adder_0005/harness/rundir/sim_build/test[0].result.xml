@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782011600" />
+    <testcase name="test_pipelined_adder_latency" classname="test_pipelined_adder" file="/src/test_pipelined_adder.py" lineno="17" time="0.030137300491333008" sim_time_ns="1020.0" ratio_time="33845.10169692655" />
+  </testsuite>
+</testsuites>

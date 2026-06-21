@@ -1,0 +1,135 @@
+transport=bridge
+
+## Rationale
+- **RTL bug (GCD subtract path):** In state `lcm1`, when `A_reg < B_reg`, the code does `B_reg <= B_reg + A_reg`. That is not Euclidean GCD; it must be `B_reg <= B_reg - A_reg`. With addition, registers do not converge (e.g. A=12, B=8 never finishes), so `vld_out`/`mcd_out` stay wrong.
+- **Extra `end`:** Remove the stray `end` before the `assign` statements (syntax/structure error in the buggy module).
+- **`lcm_out` high-Z:** Keep `assign lcm_out = (mcd_out_r1 == 'd0) ? 'hz : (mult_reg / mcd_out_r1);` — this matches the spec and reference; `mcd_out`/`vld_out` simulation mismatches were from the GCD bug, not hi-Z logic.
+- **Formal — reset idle:** After reset release, assert `!vld_out` and `mcd_out == 0` (spec: outputs invalid while idle).
+- **Formal — invalid before `vld_out`:** While `!vld_out`, assert `mcd_out == 0`. This is the port-level proxy for “`lcm_out` is hi-Z before valid” (`mcd_out_r1 == 0` drives `'hz` on `lcm_out` in the DUT).
+- **Formal — valid result:** On the first cycle `vld_out` is asserted, assert `(A % mcd_out) == 0 && (B % mcd_out) == 0` with environment assume `A`/`B` constant after reset (so port values match the latched job operands).
+- **No shadow model:** Only DUT ports and `$past()` are used; BMC depth 10 completes in ~45s on the fixed design.
+
+**Fixed `TopModule` change (one line in `lcm1`):**
+
+```verilog
+                else if(A_reg < B_reg) begin
+                    B_reg   <= B_reg - A_reg;   // was: B_reg + A_reg
+                    A_reg   <= A_reg;
+                end
+```
+
+Also remove the extra `end` before the `assign` lines.
+
+## Raw
+## Rationale
+
+- **RTL bug (GCD subtract path):** In state `lcm1`, when `A_reg < B_reg`, the code does `B_reg <= B_reg + A_reg`. That is not Euclidean GCD; it must be `B_reg <= B_reg - A_reg`. With addition, registers do not converge (e.g. A=12, B=8 never finishes), so `vld_out`/`mcd_out` stay wrong.
+- **Extra `end`:** Remove the stray `end` before the `assign` statements (syntax/structure error in the buggy module).
+- **`lcm_out` high-Z:** Keep `assign lcm_out = (mcd_out_r1 == 'd0) ? 'hz : (mult_reg / mcd_out_r1);` — this matches the spec and reference; `mcd_out`/`vld_out` simulation mismatches were from the GCD bug, not hi-Z logic.
+- **Formal — reset idle:** After reset release, assert `!vld_out` and `mcd_out == 0` (spec: outputs invalid while idle).
+- **Formal — invalid before `vld_out`:** While `!vld_out`, assert `mcd_out == 0`. This is the port-level proxy for “`lcm_out` is hi-Z before valid” (`mcd_out_r1 == 0` drives `'hz` on `lcm_out` in the DUT).
+- **Formal — valid result:** On the first cycle `vld_out` is asserted, assert `(A % mcd_out) == 0 && (B % mcd_out) == 0` with environment assume `A`/`B` constant after reset (so port values match the latched job operands).
+- **No shadow model:** Only DUT ports and `$past()` are used; BMC depth 10 completes in ~45s on the fixed design.
+
+**Fixed `TopModule` change (one line in `lcm1`):**
+
+```verilog
+                else if(A_reg < B_reg) begin
+                    B_reg   <= B_reg - A_reg;   // was: B_reg + A_reg
+                    A_reg   <= A_reg;
+                end
+```
+
+Also remove the extra `end` before the `assign` lines.
+
+## TopModule_formal
+
+```verilog
+module TopModule_formal;
+    localparam integer DATA_W = 8;
+
+    (* gclk *) reg clk;
+    (* anyseq *) reg rst_n;
+    (* anyseq *) reg [DATA_W-1:0] A;
+    (* anyseq *) reg [DATA_W-1:0] B;
+    (* anyseq *) reg vld_in;
+
+    wire [DATA_W*2-1:0] lcm_out;
+    wire [DATA_W-1:0]   mcd_out;
+    wire                vld_out;
+
+    TopModule #(.DATA_W(DATA_W)) dut (
+        .clk(clk),
+        .rst_n(rst_n),
+        .A(A),
+        .B(B),
+        .vld_in(vld_in),
+        .lcm_out(lcm_out),
+        .mcd_out(mcd_out),
+        .vld_out(vld_out)
+    );
+
+    always @(posedge clk) begin
+        if ($initstate) begin
+            assume(!rst_n);
+        end else begin
+            if ($past(rst_n))
+                assume(A == $past(A) && B == $past(B));
+
+            if (!$past(rst_n)) begin
+                assert(!vld_out && (mcd_out == {DATA_W{1'b0}}));
+            end else if (!vld_out) begin
+                assert(mcd_out == {DATA_W{1'b0}});
+            end else if (vld_out && !$past(vld_out)) begin
+                assert((A % mcd_out) == 0 && (B % mcd_out) == 0);
+            end
+        end
+    end
+endmodule
+```
+
+## Wrapper
+```verilog
+module TopModule_formal;
+    localparam integer DATA_W = 8;
+
+    (* gclk *) reg clk;
+    (* anyseq *) reg rst_n;
+    (* anyseq *) reg [DATA_W-1:0] A;
+    (* anyseq *) reg [DATA_W-1:0] B;
+    (* anyseq *) reg vld_in;
+
+    wire [DATA_W*2-1:0] lcm_out;
+    wire [DATA_W-1:0]   mcd_out;
+    wire                vld_out;
+
+    TopModule #(.DATA_W(DATA_W)) dut (
+        .clk(clk),
+        .rst_n(rst_n),
+        .A(A),
+        .B(B),
+        .vld_in(vld_in),
+        .lcm_out(lcm_out),
+        .mcd_out(mcd_out),
+        .vld_out(vld_out)
+    );
+
+    always @(posedge clk) begin
+        if ($initstate) begin
+            assume(!rst_n);
+        end else begin
+            if ($past(rst_n))
+                assume(A == $past(A) && B == $past(B));
+
+            if (!$past(rst_n)) begin
+                assert(!vld_out && (mcd_out == {DATA_W{1'b0}}));
+            end else if (!vld_out) begin
+                assert(mcd_out == {DATA_W{1'b0}});
+            end else if (vld_out && !$past(vld_out)) begin
+                assert((A % mcd_out) == 0 && (B % mcd_out) == 0);
+            end
+        end
+    end
+endmodule
+
+```

@@ -1,0 +1,56 @@
+## Rationale
+- **Primary bug (L21):** `valid_cnt` increments on `!valid_in` instead of `valid_in`, so the counter advances during idle cycles after reset rather than when input data is accepted.
+- **Waveform evidence:** Before the first `valid_in` at t=35, `valid_in` is low for two clock edges (t=30, t=40 sampling), so `valid_cnt` reaches `2'd1` before any data arrives.
+- **First mismatch (t=40):** On the first valid byte (`data_in = 8'hAA`), the DUT sees `valid_cnt == 1` and asserts `valid_out` with `data_out = 1010` (`{data_lock, data_in[7:4]}` with stale `data_lock=0`). Reference keeps `valid_out` low until the second byte.
+- **Expected behavior:** `valid_cnt` should count valid input beats (0 → 1 on first byte, 1 → 2 on second). Output is produced when `valid_cnt == 1` (second byte, `{data_lock, data_in[7:4]}`) or `valid_cnt == 2` (third byte in a run, `{data_lock[3:0], data_in}`), matching the reference model.
+- **Fix:** Change L21 from `else if(!valid_in)` to `else if(valid_in)`. The `data_lock`, `valid_out`, and `data_out` logic (L12–17, L28–45) is otherwise correct. Simulation passes 127/127 samples with this single change.
+
+## FixedTopModule
+```verilog
+module TopModule(
+	input 				   clk 		,   
+	input 			      rst_n		,
+	input				      valid_in	,
+	input	[7:0]			   data_in	,
+ 
+ 	output  reg			   valid_out,
+	output  reg [11:0]   data_out
+);
+reg 	[7:0]		data_lock;
+reg 	[1:0]		valid_cnt		;
+always @(posedge clk or negedge rst_n ) begin
+	if(!rst_n) 
+		data_lock <= 'd0;
+	else if(valid_in )
+		data_lock <= data_in;
+end
+always @(posedge clk or negedge rst_n ) begin
+	if(!rst_n) 
+		valid_cnt <= 'd0;
+	else if(valid_in)begin
+		if(valid_cnt == 2'd2)
+			valid_cnt <= 2'd0;
+		else
+			valid_cnt <= valid_cnt + 1'd1;
+	end 
+end
+always @(posedge clk or negedge rst_n ) begin
+	if(!rst_n) 
+		valid_out <= 'd0;
+	else if(valid_in && valid_cnt == 2'd1)
+		valid_out <= 1'd1;
+	else if(valid_in && valid_cnt == 2'd2)
+		valid_out <= 1'd1;
+	else
+		valid_out <= 'd0;
+end
+always @(posedge clk or negedge rst_n ) begin
+	if(!rst_n) 
+		data_out <= 'd0;
+	else if(valid_in && valid_cnt == 2'd1)
+		data_out <= {data_lock, data_in[7:4]};
+	else if(valid_in && valid_cnt == 2'd2)
+		data_out <= {data_lock[3:0], data_in};
+end
+endmodule
+```

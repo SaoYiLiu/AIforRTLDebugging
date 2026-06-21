@@ -1,0 +1,52 @@
+## Rationale
+- The design is a 3-stage pipelined unsigned multiplier: partial products `temp[0..3]` are formed combinatorially, then `adder_0 = temp[0]+temp[1]`, `adder_1 = temp[2]+temp[3]`, and finally `mul_out = adder_0 + adder_1`.
+- The bug is in the second pipeline stage: `adder_1 <= temp[2] + temp[2]` doubles `temp[2]` instead of adding `temp[2]` and `temp[3]`.
+- That drops the contribution of `mul_b[3]` (the `temp[3]` term) whenever it differs from `mul_b[2]`, so the final sum is wrong for many operand pairs.
+- Simulation reported 10 mismatches out of 43 samples, with the first at 140 ps — after reset, when non-trivial products (e.g. 4×5, 7×8, 9×10) propagate through the pipeline.
+- Early cases like 2×3 can still match by coincidence when `temp[3]` is zero, which matches the waveform showing correct behavior around 125 ps but failures later.
+- The reference model uses `adder_1 <= temp[2] + temp[3]`; applying that single change yields 0 mismatches in the ChipBench testbench.
+
+## FixedTopModule
+```verilog
+module TopModule#(
+	parameter size = 4
+)(
+	input 						clk 		,   
+	input 						rst_n		,
+	input	[size-1:0]			mul_a		,
+	input	[size-1:0]			mul_b		,
+ 
+ 	output	reg	[size*2-1:0]	mul_out		
+);
+    //parameter 
+    parameter N = size * 2;
+    //defination
+    wire [N - 1 : 0] temp [0 : 3];
+    
+    reg [N - 1 : 0] adder_0;
+    reg [N - 1 : 0] adder_1;
+    
+    //output 
+    genvar i;
+    generate
+        for(i = 0; i < 4; i = i + 1)begin : loop
+            assign temp[i] = mul_b[i] ? mul_a << i : 'd0;
+        end
+    endgenerate
+    
+    always@(posedge clk or negedge rst_n)begin
+        if(!rst_n) adder_0 <= 'd0;
+        else adder_0 <= temp[0] + temp[1];
+    end
+    
+    always@(posedge clk or negedge rst_n)begin
+        if(!rst_n) adder_1 <= 'd0;
+        else adder_1 <= temp[2] + temp[3];
+    end
+    
+    always@(posedge clk or negedge rst_n)begin
+        if(!rst_n) mul_out <= 'd0;
+        else mul_out <= adder_0 + adder_1;
+    end
+endmodule
+```

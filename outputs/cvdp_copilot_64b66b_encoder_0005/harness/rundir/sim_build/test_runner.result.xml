@@ -1,0 +1,15 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782005356" />
+    <testcase name="reset_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="28" time="0.0019381046295166016" sim_time_ns="60.0" ratio_time="30958.080944765654" />
+    <testcase name="data_encoding_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="53" time="0.001346588134765625" sim_time_ns="60.0" ratio_time="44557.05382436261" />
+    <testcase name="control_encoding_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="77" time="0.001463174819946289" sim_time_ns="60.0" ratio_time="41006.719895714516" />
+    <testcase name="mixed_data_control_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="102" time="0.001377105712890625" sim_time_ns="70.0" ratio_time="50831.246537396124" />
+    <testcase name="all_control_symbols_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="130" time="0.0012552738189697266" sim_time_ns="60.0" ratio_time="47798.336182336185" />
+    <testcase name="random_data_control_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="157" time="0.0050313472747802734" sim_time_ns="150.0" ratio_time="29813.088186513767" />
+    <testcase name="random_data_only_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="195" time="0.0069429874420166016" sim_time_ns="140.0" ratio_time="20164.230623948355" />
+    <testcase name="tc1_data_encoding_bug_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="231" time="0.002380847930908203" sim_time_ns="80.0" ratio_time="33601.474063689166" />
+    <testcase name="tc2_reset_bug_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="269" time="0.0028264522552490234" sim_time_ns="100.0" ratio_time="35380.04217629692" />
+    <testcase name="tc3_stuck_at_zero_bug_test" classname="test_encoder_64b66b" file="/src/test_encoder_64b66b.py" lineno="307" time="0.0025157928466796875" sim_time_ns="90.0" ratio_time="35774.01061410159" />
+  </testsuite>
+</testsuites>

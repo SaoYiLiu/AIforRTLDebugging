@@ -1,0 +1,54 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 682B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 180B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/nvidia/cvdp-sim:v1.0.0
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 0.0s
+#4 transferring context: 2B 0.0s done
+#4 DONE 0.0s
+
+#5 [1/1] FROM docker.io/nvidia/cvdp-sim:v1.0.0@sha256:5460a1246ec7c3fbd34328936868bc8d7bc671ad54c7c08c9346fc103da713ee
+#5 resolve docker.io/nvidia/cvdp-sim:v1.0.0@sha256:5460a1246ec7c3fbd34328936868bc8d7bc671ad54c7c08c9346fc103da713ee 0.0s done
+#5 CACHED
+
+#6 exporting to image
+#6 exporting layers done
+#6 exporting manifest sha256:21e1a3a34858b45ff96e98c5aeec60f0c4677846721808d80f8a8eccc5793646 0.0s done
+#6 exporting config sha256:3f76efb9227e7355afcb3990d4faca8d21ede63fa47ec94f5b4ee1676e7755ca
+#6 exporting config sha256:3f76efb9227e7355afcb3990d4faca8d21ede63fa47ec94f5b4ee1676e7755ca 0.0s done
+#6 exporting attestation manifest sha256:6efcb49a385a3cb33e911ec62bc0c8e40ec4011639d833629a02c7e82148bafe 0.0s done
+#6 exporting manifest list sha256:566e46bf94ae30ba8cfdc376dcbfe1482db86e298a21ff5cff32b6f9027cd1b4 0.0s done
+#6 naming to docker.io/library/cvdp_react_cvdp_copilot_prim_max_0001_2-direct:latest
+#6 naming to docker.io/library/cvdp_react_cvdp_copilot_prim_max_0001_2-direct:latest done
+#6 unpacking to docker.io/library/cvdp_react_cvdp_copilot_prim_max_0001_2-direct:latest 0.0s done
+#6 DONE 0.2s
+
+#7 resolving provenance for metadata file
+#7 DONE 0.0s
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 12 items
+
+../../src/test_runner.py::test_prim_max_find[4-8] PASSED                 [  8%]
+../../src/test_runner.py::test_prim_max_find[4-16] PASSED                [ 16%]
+../../src/test_runner.py::test_prim_max_find[4-24] PASSED                [ 25%]
+../../src/test_runner.py::test_prim_max_find[4-32] PASSED                [ 33%]
+../../src/test_runner.py::test_prim_max_find[8-8] PASSED                 [ 41%]
+../../src/test_runner.py::test_prim_max_find[8-16] PASSED                [ 50%]
+../../src/test_runner.py::test_prim_max_find[8-24] PASSED                [ 58%]
+../../src/test_runner.py::test_prim_max_find[8-32] PASSED                [ 66%]
+../../src/test_runner.py::test_prim_max_find[16-8] PASSED                [ 75%]
+../../src/test_runner.py::test_prim_max_find[16-16] PASSED               [ 83%]
+../../src/test_runner.py::test_prim_max_find[16-24] PASSED               [ 91%]
+../../src/test_runner.py::test_prim_max_find[16-32] PASSED               [100%]
+
+============================= 12 passed in 18.26s ==============================

@@ -1,0 +1,50 @@
+## Rationale
+- **Suspected bug (L024):** The `data_r` capture uses an inverted `valid_in` condition: `data_r <= !valid_in ? data_in : data_r`. That stores `data_in` when the input is **invalid**, and holds `data_r` when `valid_in` is high — the opposite of the spec.
+- **First mismatch evidence (t=120):** At t=105 the first valid byte `0xAA` arrives with `valid_in=1`, but `data_r` never captures it. At t=115 the second byte `0x55` produces `data_out_dut = 0x0055` while `data_out_ref = 0xAA55`.
+- **`valid_out` is correct:** All 118 failures are on `data_out` only; `flag` toggling and `valid_out <= flag && valid_in` (L017, L038) match the reference timing.
+- **Garbage capture when idle:** During t=145–155 `valid_in=0` but `data_in` changes (`0xFF`, `0xEE`). The inverted condition writes those idle-cycle values into `data_r`, corrupting later pairs.
+- **Fix applied:** Change L024 to `data_r <= valid_in ? data_in : data_r` so the first (and each subsequent first-of-pair) byte is latched only on valid input cycles. Nonblocking semantics ensure `{data_r, data_in}` on the second beat still uses the previously stored high byte.
+
+## FixedTopModule
+```verilog
+module TopModule(
+    input                  clk      ,  
+    input                  rst_n    ,
+    input                  valid_in ,
+    input       [7:0]      data_in  ,
+  
+    output  reg            valid_out,
+    output  reg [15:0]     data_out
+);
+    reg [7:0] data_r;
+    reg       flag;
+     
+    always@(posedge clk or negedge rst_n) begin
+        if(~rst_n)
+            flag <= 0;
+        else
+            flag <= valid_in? ~flag: flag;
+    end
+     
+    always@(posedge clk or negedge rst_n) begin
+        if(~rst_n)
+            data_r <= 0;
+        else
+            data_r <= valid_in? data_in: data_r;
+    end
+     
+    always@(posedge clk or negedge rst_n) begin
+        if(~rst_n)
+            data_out <= 0;
+        else
+            data_out <= flag&&valid_in? {data_r, data_in}: data_out;
+    end
+     
+    always@(posedge clk or negedge rst_n) begin
+        if(~rst_n)
+            valid_out <= 0;
+        else
+            valid_out <= flag&&valid_in;
+    end
+endmodule
+```

@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782012749" />
+    <testcase name="test_filo_dynamic" classname="test_filo" file="/src/test_filo.py" lineno="57" time="0.021702289581298828" sim_time_ns="835.0" ratio_time="38475.2031287764" />
+  </testsuite>
+</testsuites>

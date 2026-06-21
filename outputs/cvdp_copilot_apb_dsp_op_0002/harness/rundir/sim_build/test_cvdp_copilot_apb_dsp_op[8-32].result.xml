@@ -1,0 +1,20 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782011780" />
+    <testcase name="test1_write_read_addr_a" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="70" time="0.0063173770904541016" sim_time_ns="100.0" ratio_time="15829.354266520739" />
+    <testcase name="test2_write_read_addr_b" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="116" time="0.005186796188354492" sim_time_ns="100.0" ratio_time="19279.724201333025" />
+    <testcase name="test3_write_read_addr_c" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="162" time="0.005004405975341797" sim_time_ns="100.0" ratio_time="19982.39161505479" />
+    <testcase name="test4_write_read_addr_o" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="208" time="0.004927158355712891" sim_time_ns="100.0" ratio_time="20295.67405400174" />
+    <testcase name="test5_write_read_addr_control" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="254" time="0.004868745803833008" sim_time_ns="100.0" ratio_time="20539.17046177954" />
+    <testcase name="test6_write_read_wdata_sram" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="300" time="0.005086660385131836" sim_time_ns="100.0" ratio_time="19659.264119990625" />
+    <testcase name="test7_write_read_addr_sram" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="346" time="0.005213737487792969" sim_time_ns="100.0" ratio_time="19180.098774464972" />
+    <testcase name="test8_invalid_address_access" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="392" time="0.004085063934326172" sim_time_ns="80.0" ratio_time="19583.536827360804" />
+    <testcase name="test9_write_read_sram" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="454" time="0.010105609893798828" sim_time_ns="200.0" ratio_time="19790.98759024206" />
+    <testcase name="test10_perform_dsp_op" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="520" time="0.0246734619140625" sim_time_ns="490.0" ratio_time="19859.39393939394" />
+    <testcase name="test11_sram_apb_op" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="647" time="0.012563228607177734" sim_time_ns="240.0" ratio_time="19103.369643602688" />
+    <testcase name="test12_dsp_apb_op" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="739" time="0.026128053665161133" sim_time_ns="500.0" ratio_time="19136.51917619469" />
+    <testcase name="test13_invalid_sram_address" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="883" time="0.006363391876220703" sim_time_ns="130.0" ratio_time="20429.356313225926" />
+    <testcase name="test14_multiple_dsp_op" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="935" time="0.038811445236206055" sim_time_ns="770.0" ratio_time="19839.50856026587" />
+    <testcase name="test15_write_sram_while_read" classname="test_apb_dsp_op_harness" file="/src/test_apb_dsp_op_harness.py" lineno="1149" time="0.018878459930419922" sim_time_ns="300.0" ratio_time="15891.126771235888" />
+  </testsuite>
+</testsuites>

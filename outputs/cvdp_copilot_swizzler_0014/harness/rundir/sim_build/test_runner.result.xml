@@ -1,0 +1,14 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782017690" />
+    <testcase name="test_tc1_identity_mapping" classname="test_swizzler" file="/src/test_swizzler.py" lineno="5" time="0.003710508346557617" sim_time_ns="40.0" ratio_time="10780.194049990361" />
+    <testcase name="test_tc2_reverse_mapping" classname="test_swizzler" file="/src/test_swizzler.py" lineno="50" time="0.0028450489044189453" sim_time_ns="50.00000000000001" ratio_time="17574.390346099055" />
+    <testcase name="test_tc3_passthrough" classname="test_swizzler" file="/src/test_swizzler.py" lineno="95" time="0.0023398399353027344" sim_time_ns="50.000000000000014" ratio_time="21368.983085388227" />
+    <testcase name="test_tc4_reverse_data" classname="test_swizzler" file="/src/test_swizzler.py" lineno="140" time="0.0025424957275390625" sim_time_ns="50.0" ratio_time="19665.716429107277" />
+    <testcase name="test_tc5_swap_halves" classname="test_swizzler" file="/src/test_swizzler.py" lineno="185" time="0.0026268959045410156" sim_time_ns="50.0" ratio_time="19033.871846070066" />
+    <testcase name="test_tc6_bitwise_inversion" classname="test_swizzler" file="/src/test_swizzler.py" lineno="230" time="0.0020711421966552734" sim_time_ns="50.0" ratio_time="24141.268562219408" />
+    <testcase name="test_tc7_circular_left_shift" classname="test_swizzler" file="/src/test_swizzler.py" lineno="275" time="0.0028228759765625" sim_time_ns="50.0" ratio_time="17712.432432432433" />
+    <testcase name="test_tc8_circular_right_shift" classname="test_swizzler" file="/src/test_swizzler.py" lineno="321" time="0.002529144287109375" sim_time_ns="50.0" ratio_time="19769.532428355957" />
+    <testcase name="test_tc9_invalid_mapping" classname="test_swizzler" file="/src/test_swizzler.py" lineno="367" time="0.002458333969116211" sim_time_ns="50.0" ratio_time="20338.977790708952" />
+  </testsuite>
+</testsuites>

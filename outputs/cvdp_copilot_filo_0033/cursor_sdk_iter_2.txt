@@ -1,0 +1,75 @@
+## Transport
+rest
+
+## Rationale
+- **Root cause is line 49:** On a valid pop, the RTL reads `memory[top-1]` but assigns `top <= top`, so the stack pointer never moves down after a pop.
+- **Harness evidence matches this:** The first pop returns the last pushed value (`0xba`), but the second pop still returns `0xba` instead of the previous value (`0x99`) — exactly what happens when `top` stays at `FILO_DEPTH` after every pop.
+- **Push logic is correct (lines 38–41):** Data is written to `memory[top]` and `top` is incremented, so after 16 pushes `top == 16` and the last entry is at `memory[15]`.
+- **Pop read index is correct (line 50):** `data_out <= memory[top-1]` is the right LIFO read for a stack where `top` points one past the last stored element.
+- **Missing decrement breaks LIFO:** After the first pop, `top` should be 15 (not 16), so the next pop reads `memory[14]` (`0x99`), then `memory[13]`, and so on.
+- **Minimal fix:** Change line 49 from `top <= top;` to `top <= top - 1;`. No other logic changes are needed for the failing cocotb test.
+- **`empty`/`full` already depend on `top` (lines 55–56):** Once `top` decrements on pop, `empty <= (top == 0)` and `full <= (top == FILO_DEPTH)` will behave correctly through the pop sequence.
+
+## PatchedFiles
+### rtl/FILO_RTL.sv
+```verilog
+module FILO_RTL #(
+    parameter DATA_WIDTH = 8,  // Width of the data entries
+    parameter FILO_DEPTH = 16  // Depth of the FILO buffer
+) (
+    input  wire                  clk,       // Clock signal
+    input  wire                  reset,     // Asynchronous reset signal
+    input  wire                  push,      // Push control signal
+    input  wire                  pop,       // Pop control signal
+    input  wire [DATA_WIDTH-1:0] data_in,   // Data input
+    output reg  [DATA_WIDTH-1:0] data_out,  // Data output
+    output reg                   full,      // Full status signal
+    output reg                   empty      // Empty status signal
+);
+
+ 
+  reg [DATA_WIDTH-1:0] memory[FILO_DEPTH-1:0];  
+  reg [$clog2(FILO_DEPTH):0] top;  
+ 
+  reg feedthrough_valid;
+  reg [DATA_WIDTH-1:0] feedthrough_data;
+
+ 
+  always @(posedge clk or posedge reset) begin
+    if (reset) begin
+      top <= 0;
+      empty <= 1;
+      full <= 0;
+      feedthrough_valid <= 0;
+      data_out <= 0;  
+    end else begin
+    
+      if (push && pop && empty) begin
+        data_out <= data_in; 
+        feedthrough_data <= data_in;
+        feedthrough_valid <= 1;
+      end else begin
+      
+        if (push && !full) begin
+          memory[top] <= data_in;  
+          top <= top + 1;  
+          feedthrough_valid <= 0;
+        end
+
+        if (pop && !empty) begin
+          if (feedthrough_valid) begin
+            data_out <= feedthrough_data;  
+            feedthrough_valid <= 0;
+          end else begin
+            top <= top - 1; 
+            data_out <= memory[top-1]; 
+          end
+        end
+      end
+
+      empty <= (top == 0);
+      full  <= (top == FILO_DEPTH);  
+    end
+  end
+endmodule
+```

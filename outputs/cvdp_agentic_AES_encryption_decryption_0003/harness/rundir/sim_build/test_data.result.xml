@@ -1,0 +1,8 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782033717" />
+    <testcase name="test_aes128_encrypt" classname="test_aes128_encrypt" file="/src/test_aes128_encrypt.py" lineno="18" time="0.0240478515625" sim_time_ns="140.0" ratio_time="5821.725888324873">
+      <failure error_type="AssertionError" error_msg="[ERROR] DUT o_data does not match model o_data: 0x2e27a813e3abfe563000823ba314b027 != 0xe3ae342f2e5c9424be317c28adb49916&#10;assert 61350396404198514298306430670063579175 == 302639273119932222429027963260223396118" />
+    </testcase>
+  </testsuite>
+</testsuites>

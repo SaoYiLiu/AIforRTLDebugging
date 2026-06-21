@@ -1,0 +1,13 @@
+services:
+
+  direct:
+    image: nvidia/cvdp-sim:v1.0.0
+    volumes:
+      - ./src/:/src/:ro
+      - ./rtl:/code/rtl
+      - ./rundir:/code/rundir
+      - ./docs:/code/docs:ro
+      - ./verif:/code/verif:ro
+    env_file    : ./src/.env
+    command     : pytest -s -o cache_dir=/code/rundir/.cache /src/test_runner.py -v   
+    working_dir: /code/rundir

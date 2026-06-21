@@ -1,0 +1,4 @@
+ Network cvdp_react_cvdp_copilot_64b66b_encoder_0005_2_default Creating 
+ Network cvdp_react_cvdp_copilot_64b66b_encoder_0005_2_default Created 
+ Container cvdp_react_cvdp_copilot_64b66b_encoder_0005_2-direct-run-5d50eafac7d6 Creating 
+ Container cvdp_react_cvdp_copilot_64b66b_encoder_0005_2-direct-run-5d50eafac7d6 Created 

@@ -1,0 +1,138 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_runner      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782012471
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_src_100MHz_des_100MHz_same_phase (1/11)
+    60.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+    70.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+    80.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+    80.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_src_100MHz_des_100MHz_same_phase passed
+    80.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_src_100MHz_des_50MHz (2/11)
+   161.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   181.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+   181.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_src_100MHz_des_50MHz passed
+   181.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_src_50MHz_des_100MHz (3/11)
+   322.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   332.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   342.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+   342.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_src_50MHz_des_100MHz passed
+   342.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_src_100MHz_des_100MHz_and_different_phase (4/11)
+   418.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   428.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+   428.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_src_100MHz_des_100MHz_and_different_phase passed
+   428.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_RTL_Bug_src_100MHz_des_250MHz (5/11)
+   489.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   493.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   497.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+   497.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_RTL_Bug_src_100MHz_des_250MHz passed
+   497.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_random_clocks_and_reset (6/11)
+   498.00ns INFO     cocotb.cdc_pulse_synchronizer      Iteration 1: Selected src_clock frequency: 90.91 MHz
+   498.00ns INFO     cocotb.cdc_pulse_synchronizer      Iteration 1: Selected des_clock frequency: 71.43 MHz
+   568.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   582.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+   638.00ns INFO     cocotb.cdc_pulse_synchronizer      Iteration 2: Selected src_clock frequency: 125.00 MHz
+   638.00ns INFO     cocotb.cdc_pulse_synchronizer      Iteration 2: Selected des_clock frequency: 62.50 MHz
+   694.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   702.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+   764.00ns INFO     cocotb.cdc_pulse_synchronizer      Iteration 3: Selected src_clock frequency: 50.00 MHz
+   764.00ns INFO     cocotb.cdc_pulse_synchronizer      Iteration 3: Selected des_clock frequency: 52.63 MHz
+   830.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   834.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   840.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   846.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   859.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   859.00ns WARNING  ..set.test_random_clocks_and_reset des_pulse was not received within 4 des_clock cycles
+                                                        assert False
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_cdc_pulse_synchronizer.py", line 96, in test_random_clocks_and_reset
+                                                            await run_test(dut)
+                                                          File "/src/test_cdc_pulse_synchronizer.py", line 37, in run_test
+                                                            assert des_pulse_received, "des_pulse was not received within 4 des_clock cycles"
+                                                        AssertionError: des_pulse was not received within 4 des_clock cycles
+                                                        assert False
+   859.00ns WARNING  cocotb.regression                  test_cdc_pulse_synchronizer.test_random_clocks_and_reset failed
+   859.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_reset (7/11)
+   950.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+   950.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_reset passed
+   950.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_src_90MHz_des_100MHz (8/11)
+  1031.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+  1041.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+  1041.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_src_90MHz_des_100MHz passed
+  1041.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_src_111p1MHz_des_83p33MHz (9/11)
+  1114.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+  1126.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+  1126.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_src_111p1MHz_des_83p33MHz passed
+  1126.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_src_1MHz_des_100MHz (10/11)
+  8127.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+  8137.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+  8147.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 1
+  8147.00ns INFO     cocotb.regression                  test_cdc_pulse_synchronizer.test_src_1MHz_des_100MHz passed
+  8147.00ns INFO     cocotb.regression                  running test_cdc_pulse_synchronizer.test_src_100MHz_des_1MHz (11/11)
+  9148.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+ 10148.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+ 11148.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+ 12148.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+ 13148.00ns INFO     cocotb.cdc_pulse_synchronizer      des_pulse = 0
+ 13148.00ns WARNING  ..es_1MHz.test_src_100MHz_des_1MHz des_pulse was not received within 4 des_clock cycles
+                                                        assert False
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_cdc_pulse_synchronizer.py", line 173, in test_src_100MHz_des_1MHz
+                                                            await run_test(dut)
+                                                          File "/src/test_cdc_pulse_synchronizer.py", line 37, in run_test
+                                                            assert des_pulse_received, "des_pulse was not received within 4 des_clock cycles"
+                                                        AssertionError: des_pulse was not received within 4 des_clock cycles
+                                                        assert False
+ 13148.00ns WARNING  cocotb.regression                  test_cdc_pulse_synchronizer.test_src_100MHz_des_1MHz failed
+ 13148.00ns INFO     cocotb.regression                  ************************************************************************************************************************************
+                                                        ** TEST                                                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ************************************************************************************************************************************
+                                                        ** test_cdc_pulse_synchronizer.test_src_100MHz_des_100MHz_same_phase            PASS          80.00           0.00      21991.37  **
+                                                        ** test_cdc_pulse_synchronizer.test_src_100MHz_des_50MHz                        PASS         100.00           0.00      48573.29  **
+                                                        ** test_cdc_pulse_synchronizer.test_src_50MHz_des_100MHz                        PASS         160.00           0.00      40050.65  **
+                                                        ** test_cdc_pulse_synchronizer.test_src_100MHz_des_100MHz_and_different_phase   PASS          85.00           0.00      32552.58  **
+                                                        ** test_cdc_pulse_synchronizer.test_RTL_Bug_src_100MHz_des_250MHz               PASS          68.00           0.00      19475.09  **
+                                                        ** test_cdc_pulse_synchronizer.test_random_clocks_and_reset                     FAIL         361.00           0.02      22047.96  **
+                                                        ** test_cdc_pulse_synchronizer.test_reset                                       PASS          90.00           0.00      45529.77  **
+                                                        ** test_cdc_pulse_synchronizer.test_src_90MHz_des_100MHz                        PASS          90.00           0.00      31020.41  **
+                                                        ** test_cdc_pulse_synchronizer.test_src_111p1MHz_des_83p33MHz                   PASS          84.00           0.00      29255.30  **
+                                                        ** test_cdc_pulse_synchronizer.test_src_1MHz_des_100MHz                         PASS        7020.00           0.06     119162.63  **
+                                                        ** test_cdc_pulse_synchronizer.test_src_100MHz_des_1MHz                         FAIL        5000.00           0.04     119032.60  **
+                                                        ************************************************************************************************************************************
+                                                        ** TESTS=11 PASS=9 FAIL=2 SKIP=0                                                           13148.00           0.18      71686.04  **
+                                                        ************************************************************************************************************************************
+FAILED
+
+=================================== FAILURES ===================================
+_________________________________ test_runner __________________________________
+
+    def test_runner():
+        runner = get_runner(sim)
+    
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            always=True,
+            clean=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+>       runner.test(hdl_toplevel=toplevel, test_module=module,waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:26: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s cdc_pulse_synchronizer -g2012 -f /code/rundir/sim_build/cmds.f /code/rtl/cdc_pulse_synchronizer.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 2 of 11 tests.
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_runner - SystemExit: 1
+============================== 1 failed in 1.59s ===============================

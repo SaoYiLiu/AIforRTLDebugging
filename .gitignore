@@ -11,9 +11,6 @@ __pycache__/
 *.blif
 *.json
 
-# generated outputs
-outputs/
-
 # SymbiYosys artifacts
 *_sby/
 sby_*/

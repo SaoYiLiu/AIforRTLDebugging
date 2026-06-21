@@ -1,0 +1,125 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_runner      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782012826
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_fsm_seq_det.test_reset (1/6)
+    40.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+    50.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+    60.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+    70.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+    80.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+    90.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   100.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   110.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   120.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   130.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   140.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   145.00ns INFO     cocotb.regression                  test_fsm_seq_det.test_reset passed
+   145.00ns INFO     cocotb.regression                  running test_fsm_seq_det.test_detection_at_start (2/6)
+   186.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   196.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   206.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   216.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   226.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   236.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   246.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   256.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   266.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   276.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 1, test_sequence: 1
+   286.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   291.00ns INFO     cocotb.regression                  test_fsm_seq_det.test_detection_at_start passed
+   291.00ns INFO     cocotb.regression                  running test_fsm_seq_det.test_detection_at_end (3/6)
+   332.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   342.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   352.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   362.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   372.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   382.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   392.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   402.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   412.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   422.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   432.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   442.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   452.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   457.00ns INFO     cocotb.regression                  test_fsm_seq_det.test_detection_at_end passed
+   457.00ns INFO     cocotb.regression                  running test_fsm_seq_det.test_multiple_occurrences (4/6)
+   498.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   508.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   518.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   528.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   538.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   548.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   558.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   568.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   578.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   588.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 1, test_sequence: 1
+   598.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   608.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   618.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   628.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   638.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   648.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   653.00ns INFO     cocotb.regression                  test_fsm_seq_det.test_multiple_occurrences passed
+   653.00ns INFO     cocotb.regression                  running test_fsm_seq_det.test_noise_before_after (5/6)
+   694.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   704.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   714.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   724.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   734.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   744.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   754.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   764.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   774.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   784.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   794.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   804.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   814.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   824.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   834.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   844.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 1, test_sequence: 1
+   849.00ns INFO     cocotb.regression                  test_fsm_seq_det.test_noise_before_after passed
+   849.00ns INFO     cocotb.regression                  running test_fsm_seq_det.test_rtl_bug_seq (6/6)
+   890.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   900.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   910.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   920.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   930.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   940.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+   950.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+   960.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   970.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+   980.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+   990.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+  1000.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 1, test_sequence: 0
+  1010.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+  1020.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 1
+  1030.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+  1040.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 1
+  1050.00ns INFO     cocotb.fsm_seq_detector            Input: 1, Decoded Output: 0, test_sequence: 0
+  1060.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 0, test_sequence: 0
+  1070.00ns INFO     cocotb.fsm_seq_detector            Input: 0, Decoded Output: 1, test_sequence: 0
+  1075.00ns INFO     cocotb.regression                  test_fsm_seq_det.test_rtl_bug_seq passed
+  1075.00ns INFO     cocotb.regression                  ****************************************************************************************************
+                                                        ** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************************
+                                                        ** test_fsm_seq_det.test_reset                  PASS         145.00           0.01      26420.53  **
+                                                        ** test_fsm_seq_det.test_detection_at_start     PASS         145.00           0.01      26874.68  **
+                                                        ** test_fsm_seq_det.test_detection_at_end       PASS         165.00           0.01      16364.63  **
+                                                        ** test_fsm_seq_det.test_multiple_occurrences   PASS         195.00           0.01      25841.68  **
+                                                        ** test_fsm_seq_det.test_noise_before_after     PASS         195.00           0.01      27185.05  **
+                                                        ** test_fsm_seq_det.test_rtl_bug_seq            PASS         225.00           0.01      26485.14  **
+                                                        ****************************************************************************************************
+                                                        ** TESTS=6 PASS=6 FAIL=0 SKIP=0                             1075.00           0.06      16885.03  **
+                                                        ****************************************************************************************************
+PASSED
+
+============================== 1 passed in 1.57s ===============================

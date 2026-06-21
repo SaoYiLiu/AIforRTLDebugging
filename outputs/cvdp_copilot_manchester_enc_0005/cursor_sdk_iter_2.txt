@@ -1,0 +1,55 @@
+## Transport
+rest
+
+## Rationale
+- **Lines 18–33:** In `always_comb`, when `enc_valid_in` is 0 the `else` branch only drives `enc_valid_out`; `enc_data_out` is never assigned, so synthesis infers a latch and the bus holds the previous value (`6'b011001` in cycles 8–9 instead of `6'b000000`).
+- **Spec table (cycles 8–9):** With `enc_valid_in = 0`, `enc_data_out` must be `6'b000000`; latch behavior is exactly what the problem statement calls out as corrupting the link.
+- **Lines 18–33:** Combinational logic also drives `enc_valid_out` directly from `enc_valid_in`, so when the test sets `enc_valid_in = 0` (after the capture clock), `enc_valid_out` drops immediately and `await RisingEdge(dut.enc_valid_out)` never sees a rising edge — consistent with the **600s harness timeout**.
+- **Lines 6, 7:** `clk_in` and `rst_in` are inputs but unused in combinational-only logic; registered outputs on `posedge clk_in` with active-high reset match the cycle-by-cycle spec (reset clears outputs; invalid cycles clear outputs).
+- **Fix:** Combinational Manchester mapping into `next_enc_data` (every bit assigned every evaluation — no latch), and `always_ff` to register `enc_valid_out` / `enc_data_out`, asserting encoded data when `enc_valid_in` is high and clearing both when it is low or reset is active.
+- **Encoding rule preserved:** For each input bit, `1 → 10` and `0 → 01`, which matches the expected values in cycles 2–7 (e.g. `3'b000 → 6'b101010`, `3'b101 → 6'b011001`).
+
+## PatchedFiles
+### rtl/manchester_encoder.sv
+```verilog
+// Manchester encoder module
+module manchester_encoder #(
+    parameter N = 8  // Default width of input data
+) (
+    input  logic clk_in,          // Clock input
+    input  logic rst_in,          // Active high reset input
+    input  logic enc_valid_in,        // Input valid signal
+    input  logic [N-1:0] enc_data_in, // N-bit input data
+    output logic enc_valid_out,       // Output valid signal
+    output logic [2*N-1:0] enc_data_out // 2N-bit output encoded data
+);
+
+    logic [2*N-1:0] next_enc_data;
+
+    always_comb begin
+        for (int i = 0; i < N; i++) begin
+            if (enc_data_in[i] == 1'b1) begin
+                next_enc_data[2*i]     = 1'b1;
+                next_enc_data[2*i + 1] = 1'b0;
+            end else begin
+                next_enc_data[2*i]     = 1'b0;
+                next_enc_data[2*i + 1] = 1'b1;
+            end
+        end
+    end
+
+    always_ff @(posedge clk_in) begin
+        if (rst_in) begin
+            enc_valid_out <= 1'b0;
+            enc_data_out  <= '0;
+        end else if (enc_valid_in) begin
+            enc_valid_out <= 1'b1;
+            enc_data_out  <= next_enc_data;
+        end else begin
+            enc_valid_out <= 1'b0;
+            enc_data_out  <= '0;
+        end
+    end
+
+endmodule
+```

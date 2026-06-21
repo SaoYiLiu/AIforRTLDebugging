@@ -1,0 +1,57 @@
+## Rationale
+- **Suspected bug (L033):** The binary-to-Gray conversion uses `(bin_add_wire >> 2) ^ bin_add_wire` instead of the correct formula `(bin_add_wire >> 1) ^ bin_add_wire`. Standard binary-to-Gray is `gray = binary ^ (binary >> 1)`; shifting by 2 corrupts every converted value after the first increment.
+
+- **Waveform evidence:** The first mismatch is at **130 ps** (sampled at **125 ps** on the posedge). Both DUT and ref agree at 105 ps (`gray_out = 1`), but at 125 ps ref is `11` (0011) while DUT is `10` (0010)—exactly one step off in the Gray sequence, consistent with a wrong shift in the conversion.
+
+- **Causal trace:** `tb_mismatch` stays 0 through 105 ps, then goes high at 125 ps when `gray_out_dut` becomes `10` while `gray_out_ref` is `11`. The divergence starts on the second Gray-code update, not at reset, pointing to the combinational Gray encoder rather than reset or clocking.
+
+- **Downstream effect:** Because `gray_wire` feeds the Gray-to-binary block (L016–L019) on the next cycle, the wrong shift propagates through `bin_out`, `bin_add_wire`, and `gray_out`, producing 380/421 mismatches and a scrambled sequence (e.g., DUT `101` at 145 ps vs ref `10`).
+
+- **Fix applied:** Change L033 from `>> 2` to `>> 1` only. Simulation against the reference testbench confirms **0 mismatches in 421 samples**.
+
+## FixedTopModule
+```verilog
+module TopModule(
+   input   clk,
+   input   rst_n,
+
+   output  reg [3:0] gray_out
+);
+//Gray code to binary conversion
+reg  [3:0] bin_out;
+wire [3:0] gray_wire;
+
+always @(posedge clk or negedge rst_n)begin
+   if(rst_n == 1'b0) begin
+      bin_out <= 4'b0;
+   end
+   else begin
+      bin_out[3] = gray_wire[3];
+      bin_out[2] = gray_wire[2]^bin_out[3];
+      bin_out[1] = gray_wire[1]^bin_out[2];
+      bin_out[0] = gray_wire[0]^bin_out[1];
+   end 
+end
+//Binary increment
+reg [3:0] bin_add_wire;
+always @(posedge clk or negedge rst_n)begin
+   if(rst_n == 1'b0) begin
+      bin_add_wire <= 4'b0;
+   end
+   else begin
+      bin_add_wire <= bin_out + 1'b1;
+   end
+end
+//Binary to gray code conversion
+assign gray_wire = (bin_add_wire >> 1) ^ bin_add_wire;
+
+always @(posedge clk or negedge rst_n)begin
+   if(rst_n == 1'b0) begin
+      gray_out <= 4'b0;
+   end
+   else begin
+      gray_out <= gray_wire;
+   end
+end
+endmodule
+```

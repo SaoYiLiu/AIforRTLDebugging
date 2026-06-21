@@ -1,0 +1,8 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782022480" />
+    <testcase name="test_line_buffer" classname="test_line_buffer" file="/src/test_line_buffer.py" lineno="27" time="0.01824808120727539" sim_time_ns="130.0" ratio_time="7124.0366876584185">
+      <failure error_type="AssertionError" error_msg="[ERROR] DUT o_window does not match model o_window: 0x0 != 0x113&#10;assert 0 == 275" />
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782015925" />
+    <testcase name="test_montgomery_redc" classname="test_montgomery_redc" file="/src/test_montgomery_redc.py" lineno="8" time="0.06858944892883301" sim_time_ns="5000.0" ratio_time="72897.50942871544" />
+  </testsuite>
+</testsuites>

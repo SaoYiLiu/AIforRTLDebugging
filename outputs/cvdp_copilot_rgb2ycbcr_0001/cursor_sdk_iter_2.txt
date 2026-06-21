@@ -1,0 +1,110 @@
+## Transport
+rest
+
+## Rationale
+- **Root cause is a write-side pipeline skew, not the read pointer.** On each `fifo_write` (lines 76–80), the FIFO stores `{y_reg, cb_reg, cr_reg}` while those registers are updated in the same cycle from `y_calc`/`cb_calc`/`cr_calc` (lines 62–65). Because all updates are nonblocking, the FIFO always captures the **previous** cycle’s converted values.
+
+- **Harness evidence matches stale/reset data on the first reads.** Test Case 1 pixel 0 is `0000` (expected `8566`) — that is `{y_reg, cb_reg, cr_reg}` still at reset on the first write. Pixel 1 is `1410` (expected `62FD`) — that packs to Y=16, Cb=128, Cr=128, which is the YCbCr of RGB `(0,0,0)` from the cycle before the first real pixel’s RGB reaches `r/g/b`.
+
+- **The failure pattern is a fixed 2-entry offset, not random corruption.** Actual pixels 2 and 3 (`8566`, `62FD`) match expected pixels 0 and 1 in both test cases. That is exactly “two bogus FIFO entries, then correct data shifted late,” consistent with one write using reset regs and the next using conversion of `(0,0,0)`.
+
+- **The cocotb log confirms index-0 mismatch from empty conversion.** `Expected BA73, Got 0000` at index 0 is the same class of bug: first FIFO slot written before valid YCbCr is aligned with the current input beat.
+
+- **Read logic (lines 88–105) is consistent.** `empty = (read_ptr == write_ptr)`, `m_axis_tdata = fifo_data[read_ptr]`, and read-pointer increment on `fifo_read` behave correctly once the FIFO holds the right data. The apparent “early read” is reading correctly indexed but incorrectly written entries.
+
+- **Minimal fix:** derive RGB and YCbCr **combinationally from `s_axis_tdata`** and write `{y_calc, cb_calc, cr_calc}` into the FIFO on the same cycle as the input beat. Remove the extra register stage (`y_reg`/`cb_reg`/`cr_reg`) that introduced the 1-cycle (effectively 2-entry) misalignment.
+
+---
+
+## PatchedFiles
+### rtl/axis_rgb2ycbcr.sv
+```verilog
+module axis_rgb2ycbcr #(
+    parameter PIXEL_WIDTH = 16,
+    parameter FIFO_DEPTH = 16
+)(
+    input  wire            aclk,
+    input  wire            aresetn,
+
+    // AXI Stream Slave Interface (Input)
+    input  wire [15:0]     s_axis_tdata,
+    input  wire            s_axis_tvalid,
+    output wire            s_axis_tready,
+    input  wire            s_axis_tlast,
+    input  wire            s_axis_tuser,
+
+    // AXI Stream Master Interface (Output)
+    output wire [15:0]     m_axis_tdata,
+    output wire            m_axis_tvalid,
+    input  wire            m_axis_tready,
+    output wire            m_axis_tlast,
+    output wire            m_axis_tuser
+);
+
+    // -----------------------------
+    // FIFO Buffer (16-depth buffer)
+    // -----------------------------
+    reg [15:0] fifo_data [0:FIFO_DEPTH-1];
+    reg        fifo_tlast [0:FIFO_DEPTH-1];
+    reg        fifo_tuser [0:FIFO_DEPTH-1];
+
+    reg [3:0]  write_ptr, read_ptr; // 4-bit pointers for FIFO
+    reg        full;
+    wire       empty;
+
+    wire       fifo_write = s_axis_tvalid && !full;
+    wire       fifo_read  = !empty && m_axis_tready;
+
+    // -----------------------------
+    // RGB Extraction
+    // -----------------------------
+    wire [7:0] r = {s_axis_tdata[15:11], 3'b0}; // 5-bit to 8-bit
+    wire [7:0] g = {s_axis_tdata[10:5],  2'b0}; // 6-bit to 8-bit
+    wire [7:0] b = {s_axis_tdata[4:0],   3'b0}; // 5-bit to 8-bit
+
+    // -----------------------------
+    // RGB to YCbCr Conversion
+    // -----------------------------
+    wire [7:0] y_calc  = (( 77 * r + 150 * g +  29 * b) >> 8) + 16;
+    wire [7:0] cb_calc = ((-43 * r - 85 * g + 128 * b) >> 8) + 128;
+    wire [7:0] cr_calc = ((128 * r - 107 * g - 21 * b) >> 8) + 128;
+
+    // -----------------------------
+    // FIFO Buffer Write
+    // -----------------------------
+    always @(posedge aclk) begin
+        if (!aresetn) begin
+            write_ptr <= 0;
+            full <= 0;
+        end else if (fifo_write) begin
+            fifo_data[write_ptr] <= {y_calc[7:3], cb_calc[7:2], cr_calc[7:3]};
+            fifo_tlast[write_ptr] <= s_axis_tlast;
+            fifo_tuser[write_ptr] <= s_axis_tuser;
+            write_ptr <= write_ptr + 1;
+            full <= (write_ptr == FIFO_DEPTH-1);
+        end
+    end
+
+    // -----------------------------
+    // FIFO Buffer Read
+    // -----------------------------
+    always @(posedge aclk) begin
+        if (!aresetn) begin
+            read_ptr <= 0;
+        end else if (fifo_read) begin
+            read_ptr <= read_ptr + 1;
+        end
+    end
+    assign empty = (read_ptr == write_ptr);
+
+    // -----------------------------
+    // AXI-Stream Output Signals
+    // -----------------------------
+    assign s_axis_tready = !full;
+    assign m_axis_tvalid = !empty;
+    assign m_axis_tdata  = fifo_data[read_ptr];
+    assign m_axis_tlast  = fifo_tlast[read_ptr];
+    assign m_axis_tuser  = fifo_tuser[read_ptr];
+
+endmodule
+```

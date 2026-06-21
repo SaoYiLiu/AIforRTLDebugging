@@ -1,0 +1,6 @@
+ Network cvdp_react_cvdp_copilot_prim_max_0001_2_default Creating 
+ Network cvdp_react_cvdp_copilot_prim_max_0001_2_default Created 
+ Image cvdp_react_cvdp_copilot_prim_max_0001_2-direct Building 
+ Image cvdp_react_cvdp_copilot_prim_max_0001_2-direct Built 
+ Container cvdp_react_cvdp_copilot_prim_max_0001_2-direct-run-d32be7f6013e Creating 
+ Container cvdp_react_cvdp_copilot_prim_max_0001_2-direct-run-d32be7f6013e Created 

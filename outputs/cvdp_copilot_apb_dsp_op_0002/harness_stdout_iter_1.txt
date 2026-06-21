@@ -1,0 +1,214 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 690B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 180B 0.0s done
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/nvidia/cvdp-sim:v1.0.0
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B 0.0s done
+#4 DONE 0.1s
+
+#5 [1/1] FROM docker.io/nvidia/cvdp-sim:v1.0.0@sha256:5460a1246ec7c3fbd34328936868bc8d7bc671ad54c7c08c9346fc103da713ee
+#5 resolve docker.io/nvidia/cvdp-sim:v1.0.0@sha256:5460a1246ec7c3fbd34328936868bc8d7bc671ad54c7c08c9346fc103da713ee 0.0s done
+#5 CACHED
+
+#6 exporting to image
+#6 exporting layers done
+#6 exporting manifest sha256:daa6ee580fd9dcde11e072741a217e61f1dc77019270dd2f6fe0270a86900787 0.0s done
+#6 exporting config sha256:de57061612f9404a6700b5c907f2ea6eb5aca4e1114c6d1f2b670278ce56924b 0.0s done
+#6 exporting attestation manifest sha256:e3cce874d819d94ab995234a645ed9caabce7158c2d21fc512ceaccbfcc901d5 0.0s done
+#6 exporting manifest list sha256:94b1912d2ebf5f0bdd113b93622a235996493fbafaa2d55fbd98c570a9b3fb7f
+#6 exporting manifest list sha256:94b1912d2ebf5f0bdd113b93622a235996493fbafaa2d55fbd98c570a9b3fb7f 0.0s done
+#6 naming to docker.io/library/cvdp_react_cvdp_copilot_apb_dsp_op_0002_1-direct:latest done
+#6 unpacking to docker.io/library/cvdp_react_cvdp_copilot_apb_dsp_op_0002_1-direct:latest 0.0s done
+#6 DONE 0.2s
+
+#7 resolving provenance for metadata file
+#7 DONE 0.0s
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_cvdp_copilot_apb_dsp_op[8-32] FAILED      [100%]
+
+=================================== FAILURES ===================================
+______________________ test_cvdp_copilot_apb_dsp_op[8-32] ______________________
+
+addr_width = 8, data_width = 32
+
+    @pytest.mark.parametrize("addr_width, data_width", [(8, 32)])  # Add desired ADDR_WIDTH and DATA_WIDTH values here
+    def test_cvdp_copilot_apb_dsp_op(addr_width, data_width):
+        """
+        Pytest function to run cocotb simulations with different ADDR_WIDTH and DATA_WIDTH parameters.
+    
+        Args:
+            addr_width (int): The ADDR_WIDTH value to test.
+            data_width (int): The DATA_WIDTH value to test.
+        """
+        try:
+>           runner(addr_width, data_width)
+
+/src/test_runner.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+addr_width = 8, data_width = 32
+
+    def runner(addr_width, data_width):
+        """
+        Runs the cocotb simulation with the specified ADDR_WIDTH and DATA_WIDTH parameters.
+    
+        Args:
+            addr_width (int): The ADDR_WIDTH value to test.
+            data_width (int): The DATA_WIDTH value to test.
+        """
+        logger.info(f"Starting simulation with ADDR_WIDTH = {addr_width}")
+        logger.info(f"Starting simulation with DATA_WIDTH = {data_width}")
+    
+        # Initialize the simulator runner
+        runner = get_runner(sim)
+    
+        # Build the simulation with the specified ADDR_WIDTH and DATA_WIDTH parameters
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters={"ADDR_WIDTH": addr_width, "DATA_WIDTH": data_width},  # Pass ADDR_WIDTH parameter
+            # Simulator Arguments
+            always=True,
+            clean=True,
+            waves=False,        # Disable waveform generation for faster runs
+            verbose=False,      # Set to True for detailed simulator logs
+            timescale=("1ns", "1ps"),
+            log_file=f"sim_{toplevel}.log"
+        )
+    
+        # Run the simulation
+>       runner.test(
+            hdl_toplevel=toplevel,
+            test_module=module,
+            waves=False
+        )
+E       SystemExit: 1
+
+/src/test_runner.py:48: SystemExit
+----------------------------- Captured stdout call -----------------------------
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011685
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test1_write_read_addr_a (1/15)
+                                                            Test 1: Write and Read ADDRESS_A Register (reg_operand_a)
+     0.00ns INFO     cocotb.apb_dsp_op                  Test 1: Write and Read ADDRESS_A Register
+   100.00ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test1_write_read_addr_a passed
+   100.00ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test2_write_read_addr_b (2/15)
+                                                            Test 2: Write and Read ADDRESS_B Register (reg_operand_b)
+   100.00ns INFO     cocotb.apb_dsp_op                  Test 2: Write and Read ADDRESS_B Register
+   200.00ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test2_write_read_addr_b passed
+   200.00ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test3_write_read_addr_c (3/15)
+                                                            Test 3: Write and Read ADDRESS_C Register (reg_operand_c)
+   200.00ns INFO     cocotb.apb_dsp_op                  Test 3: Write and Read ADDRESS_C Register
+   300.00ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test3_write_read_addr_c passed
+   300.00ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test4_write_read_addr_o (4/15)
+                                                            Test 4: Write and Read ADDRESS_O Register (reg_operand_o)
+   300.00ns INFO     cocotb.apb_dsp_op                  Test 4: Write and Read ADDRESS_O Register
+   400.00ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test4_write_read_addr_o passed
+   400.00ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test5_write_read_addr_control (5/15)
+                                                            Test 5: Write and Read ADDRESS_CONTROL Register (reg_control)
+   400.00ns INFO     cocotb.apb_dsp_op                  Test 5: Write and Read ADDRESS_CONTROL Register
+   500.00ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test5_write_read_addr_control passed
+   500.00ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test6_write_read_wdata_sram (6/15)
+                                                            Test 6: Write and Read ADDRESS_WDATA Register (reg_wdata_sram)
+   500.00ns INFO     cocotb.apb_dsp_op                  Test 6: Write and Read ADDRESS_WDATA Register
+   600.00ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test6_write_read_wdata_sram passed
+   600.00ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test7_write_read_addr_sram (7/15)
+                                                            Test 7: Write and Read ADDRESS_SRAM_ADDR Register (reg_addr_sram)
+   600.01ns INFO     cocotb.apb_dsp_op                  Test 7: Write and Read ADDRESS_SRAM_ADDR Register
+   700.01ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test7_write_read_addr_sram passed
+   700.01ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test8_invalid_address_access (8/15)
+                                                            Test 8: Attempt to Access Invalid Address
+   700.01ns INFO     cocotb.apb_dsp_op                  Test 8: Attempt to Access Invalid Address
+   780.01ns WARNING  ..ess.test8_invalid_address_access apb_dsp_op contains no child object named PSLVERR
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_apb_dsp_op_harness.py", line 424, in test8_invalid_address_access
+                                                            received_PSLVERR = int(dut.PSLVERR.value)
+                                                                                   ^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: apb_dsp_op contains no child object named PSLVERR
+   780.01ns WARNING  cocotb.regression                  test_apb_dsp_op_harness.test8_invalid_address_access failed
+   780.01ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test9_write_read_sram (9/15)
+                                                            Test 9: Write and Read from the SRAM
+   780.01ns INFO     cocotb.apb_dsp_op                  Test 9: Write and Read from the SRAM
+   980.01ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test9_write_read_sram passed
+   980.01ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test10_perform_dsp_op (10/15)
+                                                            Test 10: Perform a DSP Operation
+   980.01ns INFO     cocotb.apb_dsp_op                  Test 10: Perform a DSP Operation
+  1470.01ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test10_perform_dsp_op passed
+  1470.01ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test11_sram_apb_op (11/15)
+                                                            Test 11: Perform a SRAM and APB Operation
+  1470.01ns INFO     cocotb.apb_dsp_op                  Test 11: Perform a SRAM and APB Operation
+  1710.01ns INFO     cocotb.apb_dsp_op                  Test 11 completed successfully
+  1710.01ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test11_sram_apb_op passed
+  1710.01ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test12_dsp_apb_op (12/15)
+                                                            Test 12: Perform a DSP and APB Operation
+  1710.01ns INFO     cocotb.apb_dsp_op                  Test 12: Perform a DSP and APB Operation
+  2210.01ns INFO     cocotb.apb_dsp_op                  Test 12 completed successfully
+  2210.01ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test12_dsp_apb_op passed
+  2210.01ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test13_invalid_sram_address (13/15)
+                                                            Test 13: Attempt to Access an Invalid SRAM Address
+  2210.01ns INFO     cocotb.apb_dsp_op                  Test 13: Attempt to Access an Invalid SRAM Address
+  2340.01ns WARNING  ..ress.test13_invalid_sram_address apb_dsp_op contains no child object named PSLVERR
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_apb_dsp_op_harness.py", line 922, in test13_invalid_sram_address
+                                                            received_PSLVERR = int(dut.PSLVERR.value)
+                                                                                   ^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/handle.py", line 484, in __getattr__
+                                                            raise AttributeError(f"{self._path} contains no child object named {name}")
+                                                        AttributeError: apb_dsp_op contains no child object named PSLVERR
+  2340.01ns WARNING  cocotb.regression                  test_apb_dsp_op_harness.test13_invalid_sram_address failed
+  2340.01ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test14_multiple_dsp_op (14/15)
+                                                            Test 14: Perform Multiple DSP Operations to Check Pipelining Behavior
+  2340.01ns INFO     cocotb.apb_dsp_op                  Test 14: Perform Multiple DSP Operations to Check Pipelining Behavior
+  3110.01ns INFO     cocotb.apb_dsp_op                  Test 14 completed successfully
+  3110.01ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test14_multiple_dsp_op passed
+  3110.01ns INFO     cocotb.regression                  running test_apb_dsp_op_harness.test15_write_sram_while_read (15/15)
+                                                            Test 15: Write to SRAM while an ongoing read is in progress
+  3110.01ns INFO     cocotb.apb_dsp_op                  Test 15: Write to SRAM while an ongoing read is in progress
+  3410.01ns INFO     cocotb.apb_dsp_op                  Test 15 completed successfully
+  3410.01ns INFO     cocotb.regression                  test_apb_dsp_op_harness.test15_write_sram_while_read passed
+  3410.01ns INFO     cocotb.regression                  ***************************************************************************************************************
+                                                        ** TEST                                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***************************************************************************************************************
+                                                        ** test_apb_dsp_op_harness.test1_write_read_addr_a         PASS         100.00           0.01      16978.93  **
+                                                        ** test_apb_dsp_op_harness.test2_write_read_addr_b         PASS         100.00           0.01      18119.51  **
+                                                        ** test_apb_dsp_op_harness.test3_write_read_addr_c         PASS         100.00           0.01      19743.48  **
+                                                        ** test_apb_dsp_op_harness.test4_write_read_addr_o         PASS         100.00           0.01      19716.56  **
+                                                        ** test_apb_dsp_op_harness.test5_write_read_addr_control   PASS         100.00           0.01      19685.10  **
+                                                        ** test_apb_dsp_op_harness.test6_write_read_wdata_sram     PASS         100.00           0.00      20257.45  **
+                                                        ** test_apb_dsp_op_harness.test7_write_read_addr_sram      PASS         100.00           0.00      20654.47  **
+                                                        ** test_apb_dsp_op_harness.test8_invalid_address_access    FAIL          80.00           0.01       8913.62  **
+                                                        ** test_apb_dsp_op_harness.test9_write_read_sram           PASS         200.00           0.01      17733.40  **
+                                                        ** test_apb_dsp_op_harness.test10_perform_dsp_op           PASS         490.00           0.03      15215.43  **
+                                                        ** test_apb_dsp_op_harness.test11_sram_apb_op              PASS         240.00           0.01      18822.25  **
+                                                        ** test_apb_dsp_op_harness.test12_dsp_apb_op               PASS         500.00           0.02      20075.16  **
+                                                        ** test_apb_dsp_op_harness.test13_invalid_sram_address     FAIL         130.00           0.01      11239.45  **
+                                                        ** test_apb_dsp_op_harness.test14_multiple_dsp_op          PASS         770.00           0.05      16660.38  **
+                                                        ** test_apb_dsp_op_harness.test15_write_sram_while_read    PASS         300.00           0.02      19938.06  **
+                                                        ***************************************************************************************************************
+                                                        ** TESTS=15 PASS=13 FAIL=2 SKIP=0                                      3410.01           0.26      13211.89  **
+                                                        ***************************************************************************************************************
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s apb_dsp_op -g2012 -Papb_dsp_op.ADDR_WIDTH=8 -Papb_dsp_op.DATA_WIDTH=32 -f /code/rundir/sim_build/cmds.f /code/rtl/apb_dsp_op.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -none in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 2 of 15 tests.
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_cvdp_copilot_apb_dsp_op[8-32] - SystemE...
+============================== 1 failed in 1.77s ===============================

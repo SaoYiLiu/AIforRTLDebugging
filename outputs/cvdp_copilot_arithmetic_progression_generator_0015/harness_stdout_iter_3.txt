@@ -1,0 +1,1977 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /rundir/harness/.cache
+rootdir: /src
+collecting ... collected 5 items
+
+../../src/test_runner.py::test_arithmetic_progression_generator[0-0-27]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011915
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_arithmetic_progression_generator.test_arithmetic_progression_generator (1/1)
+[INFO] Clock started.
+DATA_WIDTH= 27, SEQUENCE_LENGTH= 1, WIDTH_OUT_VAL=28 
+Overflow check !
+WIDTH_OUT_VAL = 28, EXPECTED_WIDTH_OUT_VAL = 28
+[DEBUG] Cycle 1/44: start_val = 0x7ffffff
+[DEBUG] Cycle 1/44: step_size = 134217727
+[DEBUG] Cycle 1/44: enable = 1
+[DEBUG] Cycle 1/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 1/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 2/44: start_val = 0x7ffffff
+[DEBUG] Cycle 2/44: step_size = 134217727
+[DEBUG] Cycle 2/44: enable = 1
+[DEBUG] Cycle 2/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 2/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 3/44: start_val = 0x7ffffff
+[DEBUG] Cycle 3/44: step_size = 134217727
+[DEBUG] Cycle 3/44: enable = 1
+[DEBUG] Cycle 3/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 3/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 4/44: start_val = 0x7ffffff
+[DEBUG] Cycle 4/44: step_size = 134217727
+[DEBUG] Cycle 4/44: enable = 1
+[DEBUG] Cycle 4/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 4/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 5/44: start_val = 0x7ffffff
+[DEBUG] Cycle 5/44: step_size = 134217727
+[DEBUG] Cycle 5/44: enable = 1
+[DEBUG] Cycle 5/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 5/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 6/44: start_val = 0x7ffffff
+[DEBUG] Cycle 6/44: step_size = 134217727
+[DEBUG] Cycle 6/44: enable = 1
+[DEBUG] Cycle 6/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 6/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 7/44: start_val = 0x7ffffff
+[DEBUG] Cycle 7/44: step_size = 134217727
+[DEBUG] Cycle 7/44: enable = 1
+[DEBUG] Cycle 7/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 7/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 8/44: start_val = 0x7ffffff
+[DEBUG] Cycle 8/44: step_size = 134217727
+[DEBUG] Cycle 8/44: enable = 1
+[DEBUG] Cycle 8/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 8/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 9/44: start_val = 0x7ffffff
+[DEBUG] Cycle 9/44: step_size = 134217727
+[DEBUG] Cycle 9/44: enable = 1
+[DEBUG] Cycle 9/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 9/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 10/44: start_val = 0x7ffffff
+[DEBUG] Cycle 10/44: step_size = 134217727
+[DEBUG] Cycle 10/44: enable = 1
+[DEBUG] Cycle 10/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 10/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 11/44: start_val = 0x7ffffff
+[DEBUG] Cycle 11/44: step_size = 134217727
+[DEBUG] Cycle 11/44: enable = 1
+[DEBUG] Cycle 11/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 11/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 12/44: start_val = 0x7ffffff
+[DEBUG] Cycle 12/44: step_size = 134217727
+[DEBUG] Cycle 12/44: enable = 1
+[DEBUG] Cycle 12/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 12/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 13/44: start_val = 0x7ffffff
+[DEBUG] Cycle 13/44: step_size = 134217727
+[DEBUG] Cycle 13/44: enable = 1
+[DEBUG] Cycle 13/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 13/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 14/44: start_val = 0x7ffffff
+[DEBUG] Cycle 14/44: step_size = 134217727
+[DEBUG] Cycle 14/44: enable = 1
+[DEBUG] Cycle 14/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 14/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 15/44: start_val = 0x7ffffff
+[DEBUG] Cycle 15/44: step_size = 134217727
+[DEBUG] Cycle 15/44: enable = 1
+[DEBUG] Cycle 15/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 15/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 16/44: start_val = 0x7ffffff
+[DEBUG] Cycle 16/44: step_size = 134217727
+[DEBUG] Cycle 16/44: enable = 1
+[DEBUG] Cycle 16/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 16/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 17/44: start_val = 0x7ffffff
+[DEBUG] Cycle 17/44: step_size = 134217727
+[DEBUG] Cycle 17/44: enable = 1
+[DEBUG] Cycle 17/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 17/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 18/44: start_val = 0x7ffffff
+[DEBUG] Cycle 18/44: step_size = 134217727
+[DEBUG] Cycle 18/44: enable = 1
+[DEBUG] Cycle 18/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 18/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 19/44: start_val = 0x7ffffff
+[DEBUG] Cycle 19/44: step_size = 134217727
+[DEBUG] Cycle 19/44: enable = 1
+[DEBUG] Cycle 19/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 19/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 20/44: start_val = 0x7ffffff
+[DEBUG] Cycle 20/44: step_size = 134217727
+[DEBUG] Cycle 20/44: enable = 1
+[DEBUG] Cycle 20/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 20/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 21/44: start_val = 0x7ffffff
+[DEBUG] Cycle 21/44: step_size = 134217727
+[DEBUG] Cycle 21/44: enable = 1
+[DEBUG] Cycle 21/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 21/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 22/44: start_val = 0x7ffffff
+[DEBUG] Cycle 22/44: step_size = 134217727
+[DEBUG] Cycle 22/44: enable = 1
+[DEBUG] Cycle 22/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 22/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 23/44: start_val = 0x7ffffff
+[DEBUG] Cycle 23/44: step_size = 134217727
+[DEBUG] Cycle 23/44: enable = 1
+[DEBUG] Cycle 23/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 23/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 24/44: start_val = 0x7ffffff
+[DEBUG] Cycle 24/44: step_size = 134217727
+[DEBUG] Cycle 24/44: enable = 1
+[DEBUG] Cycle 24/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 24/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 25/44: start_val = 0x7ffffff
+[DEBUG] Cycle 25/44: step_size = 134217727
+[DEBUG] Cycle 25/44: enable = 1
+[DEBUG] Cycle 25/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 25/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 26/44: start_val = 0x7ffffff
+[DEBUG] Cycle 26/44: step_size = 134217727
+[DEBUG] Cycle 26/44: enable = 1
+[DEBUG] Cycle 26/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 26/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 27/44: start_val = 0x7ffffff
+[DEBUG] Cycle 27/44: step_size = 134217727
+[DEBUG] Cycle 27/44: enable = 1
+[DEBUG] Cycle 27/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 27/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 28/44: start_val = 0x7ffffff
+[DEBUG] Cycle 28/44: step_size = 134217727
+[DEBUG] Cycle 28/44: enable = 1
+[DEBUG] Cycle 28/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 28/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 29/44: start_val = 0x7ffffff
+[DEBUG] Cycle 29/44: step_size = 134217727
+[DEBUG] Cycle 29/44: enable = 1
+[DEBUG] Cycle 29/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 29/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 30/44: start_val = 0x7ffffff
+[DEBUG] Cycle 30/44: step_size = 134217727
+[DEBUG] Cycle 30/44: enable = 1
+[DEBUG] Cycle 30/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 30/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 31/44: start_val = 0x7ffffff
+[DEBUG] Cycle 31/44: step_size = 134217727
+[DEBUG] Cycle 31/44: enable = 1
+[DEBUG] Cycle 31/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 31/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 32/44: start_val = 0x7ffffff
+[DEBUG] Cycle 32/44: step_size = 134217727
+[DEBUG] Cycle 32/44: enable = 1
+[DEBUG] Cycle 32/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 32/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 33/44: start_val = 0x7ffffff
+[DEBUG] Cycle 33/44: step_size = 134217727
+[DEBUG] Cycle 33/44: enable = 1
+[DEBUG] Cycle 33/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 33/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 34/44: start_val = 0x7ffffff
+[DEBUG] Cycle 34/44: step_size = 134217727
+[DEBUG] Cycle 34/44: enable = 1
+[DEBUG] Cycle 34/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 34/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 35/44: start_val = 0x7ffffff
+[DEBUG] Cycle 35/44: step_size = 134217727
+[DEBUG] Cycle 35/44: enable = 1
+[DEBUG] Cycle 35/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 35/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 36/44: start_val = 0x7ffffff
+[DEBUG] Cycle 36/44: step_size = 134217727
+[DEBUG] Cycle 36/44: enable = 1
+[DEBUG] Cycle 36/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 36/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 37/44: start_val = 0x7ffffff
+[DEBUG] Cycle 37/44: step_size = 134217727
+[DEBUG] Cycle 37/44: enable = 1
+[DEBUG] Cycle 37/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 37/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 38/44: start_val = 0x7ffffff
+[DEBUG] Cycle 38/44: step_size = 134217727
+[DEBUG] Cycle 38/44: enable = 1
+[DEBUG] Cycle 38/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 38/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 39/44: start_val = 0x7ffffff
+[DEBUG] Cycle 39/44: step_size = 134217727
+[DEBUG] Cycle 39/44: enable = 1
+[DEBUG] Cycle 39/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 39/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 40/44: start_val = 0x7ffffff
+[DEBUG] Cycle 40/44: step_size = 134217727
+[DEBUG] Cycle 40/44: enable = 1
+[DEBUG] Cycle 40/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 40/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 41/44: start_val = 0x7ffffff
+[DEBUG] Cycle 41/44: step_size = 134217727
+[DEBUG] Cycle 41/44: enable = 1
+[DEBUG] Cycle 41/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 41/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 42/44: start_val = 0x7ffffff
+[DEBUG] Cycle 42/44: step_size = 134217727
+[DEBUG] Cycle 42/44: enable = 1
+[DEBUG] Cycle 42/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 42/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 43/44: start_val = 0x7ffffff
+[DEBUG] Cycle 43/44: step_size = 134217727
+[DEBUG] Cycle 43/44: enable = 1
+[DEBUG] Cycle 43/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 43/44: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 44/44: start_val = 0x7ffffff
+[DEBUG] Cycle 44/44: step_size = 134217727
+[DEBUG] Cycle 44/44: enable = 1
+[DEBUG] Cycle 44/44: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 44/44: actual_value   = 0x0, actual_done   = 0
+
+
+   480.00ns INFO     cocotb.regression                  test_arithmetic_progression_generator.test_arithmetic_progression_generator passed
+   480.00ns INFO     cocotb.regression                  *************************************************************************************************************************************
+                                                        ** TEST                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *************************************************************************************************************************************
+                                                        ** test_arithmetic_progression_generator.test_arithmetic_progression_generator   PASS         480.00           0.01      44217.48  **
+                                                        *************************************************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                                                               480.00           0.02      22287.90  **
+                                                        *************************************************************************************************************************************
+[DEBUG] Running simulation with DATA_WIDTH=27, SEQUENCE_LENGTH=0
+[DEBUG] Start Value: 0, Step Size: 0
+[DEBUG] Parameters: {'DATA_WIDTH': 27, 'SEQUENCE_LENGTH': 0}
+PASSED
+../../src/test_runner.py::test_arithmetic_progression_generator[1-0-27]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011916
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_arithmetic_progression_generator.test_arithmetic_progression_generator (1/1)
+[INFO] Clock started.
+DATA_WIDTH= 27, SEQUENCE_LENGTH= 1, WIDTH_OUT_VAL=28 
+Overflow check !
+WIDTH_OUT_VAL = 28, EXPECTED_WIDTH_OUT_VAL = 28
+[DEBUG] Cycle 1/46: start_val = 0x7ffffff
+[DEBUG] Cycle 1/46: step_size = 134217727
+[DEBUG] Cycle 1/46: enable = 1
+[DEBUG] Cycle 1/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 1/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 2/46: start_val = 0x7ffffff
+[DEBUG] Cycle 2/46: step_size = 134217727
+[DEBUG] Cycle 2/46: enable = 1
+[DEBUG] Cycle 2/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 2/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 3/46: start_val = 0x7ffffff
+[DEBUG] Cycle 3/46: step_size = 134217727
+[DEBUG] Cycle 3/46: enable = 1
+[DEBUG] Cycle 3/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 3/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 4/46: start_val = 0x7ffffff
+[DEBUG] Cycle 4/46: step_size = 134217727
+[DEBUG] Cycle 4/46: enable = 1
+[DEBUG] Cycle 4/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 4/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 5/46: start_val = 0x7ffffff
+[DEBUG] Cycle 5/46: step_size = 134217727
+[DEBUG] Cycle 5/46: enable = 1
+[DEBUG] Cycle 5/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 5/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 6/46: start_val = 0x7ffffff
+[DEBUG] Cycle 6/46: step_size = 134217727
+[DEBUG] Cycle 6/46: enable = 1
+[DEBUG] Cycle 6/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 6/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 7/46: start_val = 0x7ffffff
+[DEBUG] Cycle 7/46: step_size = 134217727
+[DEBUG] Cycle 7/46: enable = 1
+[DEBUG] Cycle 7/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 7/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 8/46: start_val = 0x7ffffff
+[DEBUG] Cycle 8/46: step_size = 134217727
+[DEBUG] Cycle 8/46: enable = 1
+[DEBUG] Cycle 8/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 8/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 9/46: start_val = 0x7ffffff
+[DEBUG] Cycle 9/46: step_size = 134217727
+[DEBUG] Cycle 9/46: enable = 1
+[DEBUG] Cycle 9/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 9/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 10/46: start_val = 0x7ffffff
+[DEBUG] Cycle 10/46: step_size = 134217727
+[DEBUG] Cycle 10/46: enable = 1
+[DEBUG] Cycle 10/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 10/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 11/46: start_val = 0x7ffffff
+[DEBUG] Cycle 11/46: step_size = 134217727
+[DEBUG] Cycle 11/46: enable = 1
+[DEBUG] Cycle 11/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 11/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 12/46: start_val = 0x7ffffff
+[DEBUG] Cycle 12/46: step_size = 134217727
+[DEBUG] Cycle 12/46: enable = 1
+[DEBUG] Cycle 12/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 12/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 13/46: start_val = 0x7ffffff
+[DEBUG] Cycle 13/46: step_size = 134217727
+[DEBUG] Cycle 13/46: enable = 1
+[DEBUG] Cycle 13/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 13/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 14/46: start_val = 0x7ffffff
+[DEBUG] Cycle 14/46: step_size = 134217727
+[DEBUG] Cycle 14/46: enable = 1
+[DEBUG] Cycle 14/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 14/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 15/46: start_val = 0x7ffffff
+[DEBUG] Cycle 15/46: step_size = 134217727
+[DEBUG] Cycle 15/46: enable = 1
+[DEBUG] Cycle 15/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 15/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 16/46: start_val = 0x7ffffff
+[DEBUG] Cycle 16/46: step_size = 134217727
+[DEBUG] Cycle 16/46: enable = 1
+[DEBUG] Cycle 16/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 16/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 17/46: start_val = 0x7ffffff
+[DEBUG] Cycle 17/46: step_size = 134217727
+[DEBUG] Cycle 17/46: enable = 1
+[DEBUG] Cycle 17/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 17/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 18/46: start_val = 0x7ffffff
+[DEBUG] Cycle 18/46: step_size = 134217727
+[DEBUG] Cycle 18/46: enable = 1
+[DEBUG] Cycle 18/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 18/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 19/46: start_val = 0x7ffffff
+[DEBUG] Cycle 19/46: step_size = 134217727
+[DEBUG] Cycle 19/46: enable = 1
+[DEBUG] Cycle 19/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 19/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 20/46: start_val = 0x7ffffff
+[DEBUG] Cycle 20/46: step_size = 134217727
+[DEBUG] Cycle 20/46: enable = 1
+[DEBUG] Cycle 20/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 20/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 21/46: start_val = 0x7ffffff
+[DEBUG] Cycle 21/46: step_size = 134217727
+[DEBUG] Cycle 21/46: enable = 1
+[DEBUG] Cycle 21/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 21/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 22/46: start_val = 0x7ffffff
+[DEBUG] Cycle 22/46: step_size = 134217727
+[DEBUG] Cycle 22/46: enable = 1
+[DEBUG] Cycle 22/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 22/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 23/46: start_val = 0x7ffffff
+[DEBUG] Cycle 23/46: step_size = 134217727
+[DEBUG] Cycle 23/46: enable = 1
+[DEBUG] Cycle 23/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 23/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 24/46: start_val = 0x7ffffff
+[DEBUG] Cycle 24/46: step_size = 134217727
+[DEBUG] Cycle 24/46: enable = 1
+[DEBUG] Cycle 24/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 24/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 25/46: start_val = 0x7ffffff
+[DEBUG] Cycle 25/46: step_size = 134217727
+[DEBUG] Cycle 25/46: enable = 1
+[DEBUG] Cycle 25/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 25/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 26/46: start_val = 0x7ffffff
+[DEBUG] Cycle 26/46: step_size = 134217727
+[DEBUG] Cycle 26/46: enable = 1
+[DEBUG] Cycle 26/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 26/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 27/46: start_val = 0x7ffffff
+[DEBUG] Cycle 27/46: step_size = 134217727
+[DEBUG] Cycle 27/46: enable = 1
+[DEBUG] Cycle 27/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 27/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 28/46: start_val = 0x7ffffff
+[DEBUG] Cycle 28/46: step_size = 134217727
+[DEBUG] Cycle 28/46: enable = 1
+[DEBUG] Cycle 28/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 28/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 29/46: start_val = 0x7ffffff
+[DEBUG] Cycle 29/46: step_size = 134217727
+[DEBUG] Cycle 29/46: enable = 1
+[DEBUG] Cycle 29/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 29/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 30/46: start_val = 0x7ffffff
+[DEBUG] Cycle 30/46: step_size = 134217727
+[DEBUG] Cycle 30/46: enable = 1
+[DEBUG] Cycle 30/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 30/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 31/46: start_val = 0x7ffffff
+[DEBUG] Cycle 31/46: step_size = 134217727
+[DEBUG] Cycle 31/46: enable = 1
+[DEBUG] Cycle 31/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 31/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 32/46: start_val = 0x7ffffff
+[DEBUG] Cycle 32/46: step_size = 134217727
+[DEBUG] Cycle 32/46: enable = 1
+[DEBUG] Cycle 32/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 32/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 33/46: start_val = 0x7ffffff
+[DEBUG] Cycle 33/46: step_size = 134217727
+[DEBUG] Cycle 33/46: enable = 1
+[DEBUG] Cycle 33/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 33/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 34/46: start_val = 0x7ffffff
+[DEBUG] Cycle 34/46: step_size = 134217727
+[DEBUG] Cycle 34/46: enable = 1
+[DEBUG] Cycle 34/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 34/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 35/46: start_val = 0x7ffffff
+[DEBUG] Cycle 35/46: step_size = 134217727
+[DEBUG] Cycle 35/46: enable = 1
+[DEBUG] Cycle 35/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 35/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 36/46: start_val = 0x7ffffff
+[DEBUG] Cycle 36/46: step_size = 134217727
+[DEBUG] Cycle 36/46: enable = 1
+[DEBUG] Cycle 36/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 36/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 37/46: start_val = 0x7ffffff
+[DEBUG] Cycle 37/46: step_size = 134217727
+[DEBUG] Cycle 37/46: enable = 1
+[DEBUG] Cycle 37/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 37/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 38/46: start_val = 0x7ffffff
+[DEBUG] Cycle 38/46: step_size = 134217727
+[DEBUG] Cycle 38/46: enable = 1
+[DEBUG] Cycle 38/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 38/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 39/46: start_val = 0x7ffffff
+[DEBUG] Cycle 39/46: step_size = 134217727
+[DEBUG] Cycle 39/46: enable = 1
+[DEBUG] Cycle 39/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 39/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 40/46: start_val = 0x7ffffff
+[DEBUG] Cycle 40/46: step_size = 134217727
+[DEBUG] Cycle 40/46: enable = 1
+[DEBUG] Cycle 40/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 40/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 41/46: start_val = 0x7ffffff
+[DEBUG] Cycle 41/46: step_size = 134217727
+[DEBUG] Cycle 41/46: enable = 1
+[DEBUG] Cycle 41/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 41/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 42/46: start_val = 0x7ffffff
+[DEBUG] Cycle 42/46: step_size = 134217727
+[DEBUG] Cycle 42/46: enable = 1
+[DEBUG] Cycle 42/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 42/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 43/46: start_val = 0x7ffffff
+[DEBUG] Cycle 43/46: step_size = 134217727
+[DEBUG] Cycle 43/46: enable = 1
+[DEBUG] Cycle 43/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 43/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 44/46: start_val = 0x7ffffff
+[DEBUG] Cycle 44/46: step_size = 134217727
+[DEBUG] Cycle 44/46: enable = 1
+[DEBUG] Cycle 44/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 44/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 45/46: start_val = 0x7ffffff
+[DEBUG] Cycle 45/46: step_size = 134217727
+[DEBUG] Cycle 45/46: enable = 1
+[DEBUG] Cycle 45/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 45/46: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 46/46: start_val = 0x7ffffff
+[DEBUG] Cycle 46/46: step_size = 134217727
+[DEBUG] Cycle 46/46: enable = 1
+[DEBUG] Cycle 46/46: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 46/46: actual_value   = 0x0, actual_done   = 0
+
+
+   500.00ns INFO     cocotb.regression                  test_arithmetic_progression_generator.test_arithmetic_progression_generator passed
+   500.00ns INFO     cocotb.regression                  *************************************************************************************************************************************
+                                                        ** TEST                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *************************************************************************************************************************************
+                                                        ** test_arithmetic_progression_generator.test_arithmetic_progression_generator   PASS         500.00           0.01      48352.67  **
+                                                        *************************************************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                                                               500.00           0.02      23820.99  **
+                                                        *************************************************************************************************************************************
+[DEBUG] Running simulation with DATA_WIDTH=27, SEQUENCE_LENGTH=0
+[DEBUG] Start Value: 0, Step Size: 0
+[DEBUG] Parameters: {'DATA_WIDTH': 27, 'SEQUENCE_LENGTH': 0}
+PASSED
+../../src/test_runner.py::test_arithmetic_progression_generator[2-0-27]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011918
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_arithmetic_progression_generator.test_arithmetic_progression_generator (1/1)
+[INFO] Clock started.
+DATA_WIDTH= 27, SEQUENCE_LENGTH= 1, WIDTH_OUT_VAL=28 
+Overflow check !
+WIDTH_OUT_VAL = 28, EXPECTED_WIDTH_OUT_VAL = 28
+[DEBUG] Cycle 1/62: start_val = 0x7ffffff
+[DEBUG] Cycle 1/62: step_size = 134217727
+[DEBUG] Cycle 1/62: enable = 1
+[DEBUG] Cycle 1/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 1/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 2/62: start_val = 0x7ffffff
+[DEBUG] Cycle 2/62: step_size = 134217727
+[DEBUG] Cycle 2/62: enable = 1
+[DEBUG] Cycle 2/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 2/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 3/62: start_val = 0x7ffffff
+[DEBUG] Cycle 3/62: step_size = 134217727
+[DEBUG] Cycle 3/62: enable = 1
+[DEBUG] Cycle 3/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 3/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 4/62: start_val = 0x7ffffff
+[DEBUG] Cycle 4/62: step_size = 134217727
+[DEBUG] Cycle 4/62: enable = 1
+[DEBUG] Cycle 4/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 4/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 5/62: start_val = 0x7ffffff
+[DEBUG] Cycle 5/62: step_size = 134217727
+[DEBUG] Cycle 5/62: enable = 1
+[DEBUG] Cycle 5/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 5/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 6/62: start_val = 0x7ffffff
+[DEBUG] Cycle 6/62: step_size = 134217727
+[DEBUG] Cycle 6/62: enable = 1
+[DEBUG] Cycle 6/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 6/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 7/62: start_val = 0x7ffffff
+[DEBUG] Cycle 7/62: step_size = 134217727
+[DEBUG] Cycle 7/62: enable = 1
+[DEBUG] Cycle 7/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 7/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 8/62: start_val = 0x7ffffff
+[DEBUG] Cycle 8/62: step_size = 134217727
+[DEBUG] Cycle 8/62: enable = 1
+[DEBUG] Cycle 8/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 8/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 9/62: start_val = 0x7ffffff
+[DEBUG] Cycle 9/62: step_size = 134217727
+[DEBUG] Cycle 9/62: enable = 1
+[DEBUG] Cycle 9/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 9/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 10/62: start_val = 0x7ffffff
+[DEBUG] Cycle 10/62: step_size = 134217727
+[DEBUG] Cycle 10/62: enable = 1
+[DEBUG] Cycle 10/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 10/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 11/62: start_val = 0x7ffffff
+[DEBUG] Cycle 11/62: step_size = 134217727
+[DEBUG] Cycle 11/62: enable = 1
+[DEBUG] Cycle 11/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 11/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 12/62: start_val = 0x7ffffff
+[DEBUG] Cycle 12/62: step_size = 134217727
+[DEBUG] Cycle 12/62: enable = 1
+[DEBUG] Cycle 12/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 12/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 13/62: start_val = 0x7ffffff
+[DEBUG] Cycle 13/62: step_size = 134217727
+[DEBUG] Cycle 13/62: enable = 1
+[DEBUG] Cycle 13/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 13/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 14/62: start_val = 0x7ffffff
+[DEBUG] Cycle 14/62: step_size = 134217727
+[DEBUG] Cycle 14/62: enable = 1
+[DEBUG] Cycle 14/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 14/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 15/62: start_val = 0x7ffffff
+[DEBUG] Cycle 15/62: step_size = 134217727
+[DEBUG] Cycle 15/62: enable = 1
+[DEBUG] Cycle 15/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 15/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 16/62: start_val = 0x7ffffff
+[DEBUG] Cycle 16/62: step_size = 134217727
+[DEBUG] Cycle 16/62: enable = 1
+[DEBUG] Cycle 16/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 16/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 17/62: start_val = 0x7ffffff
+[DEBUG] Cycle 17/62: step_size = 134217727
+[DEBUG] Cycle 17/62: enable = 1
+[DEBUG] Cycle 17/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 17/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 18/62: start_val = 0x7ffffff
+[DEBUG] Cycle 18/62: step_size = 134217727
+[DEBUG] Cycle 18/62: enable = 1
+[DEBUG] Cycle 18/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 18/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 19/62: start_val = 0x7ffffff
+[DEBUG] Cycle 19/62: step_size = 134217727
+[DEBUG] Cycle 19/62: enable = 1
+[DEBUG] Cycle 19/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 19/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 20/62: start_val = 0x7ffffff
+[DEBUG] Cycle 20/62: step_size = 134217727
+[DEBUG] Cycle 20/62: enable = 1
+[DEBUG] Cycle 20/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 20/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 21/62: start_val = 0x7ffffff
+[DEBUG] Cycle 21/62: step_size = 134217727
+[DEBUG] Cycle 21/62: enable = 1
+[DEBUG] Cycle 21/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 21/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 22/62: start_val = 0x7ffffff
+[DEBUG] Cycle 22/62: step_size = 134217727
+[DEBUG] Cycle 22/62: enable = 1
+[DEBUG] Cycle 22/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 22/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 23/62: start_val = 0x7ffffff
+[DEBUG] Cycle 23/62: step_size = 134217727
+[DEBUG] Cycle 23/62: enable = 1
+[DEBUG] Cycle 23/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 23/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 24/62: start_val = 0x7ffffff
+[DEBUG] Cycle 24/62: step_size = 134217727
+[DEBUG] Cycle 24/62: enable = 1
+[DEBUG] Cycle 24/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 24/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 25/62: start_val = 0x7ffffff
+[DEBUG] Cycle 25/62: step_size = 134217727
+[DEBUG] Cycle 25/62: enable = 1
+[DEBUG] Cycle 25/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 25/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 26/62: start_val = 0x7ffffff
+[DEBUG] Cycle 26/62: step_size = 134217727
+[DEBUG] Cycle 26/62: enable = 1
+[DEBUG] Cycle 26/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 26/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 27/62: start_val = 0x7ffffff
+[DEBUG] Cycle 27/62: step_size = 134217727
+[DEBUG] Cycle 27/62: enable = 1
+[DEBUG] Cycle 27/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 27/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 28/62: start_val = 0x7ffffff
+[DEBUG] Cycle 28/62: step_size = 134217727
+[DEBUG] Cycle 28/62: enable = 1
+[DEBUG] Cycle 28/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 28/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 29/62: start_val = 0x7ffffff
+[DEBUG] Cycle 29/62: step_size = 134217727
+[DEBUG] Cycle 29/62: enable = 1
+[DEBUG] Cycle 29/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 29/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 30/62: start_val = 0x7ffffff
+[DEBUG] Cycle 30/62: step_size = 134217727
+[DEBUG] Cycle 30/62: enable = 1
+[DEBUG] Cycle 30/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 30/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 31/62: start_val = 0x7ffffff
+[DEBUG] Cycle 31/62: step_size = 134217727
+[DEBUG] Cycle 31/62: enable = 1
+[DEBUG] Cycle 31/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 31/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 32/62: start_val = 0x7ffffff
+[DEBUG] Cycle 32/62: step_size = 134217727
+[DEBUG] Cycle 32/62: enable = 1
+[DEBUG] Cycle 32/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 32/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 33/62: start_val = 0x7ffffff
+[DEBUG] Cycle 33/62: step_size = 134217727
+[DEBUG] Cycle 33/62: enable = 1
+[DEBUG] Cycle 33/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 33/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 34/62: start_val = 0x7ffffff
+[DEBUG] Cycle 34/62: step_size = 134217727
+[DEBUG] Cycle 34/62: enable = 1
+[DEBUG] Cycle 34/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 34/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 35/62: start_val = 0x7ffffff
+[DEBUG] Cycle 35/62: step_size = 134217727
+[DEBUG] Cycle 35/62: enable = 1
+[DEBUG] Cycle 35/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 35/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 36/62: start_val = 0x7ffffff
+[DEBUG] Cycle 36/62: step_size = 134217727
+[DEBUG] Cycle 36/62: enable = 1
+[DEBUG] Cycle 36/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 36/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 37/62: start_val = 0x7ffffff
+[DEBUG] Cycle 37/62: step_size = 134217727
+[DEBUG] Cycle 37/62: enable = 1
+[DEBUG] Cycle 37/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 37/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 38/62: start_val = 0x7ffffff
+[DEBUG] Cycle 38/62: step_size = 134217727
+[DEBUG] Cycle 38/62: enable = 1
+[DEBUG] Cycle 38/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 38/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 39/62: start_val = 0x7ffffff
+[DEBUG] Cycle 39/62: step_size = 134217727
+[DEBUG] Cycle 39/62: enable = 1
+[DEBUG] Cycle 39/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 39/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 40/62: start_val = 0x7ffffff
+[DEBUG] Cycle 40/62: step_size = 134217727
+[DEBUG] Cycle 40/62: enable = 1
+[DEBUG] Cycle 40/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 40/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 41/62: start_val = 0x7ffffff
+[DEBUG] Cycle 41/62: step_size = 134217727
+[DEBUG] Cycle 41/62: enable = 1
+[DEBUG] Cycle 41/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 41/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 42/62: start_val = 0x7ffffff
+[DEBUG] Cycle 42/62: step_size = 134217727
+[DEBUG] Cycle 42/62: enable = 1
+[DEBUG] Cycle 42/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 42/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 43/62: start_val = 0x7ffffff
+[DEBUG] Cycle 43/62: step_size = 134217727
+[DEBUG] Cycle 43/62: enable = 1
+[DEBUG] Cycle 43/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 43/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 44/62: start_val = 0x7ffffff
+[DEBUG] Cycle 44/62: step_size = 134217727
+[DEBUG] Cycle 44/62: enable = 1
+[DEBUG] Cycle 44/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 44/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 45/62: start_val = 0x7ffffff
+[DEBUG] Cycle 45/62: step_size = 134217727
+[DEBUG] Cycle 45/62: enable = 1
+[DEBUG] Cycle 45/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 45/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 46/62: start_val = 0x7ffffff
+[DEBUG] Cycle 46/62: step_size = 134217727
+[DEBUG] Cycle 46/62: enable = 1
+[DEBUG] Cycle 46/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 46/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 47/62: start_val = 0x7ffffff
+[DEBUG] Cycle 47/62: step_size = 134217727
+[DEBUG] Cycle 47/62: enable = 1
+[DEBUG] Cycle 47/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 47/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 48/62: start_val = 0x7ffffff
+[DEBUG] Cycle 48/62: step_size = 134217727
+[DEBUG] Cycle 48/62: enable = 1
+[DEBUG] Cycle 48/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 48/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 49/62: start_val = 0x7ffffff
+[DEBUG] Cycle 49/62: step_size = 134217727
+[DEBUG] Cycle 49/62: enable = 1
+[DEBUG] Cycle 49/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 49/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 50/62: start_val = 0x7ffffff
+[DEBUG] Cycle 50/62: step_size = 134217727
+[DEBUG] Cycle 50/62: enable = 1
+[DEBUG] Cycle 50/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 50/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 51/62: start_val = 0x7ffffff
+[DEBUG] Cycle 51/62: step_size = 134217727
+[DEBUG] Cycle 51/62: enable = 1
+[DEBUG] Cycle 51/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 51/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 52/62: start_val = 0x7ffffff
+[DEBUG] Cycle 52/62: step_size = 134217727
+[DEBUG] Cycle 52/62: enable = 1
+[DEBUG] Cycle 52/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 52/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 53/62: start_val = 0x7ffffff
+[DEBUG] Cycle 53/62: step_size = 134217727
+[DEBUG] Cycle 53/62: enable = 1
+[DEBUG] Cycle 53/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 53/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 54/62: start_val = 0x7ffffff
+[DEBUG] Cycle 54/62: step_size = 134217727
+[DEBUG] Cycle 54/62: enable = 1
+[DEBUG] Cycle 54/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 54/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 55/62: start_val = 0x7ffffff
+[DEBUG] Cycle 55/62: step_size = 134217727
+[DEBUG] Cycle 55/62: enable = 1
+[DEBUG] Cycle 55/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 55/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 56/62: start_val = 0x7ffffff
+[DEBUG] Cycle 56/62: step_size = 134217727
+[DEBUG] Cycle 56/62: enable = 1
+[DEBUG] Cycle 56/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 56/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 57/62: start_val = 0x7ffffff
+[DEBUG] Cycle 57/62: step_size = 134217727
+[DEBUG] Cycle 57/62: enable = 1
+[DEBUG] Cycle 57/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 57/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 58/62: start_val = 0x7ffffff
+[DEBUG] Cycle 58/62: step_size = 134217727
+[DEBUG] Cycle 58/62: enable = 1
+[DEBUG] Cycle 58/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 58/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 59/62: start_val = 0x7ffffff
+[DEBUG] Cycle 59/62: step_size = 134217727
+[DEBUG] Cycle 59/62: enable = 1
+[DEBUG] Cycle 59/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 59/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 60/62: start_val = 0x7ffffff
+[DEBUG] Cycle 60/62: step_size = 134217727
+[DEBUG] Cycle 60/62: enable = 1
+[DEBUG] Cycle 60/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 60/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 61/62: start_val = 0x7ffffff
+[DEBUG] Cycle 61/62: step_size = 134217727
+[DEBUG] Cycle 61/62: enable = 1
+[DEBUG] Cycle 61/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 61/62: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 62/62: start_val = 0x7ffffff
+[DEBUG] Cycle 62/62: step_size = 134217727
+[DEBUG] Cycle 62/62: enable = 1
+[DEBUG] Cycle 62/62: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 62/62: actual_value   = 0x0, actual_done   = 0
+
+
+   660.00ns INFO     cocotb.regression                  test_arithmetic_progression_generator.test_arithmetic_progression_generator passed
+   660.00ns INFO     cocotb.regression                  *************************************************************************************************************************************
+                                                        ** TEST                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *************************************************************************************************************************************
+                                                        ** test_arithmetic_progression_generator.test_arithmetic_progression_generator   PASS         660.00           0.01      49950.21  **
+                                                        *************************************************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                                                               660.00           0.03      24876.13  **
+                                                        *************************************************************************************************************************************
+[DEBUG] Running simulation with DATA_WIDTH=27, SEQUENCE_LENGTH=0
+[DEBUG] Start Value: 0, Step Size: 0
+[DEBUG] Parameters: {'DATA_WIDTH': 27, 'SEQUENCE_LENGTH': 0}
+PASSED
+../../src/test_runner.py::test_arithmetic_progression_generator[3-0-27]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011919
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_arithmetic_progression_generator.test_arithmetic_progression_generator (1/1)
+[INFO] Clock started.
+DATA_WIDTH= 27, SEQUENCE_LENGTH= 1, WIDTH_OUT_VAL=28 
+[DEBUG] Cycle 1/73: start_val = 0x4a3c031
+[DEBUG] Cycle 1/73: step_size = 48033447
+[DEBUG] Cycle 1/73: enable = 1
+[DEBUG] Cycle 1/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 1/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 2/73: start_val = 0x4a3c031
+[DEBUG] Cycle 2/73: step_size = 48033447
+[DEBUG] Cycle 2/73: enable = 1
+[DEBUG] Cycle 2/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 2/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 3/73: start_val = 0x4a3c031
+[DEBUG] Cycle 3/73: step_size = 48033447
+[DEBUG] Cycle 3/73: enable = 1
+[DEBUG] Cycle 3/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 3/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 4/73: start_val = 0x4a3c031
+[DEBUG] Cycle 4/73: step_size = 48033447
+[DEBUG] Cycle 4/73: enable = 1
+[DEBUG] Cycle 4/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 4/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 5/73: start_val = 0x4a3c031
+[DEBUG] Cycle 5/73: step_size = 48033447
+[DEBUG] Cycle 5/73: enable = 1
+[DEBUG] Cycle 5/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 5/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 6/73: start_val = 0x4a3c031
+[DEBUG] Cycle 6/73: step_size = 48033447
+[DEBUG] Cycle 6/73: enable = 1
+[DEBUG] Cycle 6/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 6/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 7/73: start_val = 0x4a3c031
+[DEBUG] Cycle 7/73: step_size = 48033447
+[DEBUG] Cycle 7/73: enable = 1
+[DEBUG] Cycle 7/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 7/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 8/73: start_val = 0x4a3c031
+[DEBUG] Cycle 8/73: step_size = 48033447
+[DEBUG] Cycle 8/73: enable = 1
+[DEBUG] Cycle 8/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 8/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 9/73: start_val = 0x4a3c031
+[DEBUG] Cycle 9/73: step_size = 48033447
+[DEBUG] Cycle 9/73: enable = 1
+[DEBUG] Cycle 9/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 9/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 10/73: start_val = 0x4a3c031
+[DEBUG] Cycle 10/73: step_size = 48033447
+[DEBUG] Cycle 10/73: enable = 1
+[DEBUG] Cycle 10/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 10/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 11/73: start_val = 0x4a3c031
+[DEBUG] Cycle 11/73: step_size = 48033447
+[DEBUG] Cycle 11/73: enable = 1
+[DEBUG] Cycle 11/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 11/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 12/73: start_val = 0x4a3c031
+[DEBUG] Cycle 12/73: step_size = 48033447
+[DEBUG] Cycle 12/73: enable = 1
+[DEBUG] Cycle 12/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 12/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 13/73: start_val = 0x4a3c031
+[DEBUG] Cycle 13/73: step_size = 48033447
+[DEBUG] Cycle 13/73: enable = 1
+[DEBUG] Cycle 13/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 13/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 14/73: start_val = 0x4a3c031
+[DEBUG] Cycle 14/73: step_size = 48033447
+[DEBUG] Cycle 14/73: enable = 1
+[DEBUG] Cycle 14/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 14/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 15/73: start_val = 0x4a3c031
+[DEBUG] Cycle 15/73: step_size = 48033447
+[DEBUG] Cycle 15/73: enable = 1
+[DEBUG] Cycle 15/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 15/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 16/73: start_val = 0x4a3c031
+[DEBUG] Cycle 16/73: step_size = 48033447
+[DEBUG] Cycle 16/73: enable = 1
+[DEBUG] Cycle 16/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 16/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 17/73: start_val = 0x4a3c031
+[DEBUG] Cycle 17/73: step_size = 48033447
+[DEBUG] Cycle 17/73: enable = 1
+[DEBUG] Cycle 17/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 17/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 18/73: start_val = 0x4a3c031
+[DEBUG] Cycle 18/73: step_size = 48033447
+[DEBUG] Cycle 18/73: enable = 1
+[DEBUG] Cycle 18/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 18/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 19/73: start_val = 0x4a3c031
+[DEBUG] Cycle 19/73: step_size = 48033447
+[DEBUG] Cycle 19/73: enable = 1
+[DEBUG] Cycle 19/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 19/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 20/73: start_val = 0x4a3c031
+[DEBUG] Cycle 20/73: step_size = 48033447
+[DEBUG] Cycle 20/73: enable = 1
+[DEBUG] Cycle 20/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 20/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 21/73: start_val = 0x4a3c031
+[DEBUG] Cycle 21/73: step_size = 48033447
+[DEBUG] Cycle 21/73: enable = 1
+[DEBUG] Cycle 21/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 21/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 22/73: start_val = 0x4a3c031
+[DEBUG] Cycle 22/73: step_size = 48033447
+[DEBUG] Cycle 22/73: enable = 1
+[DEBUG] Cycle 22/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 22/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 23/73: start_val = 0x4a3c031
+[DEBUG] Cycle 23/73: step_size = 48033447
+[DEBUG] Cycle 23/73: enable = 1
+[DEBUG] Cycle 23/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 23/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 24/73: start_val = 0x4a3c031
+[DEBUG] Cycle 24/73: step_size = 48033447
+[DEBUG] Cycle 24/73: enable = 1
+[DEBUG] Cycle 24/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 24/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 25/73: start_val = 0x4a3c031
+[DEBUG] Cycle 25/73: step_size = 48033447
+[DEBUG] Cycle 25/73: enable = 1
+[DEBUG] Cycle 25/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 25/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 26/73: start_val = 0x4a3c031
+[DEBUG] Cycle 26/73: step_size = 48033447
+[DEBUG] Cycle 26/73: enable = 1
+[DEBUG] Cycle 26/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 26/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 27/73: start_val = 0x4a3c031
+[DEBUG] Cycle 27/73: step_size = 48033447
+[DEBUG] Cycle 27/73: enable = 1
+[DEBUG] Cycle 27/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 27/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 28/73: start_val = 0x4a3c031
+[DEBUG] Cycle 28/73: step_size = 48033447
+[DEBUG] Cycle 28/73: enable = 1
+[DEBUG] Cycle 28/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 28/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 29/73: start_val = 0x4a3c031
+[DEBUG] Cycle 29/73: step_size = 48033447
+[DEBUG] Cycle 29/73: enable = 1
+[DEBUG] Cycle 29/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 29/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 30/73: start_val = 0x4a3c031
+[DEBUG] Cycle 30/73: step_size = 48033447
+[DEBUG] Cycle 30/73: enable = 1
+[DEBUG] Cycle 30/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 30/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 31/73: start_val = 0x4a3c031
+[DEBUG] Cycle 31/73: step_size = 48033447
+[DEBUG] Cycle 31/73: enable = 1
+[DEBUG] Cycle 31/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 31/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 32/73: start_val = 0x4a3c031
+[DEBUG] Cycle 32/73: step_size = 48033447
+[DEBUG] Cycle 32/73: enable = 1
+[DEBUG] Cycle 32/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 32/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 33/73: start_val = 0x4a3c031
+[DEBUG] Cycle 33/73: step_size = 48033447
+[DEBUG] Cycle 33/73: enable = 1
+[DEBUG] Cycle 33/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 33/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 34/73: start_val = 0x4a3c031
+[DEBUG] Cycle 34/73: step_size = 48033447
+[DEBUG] Cycle 34/73: enable = 1
+[DEBUG] Cycle 34/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 34/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 35/73: start_val = 0x4a3c031
+[DEBUG] Cycle 35/73: step_size = 48033447
+[DEBUG] Cycle 35/73: enable = 1
+[DEBUG] Cycle 35/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 35/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 36/73: start_val = 0x4a3c031
+[DEBUG] Cycle 36/73: step_size = 48033447
+[DEBUG] Cycle 36/73: enable = 1
+[DEBUG] Cycle 36/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 36/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 37/73: start_val = 0x4a3c031
+[DEBUG] Cycle 37/73: step_size = 48033447
+[DEBUG] Cycle 37/73: enable = 1
+[DEBUG] Cycle 37/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 37/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 38/73: start_val = 0x4a3c031
+[DEBUG] Cycle 38/73: step_size = 48033447
+[DEBUG] Cycle 38/73: enable = 1
+[DEBUG] Cycle 38/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 38/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 39/73: start_val = 0x4a3c031
+[DEBUG] Cycle 39/73: step_size = 48033447
+[DEBUG] Cycle 39/73: enable = 1
+[DEBUG] Cycle 39/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 39/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 40/73: start_val = 0x4a3c031
+[DEBUG] Cycle 40/73: step_size = 48033447
+[DEBUG] Cycle 40/73: enable = 1
+[DEBUG] Cycle 40/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 40/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 41/73: start_val = 0x4a3c031
+[DEBUG] Cycle 41/73: step_size = 48033447
+[DEBUG] Cycle 41/73: enable = 1
+[DEBUG] Cycle 41/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 41/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 42/73: start_val = 0x4a3c031
+[DEBUG] Cycle 42/73: step_size = 48033447
+[DEBUG] Cycle 42/73: enable = 1
+[DEBUG] Cycle 42/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 42/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 43/73: start_val = 0x4a3c031
+[DEBUG] Cycle 43/73: step_size = 48033447
+[DEBUG] Cycle 43/73: enable = 1
+[DEBUG] Cycle 43/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 43/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 44/73: start_val = 0x4a3c031
+[DEBUG] Cycle 44/73: step_size = 48033447
+[DEBUG] Cycle 44/73: enable = 1
+[DEBUG] Cycle 44/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 44/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 45/73: start_val = 0x4a3c031
+[DEBUG] Cycle 45/73: step_size = 48033447
+[DEBUG] Cycle 45/73: enable = 1
+[DEBUG] Cycle 45/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 45/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 46/73: start_val = 0x4a3c031
+[DEBUG] Cycle 46/73: step_size = 48033447
+[DEBUG] Cycle 46/73: enable = 1
+[DEBUG] Cycle 46/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 46/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 47/73: start_val = 0x4a3c031
+[DEBUG] Cycle 47/73: step_size = 48033447
+[DEBUG] Cycle 47/73: enable = 1
+[DEBUG] Cycle 47/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 47/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 48/73: start_val = 0x4a3c031
+[DEBUG] Cycle 48/73: step_size = 48033447
+[DEBUG] Cycle 48/73: enable = 1
+[DEBUG] Cycle 48/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 48/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 49/73: start_val = 0x4a3c031
+[DEBUG] Cycle 49/73: step_size = 48033447
+[DEBUG] Cycle 49/73: enable = 1
+[DEBUG] Cycle 49/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 49/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 50/73: start_val = 0x4a3c031
+[DEBUG] Cycle 50/73: step_size = 48033447
+[DEBUG] Cycle 50/73: enable = 1
+[DEBUG] Cycle 50/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 50/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 51/73: start_val = 0x4a3c031
+[DEBUG] Cycle 51/73: step_size = 48033447
+[DEBUG] Cycle 51/73: enable = 1
+[DEBUG] Cycle 51/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 51/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 52/73: start_val = 0x4a3c031
+[DEBUG] Cycle 52/73: step_size = 48033447
+[DEBUG] Cycle 52/73: enable = 1
+[DEBUG] Cycle 52/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 52/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 53/73: start_val = 0x4a3c031
+[DEBUG] Cycle 53/73: step_size = 48033447
+[DEBUG] Cycle 53/73: enable = 1
+[DEBUG] Cycle 53/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 53/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 54/73: start_val = 0x4a3c031
+[DEBUG] Cycle 54/73: step_size = 48033447
+[DEBUG] Cycle 54/73: enable = 1
+[DEBUG] Cycle 54/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 54/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 55/73: start_val = 0x4a3c031
+[DEBUG] Cycle 55/73: step_size = 48033447
+[DEBUG] Cycle 55/73: enable = 1
+[DEBUG] Cycle 55/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 55/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 56/73: start_val = 0x4a3c031
+[DEBUG] Cycle 56/73: step_size = 48033447
+[DEBUG] Cycle 56/73: enable = 1
+[DEBUG] Cycle 56/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 56/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 57/73: start_val = 0x4a3c031
+[DEBUG] Cycle 57/73: step_size = 48033447
+[DEBUG] Cycle 57/73: enable = 1
+[DEBUG] Cycle 57/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 57/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 58/73: start_val = 0x4a3c031
+[DEBUG] Cycle 58/73: step_size = 48033447
+[DEBUG] Cycle 58/73: enable = 1
+[DEBUG] Cycle 58/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 58/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 59/73: start_val = 0x4a3c031
+[DEBUG] Cycle 59/73: step_size = 48033447
+[DEBUG] Cycle 59/73: enable = 1
+[DEBUG] Cycle 59/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 59/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 60/73: start_val = 0x4a3c031
+[DEBUG] Cycle 60/73: step_size = 48033447
+[DEBUG] Cycle 60/73: enable = 1
+[DEBUG] Cycle 60/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 60/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 61/73: start_val = 0x4a3c031
+[DEBUG] Cycle 61/73: step_size = 48033447
+[DEBUG] Cycle 61/73: enable = 1
+[DEBUG] Cycle 61/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 61/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 62/73: start_val = 0x4a3c031
+[DEBUG] Cycle 62/73: step_size = 48033447
+[DEBUG] Cycle 62/73: enable = 1
+[DEBUG] Cycle 62/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 62/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 63/73: start_val = 0x4a3c031
+[DEBUG] Cycle 63/73: step_size = 48033447
+[DEBUG] Cycle 63/73: enable = 1
+[DEBUG] Cycle 63/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 63/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 64/73: start_val = 0x4a3c031
+[DEBUG] Cycle 64/73: step_size = 48033447
+[DEBUG] Cycle 64/73: enable = 1
+[DEBUG] Cycle 64/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 64/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 65/73: start_val = 0x4a3c031
+[DEBUG] Cycle 65/73: step_size = 48033447
+[DEBUG] Cycle 65/73: enable = 1
+[DEBUG] Cycle 65/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 65/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 66/73: start_val = 0x4a3c031
+[DEBUG] Cycle 66/73: step_size = 48033447
+[DEBUG] Cycle 66/73: enable = 1
+[DEBUG] Cycle 66/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 66/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 67/73: start_val = 0x4a3c031
+[DEBUG] Cycle 67/73: step_size = 48033447
+[DEBUG] Cycle 67/73: enable = 1
+[DEBUG] Cycle 67/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 67/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 68/73: start_val = 0x4a3c031
+[DEBUG] Cycle 68/73: step_size = 48033447
+[DEBUG] Cycle 68/73: enable = 1
+[DEBUG] Cycle 68/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 68/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 69/73: start_val = 0x4a3c031
+[DEBUG] Cycle 69/73: step_size = 48033447
+[DEBUG] Cycle 69/73: enable = 1
+[DEBUG] Cycle 69/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 69/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 70/73: start_val = 0x4a3c031
+[DEBUG] Cycle 70/73: step_size = 48033447
+[DEBUG] Cycle 70/73: enable = 1
+[DEBUG] Cycle 70/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 70/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 71/73: start_val = 0x4a3c031
+[DEBUG] Cycle 71/73: step_size = 48033447
+[DEBUG] Cycle 71/73: enable = 1
+[DEBUG] Cycle 71/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 71/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 72/73: start_val = 0x4a3c031
+[DEBUG] Cycle 72/73: step_size = 48033447
+[DEBUG] Cycle 72/73: enable = 1
+[DEBUG] Cycle 72/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 72/73: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 73/73: start_val = 0x4a3c031
+[DEBUG] Cycle 73/73: step_size = 48033447
+[DEBUG] Cycle 73/73: enable = 1
+[DEBUG] Cycle 73/73: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 73/73: actual_value   = 0x0, actual_done   = 0
+
+
+   770.00ns INFO     cocotb.regression                  test_arithmetic_progression_generator.test_arithmetic_progression_generator passed
+   770.00ns INFO     cocotb.regression                  *************************************************************************************************************************************
+                                                        ** TEST                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *************************************************************************************************************************************
+                                                        ** test_arithmetic_progression_generator.test_arithmetic_progression_generator   PASS         770.00           0.02      49577.30  **
+                                                        *************************************************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                                                               770.00           0.02      32006.48  **
+                                                        *************************************************************************************************************************************
+[DEBUG] Running simulation with DATA_WIDTH=27, SEQUENCE_LENGTH=0
+[DEBUG] Start Value: 0, Step Size: 0
+[DEBUG] Parameters: {'DATA_WIDTH': 27, 'SEQUENCE_LENGTH': 0}
+PASSED
+../../src/test_runner.py::test_arithmetic_progression_generator[4-0-27]      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782011920
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_arithmetic_progression_generator.test_arithmetic_progression_generator (1/1)
+[INFO] Clock started.
+DATA_WIDTH= 27, SEQUENCE_LENGTH= 1, WIDTH_OUT_VAL=28 
+[DEBUG] Cycle 1/39: start_val = 0x77c5667
+[DEBUG] Cycle 1/39: step_size = 87406951
+[DEBUG] Cycle 1/39: enable = 1
+[DEBUG] Cycle 1/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 1/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 2/39: start_val = 0x77c5667
+[DEBUG] Cycle 2/39: step_size = 87406951
+[DEBUG] Cycle 2/39: enable = 1
+[DEBUG] Cycle 2/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 2/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 3/39: start_val = 0x77c5667
+[DEBUG] Cycle 3/39: step_size = 87406951
+[DEBUG] Cycle 3/39: enable = 1
+[DEBUG] Cycle 3/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 3/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 4/39: start_val = 0x77c5667
+[DEBUG] Cycle 4/39: step_size = 87406951
+[DEBUG] Cycle 4/39: enable = 1
+[DEBUG] Cycle 4/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 4/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 5/39: start_val = 0x77c5667
+[DEBUG] Cycle 5/39: step_size = 87406951
+[DEBUG] Cycle 5/39: enable = 1
+[DEBUG] Cycle 5/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 5/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 6/39: start_val = 0x77c5667
+[DEBUG] Cycle 6/39: step_size = 87406951
+[DEBUG] Cycle 6/39: enable = 1
+[DEBUG] Cycle 6/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 6/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 7/39: start_val = 0x77c5667
+[DEBUG] Cycle 7/39: step_size = 87406951
+[DEBUG] Cycle 7/39: enable = 1
+[DEBUG] Cycle 7/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 7/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 8/39: start_val = 0x77c5667
+[DEBUG] Cycle 8/39: step_size = 87406951
+[DEBUG] Cycle 8/39: enable = 1
+[DEBUG] Cycle 8/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 8/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 9/39: start_val = 0x77c5667
+[DEBUG] Cycle 9/39: step_size = 87406951
+[DEBUG] Cycle 9/39: enable = 1
+[DEBUG] Cycle 9/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 9/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 10/39: start_val = 0x77c5667
+[DEBUG] Cycle 10/39: step_size = 87406951
+[DEBUG] Cycle 10/39: enable = 1
+[DEBUG] Cycle 10/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 10/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 11/39: start_val = 0x77c5667
+[DEBUG] Cycle 11/39: step_size = 87406951
+[DEBUG] Cycle 11/39: enable = 1
+[DEBUG] Cycle 11/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 11/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 12/39: start_val = 0x77c5667
+[DEBUG] Cycle 12/39: step_size = 87406951
+[DEBUG] Cycle 12/39: enable = 1
+[DEBUG] Cycle 12/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 12/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 13/39: start_val = 0x77c5667
+[DEBUG] Cycle 13/39: step_size = 87406951
+[DEBUG] Cycle 13/39: enable = 1
+[DEBUG] Cycle 13/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 13/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 14/39: start_val = 0x77c5667
+[DEBUG] Cycle 14/39: step_size = 87406951
+[DEBUG] Cycle 14/39: enable = 1
+[DEBUG] Cycle 14/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 14/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 15/39: start_val = 0x77c5667
+[DEBUG] Cycle 15/39: step_size = 87406951
+[DEBUG] Cycle 15/39: enable = 1
+[DEBUG] Cycle 15/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 15/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 16/39: start_val = 0x77c5667
+[DEBUG] Cycle 16/39: step_size = 87406951
+[DEBUG] Cycle 16/39: enable = 1
+[DEBUG] Cycle 16/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 16/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 17/39: start_val = 0x77c5667
+[DEBUG] Cycle 17/39: step_size = 87406951
+[DEBUG] Cycle 17/39: enable = 1
+[DEBUG] Cycle 17/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 17/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 18/39: start_val = 0x77c5667
+[DEBUG] Cycle 18/39: step_size = 87406951
+[DEBUG] Cycle 18/39: enable = 1
+[DEBUG] Cycle 18/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 18/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 19/39: start_val = 0x77c5667
+[DEBUG] Cycle 19/39: step_size = 87406951
+[DEBUG] Cycle 19/39: enable = 1
+[DEBUG] Cycle 19/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 19/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 20/39: start_val = 0x77c5667
+[DEBUG] Cycle 20/39: step_size = 87406951
+[DEBUG] Cycle 20/39: enable = 1
+[DEBUG] Cycle 20/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 20/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 21/39: start_val = 0x77c5667
+[DEBUG] Cycle 21/39: step_size = 87406951
+[DEBUG] Cycle 21/39: enable = 1
+[DEBUG] Cycle 21/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 21/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 22/39: start_val = 0x77c5667
+[DEBUG] Cycle 22/39: step_size = 87406951
+[DEBUG] Cycle 22/39: enable = 1
+[DEBUG] Cycle 22/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 22/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 23/39: start_val = 0x77c5667
+[DEBUG] Cycle 23/39: step_size = 87406951
+[DEBUG] Cycle 23/39: enable = 1
+[DEBUG] Cycle 23/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 23/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 24/39: start_val = 0x77c5667
+[DEBUG] Cycle 24/39: step_size = 87406951
+[DEBUG] Cycle 24/39: enable = 1
+[DEBUG] Cycle 24/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 24/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 25/39: start_val = 0x77c5667
+[DEBUG] Cycle 25/39: step_size = 87406951
+[DEBUG] Cycle 25/39: enable = 1
+[DEBUG] Cycle 25/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 25/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 26/39: start_val = 0x77c5667
+[DEBUG] Cycle 26/39: step_size = 87406951
+[DEBUG] Cycle 26/39: enable = 1
+[DEBUG] Cycle 26/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 26/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 27/39: start_val = 0x77c5667
+[DEBUG] Cycle 27/39: step_size = 87406951
+[DEBUG] Cycle 27/39: enable = 1
+[DEBUG] Cycle 27/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 27/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 28/39: start_val = 0x77c5667
+[DEBUG] Cycle 28/39: step_size = 87406951
+[DEBUG] Cycle 28/39: enable = 1
+[DEBUG] Cycle 28/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 28/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 29/39: start_val = 0x77c5667
+[DEBUG] Cycle 29/39: step_size = 87406951
+[DEBUG] Cycle 29/39: enable = 1
+[DEBUG] Cycle 29/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 29/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 30/39: start_val = 0x77c5667
+[DEBUG] Cycle 30/39: step_size = 87406951
+[DEBUG] Cycle 30/39: enable = 1
+[DEBUG] Cycle 30/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 30/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 31/39: start_val = 0x77c5667
+[DEBUG] Cycle 31/39: step_size = 87406951
+[DEBUG] Cycle 31/39: enable = 1
+[DEBUG] Cycle 31/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 31/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 32/39: start_val = 0x77c5667
+[DEBUG] Cycle 32/39: step_size = 87406951
+[DEBUG] Cycle 32/39: enable = 1
+[DEBUG] Cycle 32/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 32/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 33/39: start_val = 0x77c5667
+[DEBUG] Cycle 33/39: step_size = 87406951
+[DEBUG] Cycle 33/39: enable = 1
+[DEBUG] Cycle 33/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 33/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 34/39: start_val = 0x77c5667
+[DEBUG] Cycle 34/39: step_size = 87406951
+[DEBUG] Cycle 34/39: enable = 1
+[DEBUG] Cycle 34/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 34/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 35/39: start_val = 0x77c5667
+[DEBUG] Cycle 35/39: step_size = 87406951
+[DEBUG] Cycle 35/39: enable = 1
+[DEBUG] Cycle 35/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 35/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 36/39: start_val = 0x77c5667
+[DEBUG] Cycle 36/39: step_size = 87406951
+[DEBUG] Cycle 36/39: enable = 1
+[DEBUG] Cycle 36/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 36/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 37/39: start_val = 0x77c5667
+[DEBUG] Cycle 37/39: step_size = 87406951
+[DEBUG] Cycle 37/39: enable = 1
+[DEBUG] Cycle 37/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 37/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 38/39: start_val = 0x77c5667
+[DEBUG] Cycle 38/39: step_size = 87406951
+[DEBUG] Cycle 38/39: enable = 1
+[DEBUG] Cycle 38/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 38/39: actual_value   = 0x0, actual_done   = 0
+
+
+[DEBUG] Cycle 39/39: start_val = 0x77c5667
+[DEBUG] Cycle 39/39: step_size = 87406951
+[DEBUG] Cycle 39/39: enable = 1
+[DEBUG] Cycle 39/39: expected_value = 0x0, expected_done = 0
+[DEBUG] Cycle 39/39: actual_value   = 0x0, actual_done   = 0
+
+
+   430.00ns INFO     cocotb.regression                  test_arithmetic_progression_generator.test_arithmetic_progression_generator passed
+   430.00ns INFO     cocotb.regression                  *************************************************************************************************************************************
+                                                        ** TEST                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *************************************************************************************************************************************
+                                                        ** test_arithmetic_progression_generator.test_arithmetic_progression_generator   PASS         430.00           0.01      45121.48  **
+                                                        *************************************************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                                                               430.00           0.02      22297.99  **
+                                                        *************************************************************************************************************************************
+[DEBUG] Running simulation with DATA_WIDTH=27, SEQUENCE_LENGTH=0
+[DEBUG] Start Value: 0, Step Size: 0
+[DEBUG] Parameters: {'DATA_WIDTH': 27, 'SEQUENCE_LENGTH': 0}
+PASSED
+
+=============================== warnings summary ===============================
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-5i_lsh03'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-8trols9m'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 5 passed, 2 warnings in 5.75s =========================

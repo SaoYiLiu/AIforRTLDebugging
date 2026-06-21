@@ -1,0 +1,58 @@
+## Rationale
+- **Suspected bug (L24):** `valid_out` is driven with `(cnt==5 || cnt==10 || cnt==15) || valid_in`, so it goes high on **every** `valid_in` cycle, not only when a full 128-bit word is ready.
+- **First mismatch evidence:** At 110 ps (first sample after reset), `valid_out_dut=1` while `valid_out_ref=0`. The causal trace shows `valid_in=1` at 105 ps with `cnt==0`, so the `|| valid_in` term alone forces `valid_out` high.
+- **`data_out` is correct:** All 132 mismatches are on `valid_out`; `data_out` matches the reference at every output boundary (155, 205, 275 ps, etc.). The accumulation and packing logic (L27–L45) does not need changes.
+- **Reference behavior:** `valid_out_ref` pulses for one cycle only when the 6th, 11th, and 16th 24-bit words arrive (`cnt==5`, `10`, `15` with `valid_in` asserted).
+- **Secondary bug from `|| valid_in`:** When `cnt` holds at 5, 10, or 15 between transfers, `(cnt==5 || cnt==10 || cnt==15)` stays true even without `valid_in`, keeping `valid_out` stuck high (visible at 165, 215, 285 ps mismatches).
+- **Fix applied:** Change L24 to `(cnt==5 || cnt==10 || cnt==15) && valid_in` so `valid_out` is asserted only when the final fragment of a 128-bit word arrives with a valid input.
+- **Verification:** Simulation passes with 0/261 mismatches after the fix (buggy version had 132/261).
+
+## FixedTopModule
+```verilog
+module TopModule(
+	input 				clk 		,   
+	input 				rst_n		,
+	input				valid_in	,
+	input	[23:0]		data_in		,
+ 
+ 	output	reg			valid_out	,
+	output  reg [127:0]	data_out
+);
+    reg [3:0]   cnt;
+    reg [127:0] data_lock;
+    
+    always@(posedge clk or negedge rst_n) begin
+        if(~rst_n)
+            cnt <= 0;
+        else
+            cnt <= ~valid_in? cnt:cnt+1;
+    end
+    
+    always@(posedge clk or negedge rst_n) begin
+        if(~rst_n)
+            valid_out <= 0;
+        else
+            valid_out <= (cnt==5 || cnt==10 || cnt==15) && valid_in;
+    end
+    
+    always@(posedge clk or negedge rst_n) begin
+        if(~rst_n)
+            data_lock <= 0;
+        else
+            data_lock <= valid_in? {data_lock[103:0], data_in}: data_lock;
+    end
+    
+    always@(posedge clk or negedge rst_n) begin
+        if(~rst_n)
+            data_out <= 0;
+        else if(cnt==5)
+            data_out <= valid_in? {data_lock[119:0], data_in[23:16]}: data_out;
+        else if(cnt==10)
+            data_out <= valid_in? {data_lock[111:0], data_in[23: 8]}: data_out;
+        else if(cnt==15)
+            data_out <= valid_in? {data_lock[103:0], data_in[23: 0]}: data_out;
+        else
+            data_out <= data_out;
+    end
+endmodule
+```

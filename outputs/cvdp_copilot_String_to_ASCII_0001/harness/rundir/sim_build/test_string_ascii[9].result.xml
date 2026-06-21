@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1782011677" />
+    <testcase name="test_String_to_ASCII_Converter" classname="test_String_to_ASCII_Converter" file="/src/test_String_to_ASCII_Converter.py" lineno="40" time="0.02098536491394043" sim_time_ns="430.0" ratio_time="20490.4704666038" />
+  </testsuite>
+</testsuites>

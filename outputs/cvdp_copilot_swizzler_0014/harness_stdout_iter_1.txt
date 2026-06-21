@@ -1,0 +1,253 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 682B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 65B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/nvidia/cvdp-sim:v1.0.0
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B 0.0s done
+#4 DONE 0.0s
+
+#5 [1/1] FROM docker.io/nvidia/cvdp-sim:v1.0.0@sha256:5460a1246ec7c3fbd34328936868bc8d7bc671ad54c7c08c9346fc103da713ee
+#5 resolve docker.io/nvidia/cvdp-sim:v1.0.0@sha256:5460a1246ec7c3fbd34328936868bc8d7bc671ad54c7c08c9346fc103da713ee 0.0s done
+#5 CACHED
+
+#6 exporting to image
+#6 exporting layers done
+#6 exporting manifest sha256:7e1b175af4290ee50230c09fd032f8e317ec7e3a4ee492956cf23fe31058e66a
+#6 exporting manifest sha256:7e1b175af4290ee50230c09fd032f8e317ec7e3a4ee492956cf23fe31058e66a 0.0s done
+#6 exporting config sha256:a976b31a0244fc79637855e50d0277b852d27d379ec2aafd2de29a89e2fc27f2 0.0s done
+#6 exporting attestation manifest sha256:0675a6ef66bc922a92600b484db8d598633b490ef1b9bfc251eafb9b033636f5 0.0s done
+#6 exporting manifest list sha256:cca9c006b2e1d028cda3859bdc5d387ba3e99a1ebdf0a250a8fa21e610a9ec4f
+#6 exporting manifest list sha256:cca9c006b2e1d028cda3859bdc5d387ba3e99a1ebdf0a250a8fa21e610a9ec4f 0.0s done
+#6 naming to docker.io/library/cvdp_react_cvdp_copilot_swizzler_0014_1-direct:latest done
+#6 unpacking to docker.io/library/cvdp_react_cvdp_copilot_swizzler_0014_1-direct:latest 0.0s done
+#6 DONE 0.2s
+
+#7 resolving provenance for metadata file
+#7 DONE 0.0s
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /rundir/harness/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_runner 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s swizzler -g2012 -Pswizzler.N=8 -f /code/rundir/sim_build/cmds.f /code/rtl/swizzler.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782017562
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_swizzler.test_tc1_identity_mapping (1/9)
+                                                            Test Case 1: Identity Mapping (operation_mode=000)
+     0.00ns INFO     cocotb.swizzler                    TC1: Reset de-asserted
+    10.00ns INFO     cocotb.swizzler                    TC1 - Cycle 1
+    20.00ns INFO     cocotb.swizzler                    TC1 - Cycle 2
+    30.00ns INFO     cocotb.swizzler                    TC1 - Cycle 3
+    40.00ns INFO     cocotb.swizzler                    TC1 - Cycle 4
+    40.00ns WARNING  ..apping.test_tc1_identity_mapping TC1 FAIL: Expected data_out=0xAA, Got=0x80
+                                                        assert 128 == 170
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 46, in test_tc1_identity_mapping
+                                                            assert data_out == 0xAA, f"TC1 FAIL: Expected data_out=0xAA, Got=0x{data_out:02X}"
+                                                        AssertionError: TC1 FAIL: Expected data_out=0xAA, Got=0x80
+                                                        assert 128 == 170
+    40.00ns WARNING  cocotb.regression                  test_swizzler.test_tc1_identity_mapping failed
+    40.00ns INFO     cocotb.regression                  running test_swizzler.test_tc2_reverse_mapping (2/9)
+                                                            Test Case 2: Reverse Mapping (operation_mode=000)
+    50.00ns INFO     cocotb.swizzler                    TC2: Reset de-asserted
+    60.00ns INFO     cocotb.swizzler                    TC2 - Cycle 1
+    70.00ns INFO     cocotb.swizzler                    TC2 - Cycle 2
+    80.00ns INFO     cocotb.swizzler                    TC2 - Cycle 3
+    90.00ns INFO     cocotb.swizzler                    TC2 - Cycle 4
+    90.00ns WARNING  ..mapping.test_tc2_reverse_mapping TC2 FAIL: Expected data_out=0x55, Got=0x80
+                                                        assert 128 == 85
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 91, in test_tc2_reverse_mapping
+                                                            assert data_out == 0x55, f"TC2 FAIL: Expected data_out=0x55, Got=0x{data_out:02X}"
+                                                        AssertionError: TC2 FAIL: Expected data_out=0x55, Got=0x80
+                                                        assert 128 == 85
+    90.00ns WARNING  cocotb.regression                  test_swizzler.test_tc2_reverse_mapping failed
+    90.00ns INFO     cocotb.regression                  running test_swizzler.test_tc3_passthrough (3/9)
+                                                            Test Case 3: Passthrough (operation_mode=001)
+   100.00ns INFO     cocotb.swizzler                    TC3: Reset de-asserted
+   110.00ns INFO     cocotb.swizzler                    TC3 - Cycle 1
+   120.00ns INFO     cocotb.swizzler                    TC3 - Cycle 2
+   130.00ns INFO     cocotb.swizzler                    TC3 - Cycle 3
+   140.00ns INFO     cocotb.swizzler                    TC3 - Cycle 4
+   140.00ns WARNING  ..passthrough.test_tc3_passthrough TC3 FAIL: Expected data_out=0x55, Got=0x80
+                                                        assert 128 == 85
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 136, in test_tc3_passthrough
+                                                            assert data_out == 0x55, f"TC3 FAIL: Expected data_out=0x55, Got=0x{data_out:02X}"
+                                                        AssertionError: TC3 FAIL: Expected data_out=0x55, Got=0x80
+                                                        assert 128 == 85
+   140.00ns WARNING  cocotb.regression                  test_swizzler.test_tc3_passthrough failed
+   140.00ns INFO     cocotb.regression                  running test_swizzler.test_tc4_reverse_data (4/9)
+                                                            Test Case 4: Reverse Data (operation_mode=010)
+   150.00ns INFO     cocotb.swizzler                    TC4: Reset de-asserted
+   160.00ns INFO     cocotb.swizzler                    TC4 - Cycle 1
+   170.00ns INFO     cocotb.swizzler                    TC4 - Cycle 2
+   180.00ns INFO     cocotb.swizzler                    TC4 - Cycle 3
+   190.00ns INFO     cocotb.swizzler                    TC4 - Cycle 4
+   190.00ns WARNING  ..verse_data.test_tc4_reverse_data TC4 FAIL: Expected data_out=0xAA, Got=0x00
+                                                        assert 0 == 170
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 181, in test_tc4_reverse_data
+                                                            assert data_out == 0xAA, f"TC4 FAIL: Expected data_out=0xAA, Got=0x{data_out:02X}"
+                                                        AssertionError: TC4 FAIL: Expected data_out=0xAA, Got=0x00
+                                                        assert 0 == 170
+   190.00ns WARNING  cocotb.regression                  test_swizzler.test_tc4_reverse_data failed
+   190.00ns INFO     cocotb.regression                  running test_swizzler.test_tc5_swap_halves (5/9)
+                                                            Test Case 5: Swap Halves (operation_mode=011)
+   200.00ns INFO     cocotb.swizzler                    TC5: Reset de-asserted
+   210.00ns INFO     cocotb.swizzler                    TC5 - Cycle 1
+   220.00ns INFO     cocotb.swizzler                    TC5 - Cycle 2
+   230.00ns INFO     cocotb.swizzler                    TC5 - Cycle 3
+   240.00ns INFO     cocotb.swizzler                    TC5 - Cycle 4
+   240.00ns WARNING  ..swap_halves.test_tc5_swap_halves TC5 FAIL: Expected data_out=0xAA, Got=0x08
+                                                        assert 8 == 170
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 226, in test_tc5_swap_halves
+                                                            assert data_out == 0xAA, f"TC5 FAIL: Expected data_out=0xAA, Got=0x{data_out:02X}"
+                                                        AssertionError: TC5 FAIL: Expected data_out=0xAA, Got=0x08
+                                                        assert 8 == 170
+   240.00ns WARNING  cocotb.regression                  test_swizzler.test_tc5_swap_halves failed
+   240.00ns INFO     cocotb.regression                  running test_swizzler.test_tc6_bitwise_inversion (6/9)
+                                                            Test Case 6: Bitwise Inversion (operation_mode=100)
+   250.00ns INFO     cocotb.swizzler                    TC6: Reset de-asserted
+   260.00ns INFO     cocotb.swizzler                    TC6 - Cycle 1
+   270.00ns INFO     cocotb.swizzler                    TC6 - Cycle 2
+   280.00ns INFO     cocotb.swizzler                    TC6 - Cycle 3
+   290.00ns INFO     cocotb.swizzler                    TC6 - Cycle 4
+   290.00ns WARNING  ..rsion.test_tc6_bitwise_inversion TC6 FAIL: Expected data_out=0x55, Got=0x7E
+                                                        assert 126 == 85
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 271, in test_tc6_bitwise_inversion
+                                                            assert data_out == 0x55, f"TC6 FAIL: Expected data_out=0x55, Got=0x{data_out:02X}"
+                                                        AssertionError: TC6 FAIL: Expected data_out=0x55, Got=0x7E
+                                                        assert 126 == 85
+   290.00ns WARNING  cocotb.regression                  test_swizzler.test_tc6_bitwise_inversion failed
+   290.00ns INFO     cocotb.regression                  running test_swizzler.test_tc7_circular_left_shift (7/9)
+                                                            Test Case 7: Circular Left Shift (operation_mode=101)
+   300.01ns INFO     cocotb.swizzler                    TC7: Reset de-asserted
+   310.01ns INFO     cocotb.swizzler                    TC7 - Cycle 1
+   320.01ns INFO     cocotb.swizzler                    TC7 - Cycle 2
+   330.01ns INFO     cocotb.swizzler                    TC7 - Cycle 3
+   340.01ns INFO     cocotb.swizzler                    TC7 - Cycle 4
+   340.01ns WARNING  ..ift.test_tc7_circular_left_shift Can't convert LogicArray to int: it contains non-0/1 values
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 314, in test_tc7_circular_left_shift
+                                                            data_out = int(dut.data_out.value)
+                                                                       ^^^^^^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 787, in __int__
+                                                            return self.to_unsigned()
+                                                                   ^^^^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 655, in to_unsigned
+                                                            return self._get_int()
+                                                                   ^^^^^^^^^^^^^^^
+                                                          File "/venv/lib/python3.12/site-packages/cocotb/types/_logic_array.py", line 304, in _get_int
+                                                            raise ValueError(
+                                                        ValueError: Can't convert LogicArray to int: it contains non-0/1 values
+   340.01ns WARNING  cocotb.regression                  test_swizzler.test_tc7_circular_left_shift failed
+   340.01ns INFO     cocotb.regression                  running test_swizzler.test_tc8_circular_right_shift (8/9)
+                                                            Test Case 8: Circular Right Shift (operation_mode=110)
+   350.01ns INFO     cocotb.swizzler                    TC8: Reset de-asserted
+   360.01ns INFO     cocotb.swizzler                    TC8 - Cycle 1
+   370.01ns INFO     cocotb.swizzler                    TC8 - Cycle 2
+   380.01ns INFO     cocotb.swizzler                    TC8 - Cycle 3
+   390.01ns INFO     cocotb.swizzler                    TC8 - Cycle 4
+   390.01ns WARNING  ..ft.test_tc8_circular_right_shift TC8 FAIL: Expected data_out=0x55, Got=0x00
+                                                        assert 0 == 85
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 363, in test_tc8_circular_right_shift
+                                                            assert data_out == expected, f"TC8 FAIL: Expected data_out=0x{expected:02X}, Got=0x{data_out:02X}"
+                                                        AssertionError: TC8 FAIL: Expected data_out=0x55, Got=0x00
+                                                        assert 0 == 85
+   390.01ns WARNING  cocotb.regression                  test_swizzler.test_tc8_circular_right_shift failed
+   390.01ns INFO     cocotb.regression                  running test_swizzler.test_tc9_invalid_mapping (9/9)
+                                                            Test Case 9: Invalid Mapping
+   400.01ns INFO     cocotb.swizzler                    TC9: Reset de-asserted
+   410.01ns INFO     cocotb.swizzler                    TC9 - Cycle 1
+   420.01ns INFO     cocotb.swizzler                    TC9 - Cycle 2
+   430.01ns INFO     cocotb.swizzler                    TC9 - Cycle 3
+   440.01ns INFO     cocotb.swizzler                    TC9 - Cycle 4
+   440.01ns WARNING  ..mapping.test_tc9_invalid_mapping TC9 FAIL: Expected data_out=0x00, Got=0x80
+                                                        assert 128 == 0
+                                                        Traceback (most recent call last):
+                                                          File "/src/test_swizzler.py", line 408, in test_tc9_invalid_mapping
+                                                            assert data_out == 0x00, f"TC9 FAIL: Expected data_out=0x00, Got=0x{data_out:02X}"
+                                                        AssertionError: TC9 FAIL: Expected data_out=0x00, Got=0x80
+                                                        assert 128 == 0
+   440.01ns WARNING  cocotb.regression                  test_swizzler.test_tc9_invalid_mapping failed
+   440.01ns INFO     cocotb.regression                  *****************************************************************************************************
+                                                        ** TEST                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************
+                                                        ** test_swizzler.test_tc1_identity_mapping       FAIL          40.00           0.01       4597.25  **
+                                                        ** test_swizzler.test_tc2_reverse_mapping        FAIL          50.00           0.00      13233.75  **
+                                                        ** test_swizzler.test_tc3_passthrough            FAIL          50.00           0.00      13417.48  **
+                                                        ** test_swizzler.test_tc4_reverse_data           FAIL          50.00           0.00      12125.07  **
+                                                        ** test_swizzler.test_tc5_swap_halves            FAIL          50.00           0.00      12449.70  **
+                                                        ** test_swizzler.test_tc6_bitwise_inversion      FAIL          50.00           0.00      14483.09  **
+                                                        ** test_swizzler.test_tc7_circular_left_shift    FAIL          50.00           0.00      11873.14  **
+                                                        ** test_swizzler.test_tc8_circular_right_shift   FAIL          50.00           0.00      10867.20  **
+                                                        ** test_swizzler.test_tc9_invalid_mapping        FAIL          50.00           0.00      14285.78  **
+                                                        *****************************************************************************************************
+                                                        ** TESTS=9 PASS=0 FAIL=9 SKIP=0                               440.01           0.07       6136.93  **
+                                                        *****************************************************************************************************
+ERROR    Icarus:runner.py:572 ERROR: Failed 9 of 9 tests.
+FAILED
+
+=================================== FAILURES ===================================
+_________________________________ test_runner __________________________________
+
+    def test_runner():
+        runner = get_runner(sim)
+        parameters = {
+            "N": param_width,
+        }
+        runner.build(
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            verbose=True,
+            parameters=parameters,
+            timescale=("1ns", "1ns"),
+            log_file="build.log")
+    
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: 1
+
+/src/test_runner.py:34: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s swizzler -g2012 -Pswizzler.N=8 -f /code/rundir/sim_build/cmds.f /code/rtl/swizzler.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+ERROR    Icarus:runner.py:572 ERROR: Failed 9 of 9 tests.
+=============================== warnings summary ===============================
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-b_rbrvyr'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-o_2n7ba5'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-3v5pd8_m'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_runner - SystemExit: 1
+======================== 1 failed, 3 warnings in 1.29s =========================

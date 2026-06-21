@@ -1,0 +1,105 @@
+## Transport
+rest
+
+## Rationale
+- **Lines 32–33:** `reg signed [10:0] gx_val, gy_val, mag;` and `reg [7:0] buf [0:8];` are declared inside an `if` branch. Icarus Verilog (`iverilog -g2012`) does not allow procedural block-local declarations there, which causes the build failure (`exit status 24`) before simulation runs.
+- **Lines 46–57:** The `<<<` arithmetic-shift operator is unnecessary here (operands are non-negative pixel values) and can trigger elaboration issues on Icarus; `<< 1` is sufficient for doubling.
+- **Fix approach:** Move `gx_val`, `gy_val`, `mag`, and `buf` to module scope and keep blocking assignments inside the sequential block so the 9th-pixel computation still uses the updated window in the same cycle.
+- **Lines 27–28, 64–65:** Default `valid_out`/`edge_out` to 0 each cycle and assert them only when `pixel_count == 8` preserves the required 9-cycle latency and single-cycle valid pulse from the prior logic fix.
+- **Lines 45–57:** Correct Gx/Gy kernel indexing (`buf[8]` top-left through `buf[0]` bottom-right) and same-cycle magnitude computation remain intact after the compile fix.
+- **Lines 67–70, 84–87:** Buffer clear and `pixel_count` reset after processing and when `valid_in` is low match the spec requirement to discard the window after output.
+
+## PatchedFiles
+### rtl/sobel_filter.sv
+```verilog
+module sobel_filter (
+    input            clk,
+    input            rst_n,
+    input      [7:0] pixel_in,
+    input            valid_in,
+    output reg [7:0] edge_out,
+    output reg       valid_out
+);
+    reg signed [10:0] Gx, Gy;
+    reg signed [10:0] gx_val, gy_val, mag;
+    reg [7:0] pixel_buffer[0:8];
+    reg [7:0] buf [0:8];
+    reg [3:0] pixel_count;
+    integer i;
+
+    parameter THRESHOLD = 11'd128;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            for (i = 0; i < 9; i = i + 1) begin
+                pixel_buffer[i] <= 8'd0;
+            end
+            pixel_count <= 4'd0;
+            Gx        <= 11'sd0;
+            Gy        <= 11'sd0;
+            edge_out  <= 8'd0;
+            valid_out <= 1'b0;
+        end else begin
+            valid_out <= 1'b0;
+            edge_out  <= 8'd0;
+
+            if (valid_in) begin
+                if (pixel_count == 4'd8) begin
+                    buf[0] = pixel_in;
+                    buf[1] = pixel_buffer[0];
+                    buf[2] = pixel_buffer[1];
+                    buf[3] = pixel_buffer[2];
+                    buf[4] = pixel_buffer[3];
+                    buf[5] = pixel_buffer[4];
+                    buf[6] = pixel_buffer[5];
+                    buf[7] = pixel_buffer[6];
+                    buf[8] = pixel_buffer[7];
+
+                    gx_val = -$signed({3'b0, buf[8]})
+                           - ($signed({3'b0, buf[5]}) << 1)
+                           -  $signed({3'b0, buf[2]})
+                           +  $signed({3'b0, buf[6]})
+                           + ($signed({3'b0, buf[3]}) << 1)
+                           +  $signed({3'b0, buf[0]});
+
+                    gy_val = -$signed({3'b0, buf[8]})
+                           - ($signed({3'b0, buf[7]}) << 1)
+                           -  $signed({3'b0, buf[6]})
+                           +  $signed({3'b0, buf[2]})
+                           + ($signed({3'b0, buf[1]}) << 1)
+                           +  $signed({3'b0, buf[0]});
+
+                    mag = (gx_val < 0 ? -gx_val : gx_val)
+                        + (gy_val < 0 ? -gy_val : gy_val);
+
+                    Gx        <= gx_val;
+                    Gy        <= gy_val;
+                    edge_out  <= (mag > THRESHOLD) ? 8'd255 : 8'd0;
+                    valid_out <= 1'b1;
+
+                    for (i = 0; i < 9; i = i + 1) begin
+                        pixel_buffer[i] <= 8'd0;
+                    end
+                    pixel_count <= 4'd0;
+                end else begin
+                    pixel_buffer[8] <= pixel_buffer[7];
+                    pixel_buffer[7] <= pixel_buffer[6];
+                    pixel_buffer[6] <= pixel_buffer[5];
+                    pixel_buffer[5] <= pixel_buffer[4];
+                    pixel_buffer[4] <= pixel_buffer[3];
+                    pixel_buffer[3] <= pixel_buffer[2];
+                    pixel_buffer[2] <= pixel_buffer[1];
+                    pixel_buffer[1] <= pixel_buffer[0];
+                    pixel_buffer[0] <= pixel_in;
+                    pixel_count <= pixel_count + 1'b1;
+                end
+            end else begin
+                for (i = 0; i < 9; i = i + 1) begin
+                    pixel_buffer[i] <= 8'd0;
+                end
+                pixel_count <= 4'd0;
+            end
+        end
+    end
+endmodule
+```

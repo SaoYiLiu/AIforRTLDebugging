@@ -1,0 +1,38 @@
+## Rationale
+- The second counter should run **1 through 60**, then wrap to 1. The buggy RTL wrapped on `second == 59`, so 60 was never shown and the counter was always one step ahead of the reference after each minute boundary.
+- The first mismatch at **690 ps** matches that: `second_ref` is **60** while `second_dut` is **1** (wrap happened one tick too early).
+- The pause condition used **`minute == 59`** instead of **`minute == 60`**. The spec says counting stops when the minute counter reaches 60, so both counters should freeze only at minute 60.
+- Pausing at minute 59 made the DUT stop one minute early and caused long stretches of `minute` mismatches (9882 total on `minute`, 9720 on `second`).
+- The reference model uses `second == 6'd60` for wrap and `minute == 60` for pause; aligning with that fixes all **9884** mismatches.
+- Minute increment on `second == 60` was already correct and was left unchanged.
+
+## FixedTopModule
+```verilog
+module TopModule(
+	input clk,
+	input rst_n,
+
+	output reg [5:0]second,
+	output reg [5:0]minute
+	);
+
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n)
+			minute <= 6'd0;
+		else if (second == 6'd60)
+			minute <= minute + 1'b1;
+		else
+			minute <= minute;
+
+	always @(posedge clk or negedge rst_n)
+		if (!rst_n)
+			second <= 6'd0;
+		else if (second == 6'd60)
+			second <= 6'd1;
+		else if (minute == 6'd60)
+			second <= second;
+		else
+			second <= second + 1'b1;
+
+endmodule
+```

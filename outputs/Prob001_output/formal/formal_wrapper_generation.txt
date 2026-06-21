@@ -1,0 +1,61 @@
+transport=bridge
+
+## Rationale
+- **Init assumptions (`$initstate`)**: Constrain the first cycle to active reset and `a=0`, matching the example pattern so unconstrained `anyinit` state does not produce spurious failures.
+- **Reset match (`!rst_n || !$past(rst_n)`)**: Covers async reset (`!rst_n`) and the cycle immediately after reset release (`!$past(rst_n)`), requiring `match==0` in both cases.
+- **Shift-register update (`gold_a_tem == { $past(gold_a_tem[6:0]), $past(a) }`)**: Encodes the spec that `a` shifts into the LSB each enabled cycle. A shadow `gold_a_tem` tracks RefModule behavior without instantiating it; this catches the bug `{a, a_tem[6:0]}` (MSB shift) vs the correct `{a_tem[6:0], a}` (LSB shift).
+- **Pattern detect (`match == ($past(gold_a_tem) == TARGET)`)**: `match` is registered from the pre-update shift-register value, so it is checked against `$past(gold_a_tem)` and the target pattern `8'b0111_0001`.
+
+Verified with SymbiYosys BMC (depth 20): **PASS** on the fixed DUT, **FAIL** at step 9 on the buggy DUT (shift-direction bug).
+
+## Raw
+## Rationale
+
+- **Init assumptions (`$initstate`)**: Constrain the first cycle to active reset and `a=0`, matching the example pattern so unconstrained `anyinit` state does not produce spurious failures.
+- **Reset match (`!rst_n || !$past(rst_n)`)**: Covers async reset (`!rst_n`) and the cycle immediately after reset release (`!$past(rst_n)`), requiring `match==0` in both cases.
+- **Shift-register update (`gold_a_tem == { $past(gold_a_tem[6:0]), $past(a) }`)**: Encodes the spec that `a` shifts into the LSB each enabled cycle. A shadow `gold_a_tem` tracks RefModule behavior without instantiating it; this catches the bug `{a, a_tem[6:0]}` (MSB shift) vs the correct `{a_tem[6:0], a}` (LSB shift).
+- **Pattern detect (`match == ($past(gold_a_tem) == TARGET)`)**: `match` is registered from the pre-update shift-register value, so it is checked against `$past(gold_a_tem)` and the target pattern `8'b0111_0001`.
+
+Verified with SymbiYosys BMC (depth 20): **PASS** on the fixed DUT, **FAIL** at step 9 on the buggy DUT (shift-direction bug).
+
+## TopModule_formal
+
+```verilog
+module TopModule_formal;
+    localparam [7:0] TARGET = 8'b0111_0001;
+
+    (* gclk *) reg clk;
+    (* anyseq *) reg rst_n;
+    (* anyseq *) reg a;
+    wire match;
+
+    TopModule dut (
+        .clk(clk),
+        .rst_n(rst_n),
+        .a(a),
+        .match(match)
+    );
+
+    // Golden shift-register state (RefModule behavior, not instantiated).
+    reg [7:0] gold_a_tem;
+
+    always @(posedge clk) begin
+        if (!rst_n)
+            gold_a_tem <= 8'b0;
+        else
+            gold_a_tem <= {gold_a_tem[6:0], a};
+    end
+
+    always @(posedge clk) begin
+        if ($initstate) begin
+            assume(!rst_n);
+            assume(!a);
+        end else if (!rst_n || !$past(rst_n)) begin
+            assert(match == 1'b0);
+        end else begin
+            assert(gold_a_tem == { $past(gold_a_tem[6:0]), $past(a) });
+            assert(match == ($past(gold_a_tem) == TARGET));
+        end
+    end
+endmodule
+```

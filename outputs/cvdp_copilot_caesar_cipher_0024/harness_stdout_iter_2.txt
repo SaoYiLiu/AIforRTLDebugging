@@ -1,0 +1,98 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
+cachedir: /rundir/harness/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_runner 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:644 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s caesar_cipher -g2012 -Pcaesar_cipher.PHRASE_WIDTH=64 -Pcaesar_cipher.PHRASE_LEN=8 -f /code/rundir/sim_build/cmds.f /code/rtl/caesar_cipher.sv in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782012467
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_caesar_cipher.test_caesar_cipher_numeric_key (1/4)
+                                                            Test Caesar Cipher RTL module with numeric key (random tests)
+     4.00ns INFO     test                               Numeric Key Test:
+                                                          Input Phrase:  sXlukOx
+                                                          Key Phrase: [9, 19, 2, 9, 7, 12, 9, 4]
+                                                          Expected: )lZubwXb
+                                                          DUT Output: )lZubwXb
+     4.00ns INFO     test                               Test passed for input= sXlukOx, key=[9, 19, 2, 9, 7, 12, 9, 4].
+     6.00ns INFO     test                               Numeric Key Test:
+                                                          Input Phrase: UvZXmQEe
+                                                          Key Phrase: [19, 6, 16, 10, 9, 23, 3, 4]
+                                                          Expected: NbPHvNHi
+                                                          DUT Output: NbPHvNHi
+     6.00ns INFO     test                               Test passed for input=UvZXmQEe, key=[19, 6, 16, 10, 9, 23, 3, 4].
+     8.00ns INFO     test                               Numeric Key Test:
+                                                          Input Phrase: lysYUpza
+                                                          Key Phrase: [2, 7, 1, 6, 24, 10, 21, 5]
+                                                          Expected: nftESzuf
+                                                          DUT Output: nftESzuf
+     8.00ns INFO     test                               Test passed for input=lysYUpza, key=[2, 7, 1, 6, 24, 10, 21, 5].
+     8.00ns INFO     cocotb.regression                  test_caesar_cipher.test_caesar_cipher_numeric_key passed
+     8.00ns INFO     cocotb.regression                  running test_caesar_cipher.test_caesar_cipher_special_characters (2/4)
+                                                            Test Caesar Cipher RTL module with special characters in the input
+    13.00ns INFO     test                               Special Characters Test:
+                                                          Input Phrase: !@#$%^&*
+                                                          Key Phrase: [25, 7, 21, 9, 5, 12, 14, 5]
+                                                          Expected Output: :G8-*j4/
+                                                          DUT Output: :G8-*j4/
+    13.00ns INFO     test                               Test passed for special characters input.
+    13.00ns INFO     cocotb.regression                  test_caesar_cipher.test_caesar_cipher_special_characters passed
+    13.00ns INFO     cocotb.regression                  running test_caesar_cipher.test_caesar_cipher_key_shorter_than_input (3/4)
+                                                            Test Caesar Cipher RTL module with a key shorter than the input phrase
+    18.00ns INFO     test                               Short-Key Test:
+                                                          Input Phrase: LongerIn
+                                                          Original Key: [3, 5, 7]
+                                                          Extended Key: [3, 5, 7, 3, 5, 7, 3, 5]
+                                                          Expected Output: OtujjyLs
+                                                          DUT Output: OtujjyLs
+    18.00ns INFO     test                               Test passed for key shorter than input phrase.
+    18.00ns INFO     cocotb.regression                  test_caesar_cipher.test_caesar_cipher_key_shorter_than_input passed
+    18.00ns INFO     cocotb.regression                  running test_caesar_cipher.test_caesar_cipher_encryption_decryption (4/4)
+                                                            Test Caesar Cipher RTL module: encryption followed by decryption
+    23.00ns INFO     test                               Encryption-Decryption Test (Encryption phase):
+                                                          Original Input: QEsKNJFO
+                                                          Numeric Key: [25, 4, 15, 4, 7, 19, 4, 21]
+                                                          Expected Encrypted: PIhOUCJJ
+                                                          DUT Encrypted: PIhOUCJJ
+    25.00ns INFO     test                               Encryption-Decryption Test (Decryption phase):
+                                                          Encrypted Input: PIhOUCJJ
+                                                          Numeric Key: [25, 4, 15, 4, 7, 19, 4, 21]
+                                                          Expected Decrypted: QEsKNJFO
+                                                          DUT Decrypted: QEsKNJFO
+    25.00ns INFO     test                               Encryption-Decryption Test Passed.
+                                                          Original: QEsKNJFO
+                                                          Encrypted: PIhOUCJJ
+                                                          Decrypted: QEsKNJFO
+    25.00ns INFO     cocotb.regression                  test_caesar_cipher.test_caesar_cipher_encryption_decryption passed
+    25.00ns INFO     cocotb.regression                  **********************************************************************************************************************
+                                                        ** TEST                                                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **********************************************************************************************************************
+                                                        ** test_caesar_cipher.test_caesar_cipher_numeric_key              PASS           8.00           0.00       3366.22  **
+                                                        ** test_caesar_cipher.test_caesar_cipher_special_characters       PASS           4.00           0.00       3879.13  **
+                                                        ** test_caesar_cipher.test_caesar_cipher_key_shorter_than_input   PASS           4.00           0.00       3878.23  **
+                                                        ** test_caesar_cipher.test_caesar_cipher_encryption_decryption    PASS           6.00           0.00       4959.76  **
+                                                        **********************************************************************************************************************
+                                                        ** TESTS=4 PASS=4 FAIL=0 SKIP=0                                                 25.00           0.02       1140.85  **
+                                                        **********************************************************************************************************************
+INFO     Icarus:runner.py:602 Results file: /code/rundir/sim_build/test_runner.result.xml
+PASSED
+
+=============================== warnings summary ===============================
+../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-pigalq23'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-rd6ciudn'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 1 passed, 2 warnings in 1.27s =========================

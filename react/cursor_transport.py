@@ -31,6 +31,7 @@ _TERMINAL_RUN_STATUSES = frozenset({"FINISHED", "ERROR", "CANCELLED", "EXPIRED"}
 
 _bridge_probe_result: bool | None = None
 _cloud_repo_cache: tuple[str, str] | None = None
+_rest_models_cache: list[dict[str, Any]] | None = None
 _http_request_logging_enabled = False
 
 
@@ -69,6 +70,102 @@ def _cloud_repo_ref() -> str:
     return os.environ.get("CURSOR_CLOUD_REPO_REF", "main").strip() or "main"
 
 
+def _normalize_repo_url(url: str) -> str:
+    cleaned = url.strip().rstrip("/")
+    if cleaned.endswith(".git"):
+        cleaned = cleaned[:-4]
+    return cleaned
+
+
+def _fetch_rest_models(client: httpx.Client, auth: tuple[str, str]) -> list[dict[str, Any]]:
+    global _rest_models_cache
+
+    if _rest_models_cache is not None:
+        return _rest_models_cache
+
+    resp = client.get(f"{API_BASE}/v1/models", auth=auth, timeout=120)
+    if resp.status_code >= 400:
+        raise RuntimeError(
+            f"Cursor REST list models failed: HTTP {resp.status_code}: "
+            f"{resp.text[:800]}"
+        )
+
+    _rest_models_cache = list(resp.json().get("items") or [])
+    return _rest_models_cache
+
+
+def _resolve_rest_model_id(
+    client: httpx.Client,
+    auth: tuple[str, str],
+    requested: str,
+) -> str | None:
+    """
+    Map an SDK/CLI model slug to a REST ``model.id``.
+
+    The local bridge accepts names like ``composer-2.5``, but ``POST /v1/agents``
+    only accepts IDs (or aliases) returned by ``GET /v1/models``. Passing an
+    unknown ID yields HTTP 400.
+    """
+    requested = requested.strip()
+    if not requested:
+        return None
+
+    items = _fetch_rest_models(client, auth)
+
+    # SDK/CLI slugs like composer-2.5 are not accepted by POST /v1/agents even when
+    # they appear in marketing docs; map to the canonical composer REST id.
+    if "2.5" in requested or requested.endswith(".5"):
+        for item in items:
+            model_id = str(item.get("id", "")).strip()
+            if model_id == "composer-2" or model_id.startswith("composer-"):
+                print(
+                    f"[cursor] REST model mapped: {requested!r} -> {model_id!r}",
+                    flush=True,
+                )
+                return model_id
+
+    for item in items:
+        model_id = str(item.get("id", "")).strip()
+        if not model_id:
+            continue
+        aliases = [str(alias).strip() for alias in (item.get("aliases") or []) if str(alias).strip()]
+        if requested == model_id or requested in aliases:
+            if requested != model_id:
+                print(
+                    f"[cursor] REST model alias: {requested!r} -> {model_id!r}",
+                    flush=True,
+                )
+            return model_id
+
+    lower = requested.lower()
+    if lower.startswith("composer"):
+        for item in items:
+            model_id = str(item.get("id", "")).strip()
+            if model_id.lower().startswith("composer"):
+                print(
+                    f"[cursor] REST model mapped: {requested!r} -> {model_id!r}",
+                    flush=True,
+                )
+                return model_id
+
+    for item in items:
+        model_id = str(item.get("id", "")).strip()
+        aliases = [str(alias).strip().lower() for alias in (item.get("aliases") or [])]
+        if lower == model_id.lower() or lower in aliases:
+            print(
+                f"[cursor] REST model mapped: {requested!r} -> {model_id!r}",
+                flush=True,
+            )
+            return model_id
+
+    print(
+        f"[cursor] REST model {requested!r} not listed by GET /v1/models; "
+        "omitting model field so Cursor uses the account default.",
+        flush=True,
+    )
+    return None
+
+
 def _resolve_cloud_repo(client: httpx.Client, auth: tuple[str, str]) -> tuple[str, str]:
     """
     Cloud Agents on many accounts cannot use no-repo mode (environment_public_id error).
@@ -79,7 +176,7 @@ def _resolve_cloud_repo(client: httpx.Client, auth: tuple[str, str]) -> tuple[st
     explicit = os.environ.get("CURSOR_CLOUD_REPO_URL", "").strip()
     ref = _cloud_repo_ref()
     if explicit:
-        return explicit, ref
+        return _normalize_repo_url(explicit), ref
 
     if _cloud_repo_cache is not None:
         return _cloud_repo_cache
@@ -99,9 +196,30 @@ def _resolve_cloud_repo(client: httpx.Client, auth: tuple[str, str]) -> tuple[st
             "  export CURSOR_CLOUD_REPO_URL=https://github.com/YOU/AIfordebugging"
         )
 
-    url = str(items[0].get("url", "")).strip()
+    preferred_name = os.environ.get("CURSOR_CLOUD_REPO_URL", "").strip().lower()
+    chosen = items[0]
+    if preferred_name:
+        for item in items:
+            url = str(item.get("url", "")).strip().lower()
+            if preferred_name.rstrip("/").removesuffix(".git") in url:
+                chosen = item
+                break
+    else:
+        for item in items:
+            url = str(item.get("url", "")).strip().lower()
+            if "aifordebugging" in url:
+                chosen = item
+                break
+
+    url = _normalize_repo_url(str(chosen.get("url", "")).strip())
     if not url:
         raise RuntimeError("Cursor REST: /v1/repositories returned no usable repo URL.")
+
+    ref = (
+        str(chosen.get("defaultBranch") or chosen.get("defaultRef") or chosen.get("ref") or "")
+        .strip()
+        or _cloud_repo_ref()
+    )
 
     _cloud_repo_cache = (url, ref)
     return _cloud_repo_cache
@@ -120,15 +238,109 @@ def _rest_prompt_text(prompt: str) -> str:
     )
 
 
-def _rest_create_payload(prompt: str, model: str, repo_url: str, starting_ref: str) -> dict:
-    return {
+def _rest_create_payload(
+    prompt: str,
+    model_id: str | None,
+    repo_url: str,
+    starting_ref: str,
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
         "prompt": {
             "text": _rest_prompt_text(prompt),
         },
-        "model": {"id": model},
         "repos": [{"url": repo_url, "startingRef": starting_ref}],
         "autoCreatePR": False,
     }
+    if model_id:
+        payload["model"] = {"id": model_id}
+    return payload
+
+
+def _rest_create_payload_no_repo(prompt: str, model_id: str | None) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "prompt": {
+            "text": _rest_prompt_text(prompt),
+        },
+        "autoCreatePR": False,
+    }
+    if model_id:
+        payload["model"] = {"id": model_id}
+    return payload
+
+
+def _create_rest_agent(
+    client: httpx.Client,
+    auth: tuple[str, str],
+    headers: dict[str, str],
+    *,
+    prompt: str,
+    model: str,
+    repo_url: str,
+    starting_ref: str,
+) -> httpx.Response:
+    rest_model_id = _resolve_rest_model_id(client, auth, model)
+    print(
+        f"[cursor] REST create agent: model={rest_model_id or '(account default)'} "
+        f"repo={repo_url} ref={starting_ref}",
+        flush=True,
+    )
+    variants: list[tuple[str, dict[str, Any]]] = [
+        ("repos", _rest_create_payload(prompt, rest_model_id, repo_url, starting_ref)),
+        ("repos,no-model", _rest_create_payload(prompt, None, repo_url, starting_ref)),
+        ("no-repo", _rest_create_payload_no_repo(prompt, rest_model_id)),
+        ("no-repo,no-model", _rest_create_payload_no_repo(prompt, None)),
+    ]
+    last_err = "Cursor REST create agent failed with no attempts."
+    for label, payload in variants:
+        create = client.post(
+            f"{API_BASE}/v1/agents",
+            json=payload,
+            auth=auth,
+            headers=headers,
+        )
+        if create.status_code >= 400:
+            _raise_if_cursor_billing_error(create, action=f"create agent ({label})")
+        if create.status_code < 400:
+            if label != "repos":
+                print(f"[cursor] REST create agent succeeded with fallback: {label}", flush=True)
+            return create
+        last_err = _rest_create_error_message(create, action=f"create agent ({label})")
+        print(f"[cursor] {last_err}", flush=True)
+    raise RuntimeError(last_err)
+
+
+def _rest_create_error_message(resp: httpx.Response, *, action: str) -> str:
+    body = resp.text[:1200]
+    try:
+        parsed = resp.json()
+        if isinstance(parsed, dict):
+            err = parsed.get("error")
+            if isinstance(err, dict):
+                body = json.dumps(err, ensure_ascii=False)
+            elif isinstance(err, str):
+                body = err
+    except Exception:
+        pass
+    return f"Cursor REST {action} failed: HTTP {resp.status_code}: {body}"
+
+
+def _is_cursor_billing_error(text: str) -> bool:
+    return "usage_limit_exceeded" in text or "Usage-based pricing required" in text
+
+
+def _raise_if_cursor_billing_error(resp: httpx.Response, *, action: str) -> None:
+    if resp.status_code < 400:
+        return
+    if _is_cursor_billing_error(resp.text):
+        detail = _rest_create_error_message(resp, action=action)
+        raise RuntimeError(
+            "Cursor Cloud Agents (REST API) are unavailable on this account: "
+            "usage-based pricing with a spend limit is required "
+            "(Background Agent needs at least $2 headroom).\n"
+            "Enable it at https://www.cursor.com/dashboard?tab=settings\n"
+            "Or use the local bridge instead: export CURSOR_TRANSPORT=bridge\n"
+            f"Details: {detail}"
+        )
 
 
 def get_transport_mode() -> TransportMode:
@@ -142,9 +354,10 @@ def get_transport_mode() -> TransportMode:
 
 def reset_bridge_probe() -> None:
     """Clear cached bridge probe (for tests)."""
-    global _bridge_probe_result, _cloud_repo_cache
+    global _bridge_probe_result, _cloud_repo_cache, _rest_models_cache
     _bridge_probe_result = None
     _cloud_repo_cache = None
+    _rest_models_cache = None
 
 
 def _probe_bridge(api_key: str, workspace: str, timeout_s: float = 30) -> bool:
@@ -244,6 +457,9 @@ class CursorPromptSession:
         timeout_s: float = 600,
         prompt_artifact_path: Path | None = None,
     ) -> tuple[str, TransportName]:
+        rest_exc: Exception | None = None
+        bridge_exc: Exception | None = None
+
         if self.mode == "auto":
             try:
                 return self._prompt_rest_session(
@@ -252,10 +468,11 @@ class CursorPromptSession:
                     timeout_s=timeout_s,
                     prompt_artifact_path=prompt_artifact_path,
                 ), "rest"
-            except Exception as rest_exc:
+            except Exception as exc:
+                rest_exc = exc
+                print(f"[cursor] REST session call failed: {rest_exc}", flush=True)
                 print(
-                    f"[cursor] REST session call failed ({type(rest_exc).__name__}); "
-                    "trying SDK bridge.",
+                    "[cursor] Trying SDK bridge.",
                     flush=True,
                 )
 
@@ -279,13 +496,14 @@ class CursorPromptSession:
                     timeout_s=timeout_s,
                     prompt_artifact_path=prompt_artifact_path,
                 ), "bridge"
-            except Exception as first_exc:
+            except Exception as exc:
+                bridge_exc = exc
                 # The local bridge is more reliable when each prompt gets a
                 # fresh bridge process. Keep only the session-level fallback
                 # state here; do not reuse a bridge/client across prompts.
                 self.close()
                 self._bridge_failed = True
-                bridge_error_name = type(first_exc).__name__
+                bridge_error_name = type(bridge_exc).__name__
                 if self.mode == "bridge":
                     raise
                 print(
@@ -293,6 +511,24 @@ class CursorPromptSession:
                     "falling back to REST API.",
                     flush=True,
                 )
+
+        if (
+            self.mode == "auto"
+            and rest_exc is not None
+            and _is_cursor_billing_error(str(rest_exc))
+        ):
+            if bridge_exc is not None:
+                raise RuntimeError(
+                    "Cursor REST is blocked by account billing limits and the SDK "
+                    "bridge also failed. Enable usage-based pricing for REST at "
+                    "https://www.cursor.com/dashboard?tab=settings — or fix the "
+                    "bridge (export CURSOR_TRANSPORT=bridge)."
+                ) from bridge_exc
+            raise RuntimeError(
+                "Cursor REST is blocked by account billing limits. Enable "
+                "usage-based pricing at https://www.cursor.com/dashboard?tab=settings "
+                "— or use the local bridge (export CURSOR_TRANSPORT=bridge)."
+            ) from rest_exc
 
         return _prompt_rest(
             prompt,
@@ -323,18 +559,15 @@ class CursorPromptSession:
 
         if self._rest_agent_id is None:
             repo_url, starting_ref = _resolve_cloud_repo(client, auth)
-            payload = _rest_create_payload(prompt, model, repo_url, starting_ref)
-            create = client.post(
-                f"{API_BASE}/v1/agents",
-                json=payload,
-                auth=auth,
-                headers=headers,
+            create = _create_rest_agent(
+                client,
+                auth,
+                headers,
+                prompt=prompt,
+                model=model,
+                repo_url=repo_url,
+                starting_ref=starting_ref,
             )
-            if create.status_code >= 400:
-                raise RuntimeError(
-                    f"Cursor REST create agent failed: HTTP {create.status_code}: "
-                    f"{create.text[:800]}"
-                )
             data = create.json()
             self._rest_agent_id = data["agent"]["id"]
             run_id = data["run"]["id"]
@@ -346,10 +579,7 @@ class CursorPromptSession:
                 headers=headers,
             )
             if create.status_code >= 400:
-                raise RuntimeError(
-                    f"Cursor REST create run failed: HTTP {create.status_code}: "
-                    f"{create.text[:800]}"
-                )
+                raise RuntimeError(_rest_create_error_message(create, action="create run"))
             run_id = create.json()["run"]["id"]
 
         return _wait_rest_run(
@@ -579,7 +809,15 @@ def _prompt_bridge(
         _write_prompt_artifact(prompt_artifact_path, prompt)
         result = Agent.prompt(prompt, options, client=client)
 
-    return (result.result or "") if hasattr(result, "result") else str(result)
+    text = (result.result or "") if hasattr(result, "result") else str(result)
+    status = getattr(result, "status", None)
+    if not str(text).strip():
+        raise RuntimeError(
+            "Cursor bridge returned an empty response"
+            + (f" (status={status!r})" if status is not None else "")
+            + ". Try CURSOR_TRANSPORT=rest or shorten the fix prompt."
+        )
+    return str(text)
 
 
 def _prompt_rest(
@@ -595,20 +833,19 @@ def _prompt_rest(
 
     with httpx.Client(timeout=60) as client:
         repo_url, starting_ref = _resolve_cloud_repo(client, auth)
-        payload = _rest_create_payload(prompt, model, repo_url, starting_ref)
-        _write_prompt_artifact(prompt_artifact_path, payload["prompt"]["text"])
-
-        create = client.post(
-            f"{API_BASE}/v1/agents",
-            json=payload,
-            auth=auth,
-            headers=headers,
+        create = _create_rest_agent(
+            client,
+            auth,
+            headers,
+            prompt=prompt,
+            model=model,
+            repo_url=repo_url,
+            starting_ref=starting_ref,
         )
-        if create.status_code >= 400:
-            raise RuntimeError(
-                f"Cursor REST create agent failed: HTTP {create.status_code}: "
-                f"{create.text[:800]}"
-            )
+        _write_prompt_artifact(
+            prompt_artifact_path,
+            _rest_prompt_text(prompt),
+        )
 
         data = create.json()
         agent_id = data["agent"]["id"]

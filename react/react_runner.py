@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shutil
+import traceback
 from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
@@ -38,7 +39,10 @@ from react.connection_map import (  # noqa: E402
 )
 from react.vcd_trace import (  # noqa: E402
     build_vcd_debug_summary,
+    filter_vcd_summary_for_llm,
     format_causal_chain_for_llm,
+    is_clock_vcd_signal,
+    without_clock_vcd_signals,
 )
 from react.formal_generator import ensure_formal_wrapper  # noqa: E402
 from react.formal_runner import (  # noqa: E402
@@ -71,7 +75,6 @@ def _write_llm_fix_request(
     out_dir: Path,
     prob_id: str,
     prompt_text: str,
-    buggy_sv: str,
     current_sv: str,
     sim_stdout: str,
     sim_stderr: str,
@@ -130,15 +133,12 @@ def _write_llm_fix_request(
             if "results" in vcd_summary:
                 f.write("\nselected signals:\n")
                 for sig, info in vcd_summary["results"].items():
+                    if is_clock_vcd_signal(sig):
+                        continue
                     f.write(f"\n[{sig}]\n")
                     for line in info.get("lines", [])[:200]:
                         f.write(line + "\n")
             f.write("```\n\n")
-
-        f.write("## Buggy RTL extracted from prompt\n")
-        f.write("```verilog\n")
-        f.write(buggy_sv.strip() + "\n")
-        f.write("```\n\n")
 
         f.write("## Current candidate RTL\n")
         f.write("```verilog\n")
@@ -149,6 +149,34 @@ def _write_llm_fix_request(
         f.write("- Identify the logic bug relative to the spec.\n")
         f.write("- Output a corrected full `TopModule` implementation.\n")
     return p
+
+
+def format_react_result_summary(result: dict[str, Any]) -> str:
+    """Human-readable one-screen summary of a ReAct run."""
+    ok = bool(result.get("ok"))
+    mismatches = result.get("mismatches")
+    error_kind = result.get("error_kind")
+    formal_status = result.get("formal_status")
+    output_dir = result.get("output_dir")
+
+    def _fmt(value: Any) -> str:
+        if value is None:
+            return "n/a"
+        return str(value)
+
+    lines = [
+        f"Test: {'passed' if ok else 'failed'}",
+        f"Mismatches: {_fmt(mismatches)}",
+    ]
+    if not ok:
+        lines.append(f"Error kind: {_fmt(error_kind)}")
+    lines.extend(
+        [
+            f"Formal status: {_fmt(formal_status)}",
+            f"Output directory: {_fmt(output_dir)}",
+        ]
+    )
+    return "\n".join(lines)
 
 
 def run_react_loop(
@@ -291,22 +319,29 @@ def run_react_loop(
                 elif use_cursor_sdk:
                     print(f"[{prob_id}] Iteration {it}: requesting patch from Cursor...", flush=True)
                     prompt_path = out_dir / f"llm_fix_request_iter_{it}.md"
-                    fr = fix_with_cursor_sdk(
-                        prob_id=prob_id,
-                        spec_text=prompt_text,
-                        buggy_sv=buggy_sv,
-                        current_sv=current_sv,
-                        sim_stdout=last_run.get("stdout", ""),
-                        sim_stderr=last_run.get("stderr", ""),
-                        vcd_summary=last_vcd_summary,
-                        connection_map=connection_map,
-                        structured_feedback=last_feedback,
-                        prior_rationales=prior_rationales,
-                        model=cursor_model,
-                        formal_summary=last_formal_result.to_dict() if last_formal_result else None,
-                        cursor_session=cursor_session,
-                        prompt_artifact_path=prompt_path,
-                    )
+                    try:
+                        fr = fix_with_cursor_sdk(
+                            prob_id=prob_id,
+                            spec_text=prompt_text,
+                            current_sv=current_sv,
+                            sim_stdout=last_run.get("stdout", ""),
+                            sim_stderr=last_run.get("stderr", ""),
+                            vcd_summary=last_vcd_summary,
+                            connection_map=connection_map,
+                            structured_feedback=last_feedback,
+                            prior_rationales=prior_rationales,
+                            model=cursor_model,
+                            formal_summary=last_formal_result.to_dict() if last_formal_result else None,
+                            cursor_session=cursor_session,
+                            prompt_artifact_path=prompt_path,
+                        )
+                    except Exception as exc:
+                        err_path = out_dir / f"cursor_sdk_error_iter_{it}.txt"
+                        err_path.write_text(
+                            f"{type(exc).__name__}: {exc}\n\n{traceback.format_exc()}",
+                            encoding="utf-8",
+                        )
+                        raise
                     if prompt_path.is_file():
                         (out_dir / "llm_fix_request.md").write_text(
                             prompt_path.read_text(encoding="utf-8"),
@@ -549,14 +584,18 @@ def run_react_loop(
                     failure_t = last_vcd_summary.get("failure_time")
                     end_t = (failure_t + 5000) if failure_t is not None else 5000
                     start_t = max(0, (failure_t - 200) if failure_t is not None else 0)
+                    trace_signals = without_clock_vcd_signals(
+                        last_vcd_summary["priority_signals"]
+                    )[:8]
                     waves = mcp_server.vcd_to_text(
                         str(wave_dst),
-                        signals=last_vcd_summary["priority_signals"][:8],
+                        signals=trace_signals,
                         start_time=start_t,
                         end_time=end_t,
                     )
                     if waves.get("ok"):
                         last_vcd_summary["results"] = waves.get("results", {})
+                    last_vcd_summary = filter_vcd_summary_for_llm(last_vcd_summary)
             else:
                 last_vcd_summary = None
 
@@ -579,7 +618,6 @@ def run_react_loop(
                 out_dir=out_dir,
                 prob_id=prob_id,
                 prompt_text=prompt_text,
-                buggy_sv=buggy_sv,
                 current_sv=current_sv,
                 sim_stdout=run_stdout,
                 sim_stderr=run_stderr,
@@ -739,5 +777,5 @@ if __name__ == "__main__":
         formal_on_pass=args.formal_on_pass,
         formal_regenerate=args.formal_regenerate,
     )
-    print(res)
+    print(format_react_result_summary(res))
 

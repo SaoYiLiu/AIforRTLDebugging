@@ -2,36 +2,32 @@
 rest
 
 ## Rationale
-- **Root cause (L012–L038, L050):** The design splits detection into two registered flags, `match_f` and `match_b`, and drives `match` with `match_b && match_f`. That adds an extra pipeline stage instead of checking the full 9-bit window in one step.
-
-- **Spec mismatch:** The pattern is a single 9-bit condition: `a_tem[8:6] == 3'b011` **and** `a_tem[2:0] == 3'b110`. The middle bits are don’t-cares. Both ends must be true on the **same** shift-register snapshot, not on separate delayed flags.
-
-- **Timing bug:** On each posedge, `match_f`/`match_b` are updated from the **pre-shift** value of `a_tem` (L017, L031), while `a_tem` itself shifts in the new bit afterward (L047). The reference model asserts `match` when the **post-shift** register contains `011XXX110`.
-
-- **Waveform evidence:** `match_dut` stays 0 for the entire run, while `match_ref` pulses high at 105, 145, 195, and 415 ps. The first mismatch is at 110 ps (sample after the 105 ps posedge), exactly when the reference detects the completed pattern and the DUT does not.
-
-- **Why the DUT never matches:** The completing bit makes both prefix and suffix true only in the updated register for a brief window. The registered `match_f`/`match_b` path evaluates conditions one cycle late, so the AND never aligns with when the reference expects `match` high (8/237 sample mismatches, all on `match`).
-
-- **Fix applied:** Remove `match_f` and `match_b`. Keep the 9-bit shift register (L040–L048) and assert `match` combinationally from the current register contents, matching the spec’s single-cycle detection rule.
+- **Suspected bug (L017–L050):** `match_f` and `match_b` are evaluated against the **pre-shift** value of `a_tem`, while the shift update `a_tem <= {a, a_tem[7:0]}` (L047) happens in the same clock cycle. The newest input bit is not included in the window used for detection.
+- **Wrong structure:** Splitting detection into two separate flags (L009–L038) and combining them with `assign match = match_b && match_f` (L050) still checks the old register contents, not the 9-bit window **after** the incoming bit is shifted in.
+- **Waveform evidence:** `match_ref` pulses high at 105, 145, 195, and 415 ps, but `match_dut` stays **0 for the entire simulation**. All 8 mismatches are ref=1, dut=0 — the DUT never detects the pattern.
+- **Causal trace at first failure (110 ps):** The last input change before failure is `tb.a @ 95: 0`, consistent with the final bit of `110` arriving at the clock edge near 105 ps. The reference model detects the completed `011XXX110` window; the DUT evaluates one cycle too early (before that bit enters `a_tem[8]`).
+- **Fix:** Remove `match_f`/`match_b`. Form the next shift-register value `{a, a_tem[7:0]}`, update `a_tem` from it, and register `match` from the **post-shift** window: `(a_shift[8:6] == 3'b011) && (a_shift[2:0] == 3'b110)`.
 
 ## FixedTopModule
 ```verilog
 module TopModule(
-	input clk,
-	input rst_n,
-	input a,
-	output match
+    input clk,
+    input rst_n,
+    input a,
+    output reg match
 );
 
-	reg [8:0] a_tem;
+    reg [8:0] a_tem;
+    wire [8:0] a_shift = {a, a_tem[7:0]};
 
-	always @(posedge clk or negedge rst_n)
-		if (!rst_n)
-			a_tem <= 9'b0;
-		else
-			a_tem <= {a, a_tem[7:0]};
-
-	assign match = (a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110);
+    always @(posedge clk or negedge rst_n)
+        if (!rst_n) begin
+            a_tem <= 9'b0;
+            match <= 1'b0;
+        end else begin
+            a_tem <= a_shift;
+            match <= (a_shift[8:6] == 3'b011) && (a_shift[2:0] == 3'b110);
+        end
 
 endmodule
 ```

@@ -1,6 +1,0 @@
-Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
-Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
-engine_0 (smtbmc z3) returned FAIL
-counterexample trace: engine_0/trace.vcd
-counterexample trace: engine_0/trace.yw
-  failed assertion TopModule_formal._witness_.check_assert_TopModule_formal_sv_24_91 at TopModule_formal.sv:24.13-25.83 step 8

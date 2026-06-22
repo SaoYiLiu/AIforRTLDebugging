@@ -21,6 +21,41 @@ class CausalTransition:
     delta: int
 
 
+def is_clock_vcd_signal(signal: str) -> bool:
+    """True for VCD hierarchy names whose leaf is a clock net (e.g. tb.clk, stim1.clk)."""
+    leaf = signal.rsplit(".", 1)[-1].lower()
+    return leaf in ("clk", "clock")
+
+
+def without_clock_vcd_signals(signals: list[str]) -> list[str]:
+    return [s for s in signals if not is_clock_vcd_signal(s)]
+
+
+def filter_vcd_summary_for_llm(summary: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Drop clock waveforms from VCD summaries destined for LLM prompts."""
+    if not summary:
+        return summary
+    if summary.get("ok") is False:
+        return summary
+
+    out = dict(summary)
+    if "signals" in out and isinstance(out["signals"], list):
+        out["signals"] = without_clock_vcd_signals(out["signals"])
+    if "priority_signals" in out and isinstance(out["priority_signals"], list):
+        out["priority_signals"] = without_clock_vcd_signals(out["priority_signals"])
+    if "causal_chain" in out and isinstance(out["causal_chain"], list):
+        out["causal_chain"] = [
+            ev
+            for ev in out["causal_chain"]
+            if not is_clock_vcd_signal(str(ev.get("signal", "")))
+        ]
+    if "results" in out and isinstance(out["results"], dict):
+        out["results"] = {
+            k: v for k, v in out["results"].items() if not is_clock_vcd_signal(k)
+        }
+    return out
+
+
 def _load_vcd(vcd_path: str | Path) -> Any:
     from vcdvcd import VCDVCD  # type: ignore
 
@@ -102,6 +137,8 @@ def trace_vcd_failure(
     priority_set = set(priority_signals or [])
 
     for sig in sorted(vcd.signals):
+        if is_clock_vcd_signal(sig):
+            continue
         tv = list(getattr(vcd[sig], "tv", []) or [])
         for t, v in tv:
             t_int = int(t)
@@ -177,6 +214,8 @@ def build_vcd_debug_summary(
                 priority.append(s)
         priority = priority[:12]
 
+        priority = without_clock_vcd_signals(priority)
+
     causal_chain: list[dict[str, Any]] = []
     if failure_time is not None:
         causal_chain = trace_vcd_failure(
@@ -187,16 +226,18 @@ def build_vcd_debug_summary(
             priority_signals=priority,
         )
 
-    return {
-        "ok": True,
-        "vcd_path": str(path),
-        "failure_time": failure_time,
-        "signals": available[:500],
-        "signals_truncated": len(available) > 500,
-        "priority_signals": priority,
-        "priority_from_connection_map": bool(connection_map and priority),
-        "causal_chain": causal_chain,
-    }
+    return filter_vcd_summary_for_llm(
+        {
+            "ok": True,
+            "vcd_path": str(path),
+            "failure_time": failure_time,
+            "signals": without_clock_vcd_signals(available[:500]),
+            "signals_truncated": len(available) > 500,
+            "priority_signals": priority,
+            "priority_from_connection_map": bool(connection_map and priority),
+            "causal_chain": causal_chain,
+        }
+    )
 
 
 def format_causal_chain_for_llm(causal_chain: list[dict[str, Any]]) -> str:
@@ -204,8 +245,11 @@ def format_causal_chain_for_llm(causal_chain: list[dict[str, Any]]) -> str:
         return "(no causal transitions in trace window)"
     lines = []
     for ev in causal_chain:
+        sig = str(ev.get("signal", ""))
+        if is_clock_vcd_signal(sig):
+            continue
         lines.append(
-            f"- {ev['signal']} @ t={ev['time']}: {ev['value']} "
+            f"- {sig} @ t={ev['time']}: {ev['value']} "
             f"(Δ={ev['delta_to_failure']} before failure)"
         )
-    return "\n".join(lines)
+    return "\n".join(lines) if lines else "(no causal transitions in trace window)"

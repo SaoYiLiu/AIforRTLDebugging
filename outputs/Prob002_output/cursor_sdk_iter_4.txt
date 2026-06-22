@@ -2,37 +2,32 @@
 rest
 
 ## Rationale
-- **Suspected bug (L016):** The shift update uses `{a, a_tem[7:0]}`, which only replaces bit `[8]` each cycle and leaves `[7:0]` frozen at reset values. A proper 9-bit history needs `{a, a_tem[8:1]}` so the previous MSB propagates down. With the buggy slice, `[8:6]` can never become `3'b011`, so `match` stays low forever.
-
-- **Suspected bug (L015–L016, prior split-flag design):** The original `match_f` / `match_b` scheme checked prefix and suffix in separate registers and combined them with `match_b && match_f`. That does not guarantee both ends of the same 9-bit window are true on one snapshot, and it adds misaligned pipeline behavior. The current candidate correctly removes those flags and uses one combined test.
-
-- **Timing (L015–L016):** The candidate evaluates `match` from the current `a_tem` before shifting (`match <= ...` then `a_tem <= ...`). Because nonblocking assignments read the old register value, this is the pre-shift check. Waveform evidence shows `match_ref` rising at 105 ps while the pre-shift window is `9'b011101110` (`[8:6]=011`, `[2:0]=110`); a post-shift check at that edge would see `9'b001110111` and miss.
-
-- **Waveform / regression evidence:** `match_dut` is 0 for the entire run while `match_ref` pulses at 105, 145, 195, and 415 ps. The first mismatch is at 110 ps (sample after the 105 ps posedge), exactly when the reference expects detection. Structured feedback reports 8/237 mismatches, all on `match`, consistent with `match` never asserting.
-
-- **Formal evidence:** SymbiYosys BMC fails at step 1 on the assertion equating DUT `match` to the reference, indicating a systematic detection failure from reset rather than a late corner case.
-
-- **Change made:** Keep the single registered `match` with the pre-shift combined pattern test `(a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110)`, and fix the shift register to `a_tem <= {a, a_tem[8:1]}`. That implements continuous detection of `011XXX110` on the current 9-bit window, as specified.
+- **Suspected bug (L016):** The shift uses `{a, a_tem[7:0]}`, which is not a valid 9-bit shift. It drops `a_tem[8]` without moving it into `a_tem[7]`, and keeps `a_tem[7:0]` unchanged each cycle. Only bit 8 is replaced with `a`, so history never propagates and the full 9-bit window never forms.
+- **Why match stays 0:** With a broken shift register, `(a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110)` (L015) is never true. That matches the waveform: `match_dut` stays 0 for the entire simulation while `match_ref` pulses at 105, 145, 195, and 415 ps.
+- **Waveform evidence:** All 8 mismatches are ref=1 / dut=0. The causal trace shows input transitions at 25, 55, 65, and 95 ps completing a candidate pattern, but the DUT never asserts because its register does not shift correctly.
+- **Correct shift:** Use `{a, a_tem[8:1]}` so each bit moves down one position, the new input enters bit 8, and bit 0 is discarded — a proper 9-bit shift register.
+- **Match timing (L015):** Keep pre-shift registered detection — evaluate `match` from the current `a_tem` before shifting, then update the register. This aligns with the reference asserting one cycle after the pattern is fully loaded.
+- **Change made:** Replace `{a, a_tem[7:0]}` with `{a, a_tem[8:1]}`; keep the pre-shift registered match expression unchanged.
 
 ## FixedTopModule
 ```verilog
 module TopModule(
-	input clk,
-	input rst_n,
-	input a,
-	output reg match
+    input clk,
+    input rst_n,
+    input a,
+    output reg match
 );
 
-	reg [8:0] a_tem;
+    reg [8:0] a_tem;
 
-	always @(posedge clk or negedge rst_n)
-		if (!rst_n) begin
-			a_tem <= 9'b0;
-			match <= 1'b0;
-		end else begin
-			match <= (a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110);
-			a_tem <= {a, a_tem[8:1]};
-		end
+    always @(posedge clk or negedge rst_n)
+        if (!rst_n) begin
+            a_tem <= 9'b0;
+            match <= 1'b0;
+        end else begin
+            match <= (a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110);
+            a_tem <= {a, a_tem[8:1]};
+        end
 
 endmodule
 ```

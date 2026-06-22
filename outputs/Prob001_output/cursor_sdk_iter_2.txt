@@ -1,47 +1,32 @@
 ## Transport
-bridge
+rest
 
 ## Rationale
-- **Suspected bug (L031):** The shift update `a_tem <= {a, a_tem[6:0]}` inserts `a` at the MSB and drops the old LSB. The spec requires shifting `a` into the LSB while older bits move one position left (toward the MSB).
-- **Waveform evidence:** At t=195 ps (posedge after the last bit of pattern `0111_0001` is applied), `match_ref` asserts but `match_dut` stays 0. `tb_mismatch` goes high at t=195 and clears at t=205 — exactly when the reference detects the pattern and the DUT does not.
-- **Structured feedback:** 2 mismatches on `match`, first at 200 ps (sampled on the clock edge after the reference already asserted). That fits a wrong shift register contents, not wrong reset or match polarity.
-- **Root cause:** With `{a, a_tem[6:0]}`, after the test sequence `0111_0001` the register never holds `8'b0111_0001`, so the compare on L015 never succeeds at the expected time.
-- **Match logic (L010–L022) is correct:** It matches `RefModule` — `match` is registered from the pre-update `a_tem` on each posedge. No change needed there.
-- **Fix applied:** Change L031 to `a_tem <= {a_tem[6:0], a};`, which shifts left and injects `a` at bit 0. Verified: 0 mismatches in 455 samples vs 2 with the buggy shift.
+- **Suspected bug (L010–L032):** `match` and `a_tem` are updated in **separate** `always` blocks. In the `match` block at **L015**, the comparison uses the **current** (pre-shift) value of `a_tem`, while `a_tem` is shifted in the other block at **L031** on the same clock edge.
+- **Evidence:** The first mismatch is at **200 ps**, right when the 8th bit (`a=1` at 195 ps) should complete pattern `8'b0111_0001`. `match_ref` asserts at **195–205 ps**, but `match_dut` stays **0** — the DUT is one cycle late.
+- **Two mismatches explained:** At **~200 ps**, ref=1 and dut=0 (late assert). On the next posedge, dut would assert `match` based on the now-complete `a_tem` while ref has already de-asserted — a second mismatch sample.
+- **Waveform causal trace:** The failure aligns with the final `a` transition at 195 ps completing the target pattern; the DUT never reflects that in the same cycle as the reference.
+- **Fix:** Merge into one `always` block and compare **`match` against the next shift-register value** `{a, a_tem[6:0]}`, so `match` updates in the same cycle as the shift that completes (or breaks) the pattern.
 
 ## FixedTopModule
 ```verilog
 module TopModule(
-	input clk,
-	input rst_n,
-	input a,
-	output reg match
-	);
+    input clk,
+    input rst_n,
+    input a,
+    output reg match
+);
 
-	reg [7:0] a_tem;
-	
-	always @(posedge clk or negedge rst_n)
-		if (!rst_n)
-			begin 
-				match <= 1'b0;
-			end
-		else if (a_tem == 8'b0111_0001)
-			begin
-				match <= 1'b1;
-			end
-		else 
-			begin	
-				match <= 1'b0;
-			end
-		
-	always @(posedge clk or negedge rst_n)
-		if (!rst_n)
-			begin 
-				a_tem <= 8'b0;
-			end
-		else 
-			begin
-				a_tem <= {a_tem[6:0], a};
-			end
+    reg [7:0] a_tem;
+
+    always @(posedge clk or negedge rst_n)
+        if (!rst_n) begin
+            a_tem <= 8'b0;
+            match <= 1'b0;
+        end else begin
+            a_tem <= {a, a_tem[6:0]};
+            match <= ({a, a_tem[6:0]} == 8'b0111_0001);
+        end
+
 endmodule
 ```

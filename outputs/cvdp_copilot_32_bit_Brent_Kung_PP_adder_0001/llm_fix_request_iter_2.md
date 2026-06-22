@@ -167,9 +167,9 @@ error_kind: logic
     30.00ns INFO     cocotb.regression                  *****************************************************************************************************
                                                         ** TEST                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
                                                         *****************************************************************************************************
-                                                        ** test_brent_kung_adder.test_brent_kung_adder   FAIL          30.00           0.01       3954.53  **
+                                                        ** test_brent_kung_adder.test_brent_kung_adder   FAIL          30.00           0.01       3588.35  **
                                                         *****************************************************************************************************
-                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                30.00           0.02       1432.77  **
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                30.00           0.02       1395.17  **
                                                         *****************************************************************************************************
 ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
 FAILED
@@ -202,27 +202,27 @@ INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-p
 ERROR    Icarus:runner.py:572 ERROR: Failed 1 of 1 tests.
 =============================== warnings summary ===============================
 ../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477
-  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-6p7w8dwq'
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:477: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/nodeids: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-larr7psl'
     config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
 
 ../../venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
-  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-xwoo_81v'
+  /venv/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/lastfailed: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-dowh4pl0'
     config.cache.set("cache/lastfailed", self.lastfailed)
 
 ../../venv/lib/python3.12/site-packages/_pytest/stepwise.py:51
-  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-oprleg3v'
+  /venv/lib/python3.12/site-packages/_pytest/stepwise.py:51: PytestCacheWarning: could not create cache path /rundir/harness/.cache/v/cache/stepwise: [Errno 13] Permission denied: '/rundir/harness/pytest-cache-files-nudcyv5x'
     session.config.cache.set(STEPWISE_CACHE_DIR, [])
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ============================
 FAILED ../../src/test_runner.py::test_runner - SystemExit: 1
-======================== 1 failed, 3 warnings in 1.57s =========================
+======================== 1 failed, 3 warnings in 1.43s =========================
 
 [stderr]
 Network cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__1_default Creating 
  Network cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__1_default Created 
- Container cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__1-direct-run-cd403bcc42ed Creating 
- Container cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__1-direct-run-cd403bcc42ed Created
+ Container cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__1-direct-run-34f7dfa920c9 Creating 
+ Container cvdp_react_cvdp_copilot_32_bit_brent_kung_pp_adder__1-direct-run-34f7dfa920c9 Created
 
 --- full harness log ---
 
@@ -240,7 +240,7 @@ INFO     Icarus:runner.py:632 Running command vvp -M /venv/lib/python3.12/site-p
      -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /venv/bin/python
      -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
      0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (stable)
-     0.00ns INFO     cocotb                             Seeding Python random module with 1782047927
+     0.00ns INFO     cocotb                             Seeding Python random module with 1782060966
      0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /venv/lib/python3.12/site-packages/cocotb
      0.00ns INFO     cocotb                             Running tests
      0.00ns INFO     cocotb.regression                  running test_brent_kung_adder.test_brent_kung_adder (1/1)

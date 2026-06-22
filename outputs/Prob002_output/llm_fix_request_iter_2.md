@@ -11,12 +11,7 @@ logic
 ## Fix strategy
 The design compiles but fails simulation against the reference model. Use structured mismatch data and the causal waveform trace to find where DUT diverges from ref. Make minimal targeted logic fixes; preserve correct behavior elsewhere.
 
-## Previous iteration rationale (prioritize this)
-- **Suspected bug (L016–L017):** The previous fix checks `a_shift` (the **post-shift** window) and registers `match` from it. Simulation sampling happens after the nonblocking updates settle; at the detection posedge the shift has already moved the completed pattern out of alignment, so `match` is deasserted when the testbench compares.
-- **Waveform evidence:** `match_ref` pulses at 105, 145, 195, and 415 ps, but `match_dut` stays 0 for the entire run (8 ref=1 / dut=0 mismatches). That matches post-shift registration: the pattern appears in `a_tem` at 95 ps (post-shift), but by the 105 ps sample (pre-shift `a_tem` before that cycle's shift) the reference expects `match=1` while post-shift `match` has already returned to 0.
-- **Causal trace:** The last input change before the first failure is `tb.a @ 95: 0`, completing `...110`. The reference asserts one cycle later at 105 ps — when the **current** `a_tem` (before shifting in the next bit) still holds the full `011XXX110` window.
-- **Correct timing:** Pattern detection must use the **pre-shift** contents of `a_tem`, then register `match` on the clock edge, then shift `{a, a_tem[7:0]}`. The completed 9-bit window is in `a_tem` on the cycle *after* the last bit was shifted in.
-- **Change made:** Remove the `a_shift`-based post-shift check (L009, L016–L017). Register `match` from `(a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110)` before updating the shift register.
+
 
 ## Spec (from prompt file)
 I would like you to implement a module named TopModule with the following
@@ -55,24 +50,56 @@ The match signal should be asserted when:
 ## Current candidate RTL (line-numbered — fix this module)
 ```verilog
 L001: module TopModule(
-L002:     input clk,
-L003:     input rst_n,
-L004:     input a,
-L005:     output reg match
-L006: );
+L002: 	input clk,
+L003: 	input rst_n,
+L004: 	input a,
+L005: 	output match
+L006: 	);
 L007: 
-L008:     reg [8:0] a_tem;
-L009: 
-L010:     always @(posedge clk or negedge rst_n)
-L011:         if (!rst_n) begin
-L012:             a_tem <= 9'b0;
-L013:             match <= 1'b0;
-L014:         end else begin
-L015:             match <= (a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110);
-L016:             a_tem <= {a, a_tem[7:0]};
-L017:         end
-L018: 
-L019: endmodule
+L008: 	reg [8:0] a_tem;
+L009: 	reg match_f;
+L010: 	reg match_b;
+L011: 	
+L012: 	always @(posedge clk or negedge rst_n)
+L013: 		if (!rst_n)
+L014: 			begin 
+L015: 				match_f <= 1'b0;
+L016: 			end
+L017: 		else if (a_tem[8:6] == 3'b011)
+L018: 			begin
+L019: 				match_f <= 1'b1;
+L020: 			end
+L021: 		else 
+L022: 			begin	
+L023: 				match_f <= 1'b0;
+L024: 			end
+L025: 
+L026: 	always @(posedge clk or negedge rst_n)
+L027: 		if (!rst_n)
+L028: 			begin 
+L029: 				match_b <= 1'b0;
+L030: 			end
+L031: 		else if (a_tem[2:0] == 3'b110)
+L032: 			begin
+L033: 				match_b <= 1'b1;
+L034: 			end
+L035: 		else 
+L036: 			begin	
+L037: 				match_b <= 1'b0;
+L038: 			end
+L039: 			
+L040: 	always @(posedge clk or negedge rst_n)
+L041: 		if (!rst_n)
+L042: 			begin 
+L043: 				a_tem <= 9'b0;
+L044: 			end
+L045: 		else 
+L046: 			begin
+L047: 				a_tem <= {a, a_tem[7:0]};
+L048: 			end
+L049: 			
+L050: 	assign match = match_b && match_f;
+L051: endmodule
 ```
 
 ## Structured tool feedback

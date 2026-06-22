@@ -11,7 +11,12 @@ logic
 ## Fix strategy
 The design compiles but fails simulation against the reference model. Use structured mismatch data and the causal waveform trace to find where DUT diverges from ref. Make minimal targeted logic fixes; preserve correct behavior elsewhere.
 
-
+## Previous iteration rationale (prioritize this)
+- **Suspected bug (L010–L032):** `match` and `a_tem` are updated in **separate** `always` blocks. In the `match` block at **L015**, the comparison uses the **current** (pre-shift) value of `a_tem`, while `a_tem` is shifted in the other block at **L031** on the same clock edge.
+- **Evidence:** The first mismatch is at **200 ps**, right when the 8th bit (`a=1` at 195 ps) should complete pattern `8'b0111_0001`. `match_ref` asserts at **195–205 ps**, but `match_dut` stays **0** — the DUT is one cycle late.
+- **Two mismatches explained:** At **~200 ps**, ref=1 and dut=0 (late assert). On the next posedge, dut would assert `match` based on the now-complete `a_tem` while ref has already de-asserted — a second mismatch sample.
+- **Waveform causal trace:** The failure aligns with the final `a` transition at 195 ps completing the target pattern; the DUT never reflects that in the same cycle as the reference.
+- **Fix:** Merge into one `always` block and compare **`match` against the next shift-register value** `{a, a_tem[6:0]}`, so `match` updates in the same cycle as the shift that completes (or breaks) the pattern.
 
 ## Spec (from prompt file)
 I would like you to implement a module named `TopModule` with the following interface. All input and output ports are one bit unless otherwise specified.
@@ -41,38 +46,24 @@ The design must operate synchronously with the clock and use a negative edge act
 ## Current candidate RTL (line-numbered — fix this module)
 ```verilog
 L001: module TopModule(
-L002: 	input clk,
-L003: 	input rst_n,
-L004: 	input a,
-L005: 	output reg match
-L006: 	);
+L002:     input clk,
+L003:     input rst_n,
+L004:     input a,
+L005:     output reg match
+L006: );
 L007: 
-L008: 	reg [7:0] a_tem;
-L009: 	
-L010: 	always @(posedge clk or negedge rst_n)
-L011: 		if (!rst_n)
-L012: 			begin 
-L013: 				match <= 1'b0;
-L014: 			end
-L015: 		else if (a_tem == 8'b0111_0001)
-L016: 			begin
-L017: 				match <= 1'b1;
-L018: 			end
-L019: 		else 
-L020: 			begin	
-L021: 				match <= 1'b0;
-L022: 			end
-L023: 		
-L024: 	always @(posedge clk or negedge rst_n)
-L025: 		if (!rst_n)
-L026: 			begin 
-L027: 				a_tem <= 8'b0;
-L028: 			end
-L029: 		else 
-L030: 			begin
-L031: 				a_tem <= {a, a_tem[6:0]};
-L032: 			end
-L033: endmodule
+L008:     reg [7:0] a_tem;
+L009: 
+L010:     always @(posedge clk or negedge rst_n)
+L011:         if (!rst_n) begin
+L012:             a_tem <= 8'b0;
+L013:             match <= 1'b0;
+L014:         end else begin
+L015:             a_tem <= {a, a_tem[6:0]};
+L016:             match <= ({a, a_tem[6:0]} == 8'b0111_0001);
+L017:         end
+L018: 
+L019: endmodule
 ```
 
 ## Structured tool feedback

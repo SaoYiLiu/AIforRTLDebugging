@@ -2,12 +2,11 @@
 rest
 
 ## Rationale
-- **Lines 21–24 (second stage):** The generate loop declares `i` but every iteration assigns `G2[i/2]` and `P2[i/2]` from `G1[0]` and `P1[0]` only. That collapses all 16 level-2 group `(P,G)` pairs to bit 0, breaking the prefix tree above it.
-- **Harness evidence (Test Case 2):** With `a=7FFFFFFF`, `b=7FFFFFFF`, `carry_in=0`, the sum is correct (`FFFFFFFE`) but `carry_out` is `1` instead of `0`. Bit 31 of both operands is 0, so there is no overflow; a wrong `G2`/`G3`/…/`G6` chain incorrectly asserts `C[32]=1`.
-- **Correct second-stage pairing:** It must match stages 3–5 (lines 28–45): `G2[i/2] = G1[i+1] | (P1[i+1] & G1[i])` and `P2[i/2] = P1[i+1] & P1[i]` for `i = 0, 2, …, 30`.
-- **Line 87 (sum):** `sum = P1 | {C[31:1], carry_in}` is wrong. Per-bit sum is `sum[i] = P1[i] ^ carry_into_bit_i`, i.e. `sum = P1 ^ {C[31:1], carry_in}`.
-- **Harness evidence (Tests 7, 11, 12):** Wrong sums like `EEAEEAEF` vs `EEEEEEEF`, `77777777` vs `33333334`, and `55555557` vs `00000003` match XOR-vs-OR errors wherever both `P1[i]` and the incoming carry are 1 (`1 | 1 = 1` but `1 ^ 1 = 0`).
-- **Carry network (lines 51–85):** After fixing stage 2, the sparse prefix and carry-resolve equations align with Brent-Kung; no other edits are required for the listed failures.
+- **Second-stage prefix tree is broken (lines 21–24).** Every `G2`/`P2` entry is computed from `G1[0]` and `P1[0]` instead of the corresponding bit pair. A Brent-Kung black cell at index `i/2` must combine bits `i` and `i+1`: `G2[i/2] = G1[i+1] | (P1[i+1] & G1[i])` and `P2[i/2] = P1[i+1] & P1[i]`. This corrupts all upstream `G3`–`G6`/`P3`–`P6` values and the final carry `C[32]`.
+- **Harness evidence for carry_out (Test Case 2).** With `a = b = 0x7FFFFFFF` and `carry_in = 0`, the sum is correct (`FFFFFFFE`) but `carry_out` is `1` instead of `0`. MSB is `0+0+carry_from_bit_30 = 1` with no overflow, so `C[32]` must be 0. The flattened second stage makes every `G2[k]=1`, inflating prefix generates and falsely asserting `carry_out`.
+- **Sum uses OR instead of XOR (line 87).** Bit `i` of the result is `P1[i] ^ C[i]` (with `C[0]` replaced by `carry_in`). `assign sum = P1 | {C[31:1], carry_in}` forces bits high wherever either propagate or carry is 1, which explains wrong sums such as Test Case 7 (`EEAEEAEF` vs `EEEEEEEF`), Test Case 9 (`FFFFFFFF` vs `9999999A`), and Test Case 11 (`77777777` vs `33333334`).
+- **Third through sixth prefix stages (lines 27–49) and carry fanout (lines 51–85) follow the correct Brent-Kung pairing pattern** once `G2`/`P2` are fixed; no changes needed there.
+- **Fix is minimal:** correct the second-stage generate indices and change the sum expression to XOR.
 
 ## PatchedFiles
 ### rtl/brent_kung_adder.sv

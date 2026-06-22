@@ -26,7 +26,7 @@
 
 **Action**: Call fixer() for iteration 2.
 
-**Observation**: Cursor (rest) produced candidate (len=277 chars).
+**Observation**: Cursor (rest) produced candidate (len=426 chars).
 
 ## Step 5
 **Thought**: Run simulation to compare DUT vs reference.
@@ -40,7 +40,7 @@
 
 **Action**: Call fixer() for iteration 3.
 
-**Observation**: Cursor (rest) produced candidate (len=316 chars).
+**Observation**: Cursor (rest) produced candidate (len=388 chars).
 
 ## Step 7
 **Thought**: Run simulation to compare DUT vs reference.
@@ -54,7 +54,7 @@
 
 **Action**: Call fixer() for iteration 4.
 
-**Observation**: Cursor (rest) produced candidate (len=316 chars).
+**Observation**: Cursor (rest) produced candidate (len=388 chars).
 
 ## Step 9
 **Thought**: Run simulation to compare DUT vs reference.

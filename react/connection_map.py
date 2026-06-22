@@ -28,6 +28,25 @@ def strip_spec_from_prompt(prompt_text: str) -> str:
     return prompt_text.strip()
 
 
+def strip_buggy_module_from_prompt(prompt_text: str) -> str:
+    """Remove embedded buggy TopModule RTL from ChipBench one-shot prompts."""
+    text = strip_spec_from_prompt(prompt_text)
+    marker = "Based on the problem description above"
+    if marker in text:
+        return text.split(marker, 1)[0].strip()
+    blocks = re.findall(r"```\s*(.*?)\s*```", text, flags=re.DOTALL)
+    for block in blocks:
+        if "module TopModule" in block:
+            return re.sub(
+                r"```\s*.*?\s*```",
+                "",
+                text,
+                count=1,
+                flags=re.DOTALL,
+            ).strip()
+    return text.strip()
+
+
 def extract_error_context(sim_stdout: str) -> dict[str, Any]:
     """
     Parse ChipBench sim output for signals involved in the mismatch.
@@ -337,6 +356,8 @@ def resolve_vcd_priority_signals(
     *,
     max_signals: int = 12,
 ) -> list[str]:
+    from react.vcd_trace import without_clock_vcd_signals
+
     if not connection_map:
         return []
 
@@ -397,7 +418,7 @@ def resolve_vcd_priority_signals(
         if len(resolved) >= max_signals:
             break
 
-    return resolved[:max_signals]
+    return without_clock_vcd_signals(resolved[:max_signals])
 
 
 def _extract_tb_compare_snippet(tb_text: str, max_lines: int = 120) -> str:

@@ -117,7 +117,6 @@ PYTHONPATH=. python -m react_cvdp \
   --cvdp-env third_party/cvdp/cvdp_benchmark/.env
 ```
 
-
 There is no full pytest suite for the ReAct loop; correctness is judged by benchmark harness pass/fail and saved artifacts under `outputs/`.
 
 ---

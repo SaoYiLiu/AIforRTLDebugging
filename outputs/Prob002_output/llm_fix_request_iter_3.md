@@ -12,11 +12,11 @@ logic
 The design compiles but fails simulation against the reference model. Use structured mismatch data and the causal waveform trace to find where DUT diverges from ref. Make minimal targeted logic fixes; preserve correct behavior elsewhere.
 
 ## Previous iteration rationale (prioritize this)
-- **Suspected bug (L016–L017):** The previous fix checks `a_shift` (the **post-shift** window) and registers `match` from it. Simulation sampling happens after the nonblocking updates settle; at the detection posedge the shift has already moved the completed pattern out of alignment, so `match` is deasserted when the testbench compares.
-- **Waveform evidence:** `match_ref` pulses at 105, 145, 195, and 415 ps, but `match_dut` stays 0 for the entire run (8 ref=1 / dut=0 mismatches). That matches post-shift registration: the pattern appears in `a_tem` at 95 ps (post-shift), but by the 105 ps sample (pre-shift `a_tem` before that cycle's shift) the reference expects `match=1` while post-shift `match` has already returned to 0.
-- **Causal trace:** The last input change before the first failure is `tb.a @ 95: 0`, completing `...110`. The reference asserts one cycle later at 105 ps — when the **current** `a_tem` (before shifting in the next bit) still holds the full `011XXX110` window.
-- **Correct timing:** Pattern detection must use the **pre-shift** contents of `a_tem`, then register `match` on the clock edge, then shift `{a, a_tem[7:0]}`. The completed 9-bit window is in `a_tem` on the cycle *after* the last bit was shifted in.
-- **Change made:** Remove the `a_shift`-based post-shift check (L009, L016–L017). Register `match` from `(a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110)` before updating the shift register.
+- **Suspected bug (L017–L050):** `match_f` and `match_b` are evaluated against the **pre-shift** value of `a_tem`, while the shift update `a_tem <= {a, a_tem[7:0]}` (L047) happens in the same clock cycle. The newest input bit is not included in the window used for detection.
+- **Wrong structure:** Splitting detection into two separate flags (L009–L038) and combining them with `assign match = match_b && match_f` (L050) still checks the old register contents, not the 9-bit window **after** the incoming bit is shifted in.
+- **Waveform evidence:** `match_ref` pulses high at 105, 145, 195, and 415 ps, but `match_dut` stays **0 for the entire simulation**. All 8 mismatches are ref=1, dut=0 — the DUT never detects the pattern.
+- **Causal trace at first failure (110 ps):** The last input change before failure is `tb.a @ 95: 0`, consistent with the final bit of `110` arriving at the clock edge near 105 ps. The reference model detects the completed `011XXX110` window; the DUT evaluates one cycle too early (before that bit enters `a_tem[8]`).
+- **Fix:** Remove `match_f`/`match_b`. Form the next shift-register value `{a, a_tem[7:0]}`, update `a_tem` from it, and register `match` from the **post-shift** window: `(a_shift[8:6] == 3'b011) && (a_shift[2:0] == 3'b110)`.
 
 ## Spec (from prompt file)
 I would like you to implement a module named TopModule with the following
@@ -62,17 +62,18 @@ L005:     output reg match
 L006: );
 L007: 
 L008:     reg [8:0] a_tem;
-L009: 
-L010:     always @(posedge clk or negedge rst_n)
-L011:         if (!rst_n) begin
-L012:             a_tem <= 9'b0;
-L013:             match <= 1'b0;
-L014:         end else begin
-L015:             match <= (a_tem[8:6] == 3'b011) && (a_tem[2:0] == 3'b110);
-L016:             a_tem <= {a, a_tem[7:0]};
-L017:         end
-L018: 
-L019: endmodule
+L009:     wire [8:0] a_shift = {a, a_tem[7:0]};
+L010: 
+L011:     always @(posedge clk or negedge rst_n)
+L012:         if (!rst_n) begin
+L013:             a_tem <= 9'b0;
+L014:             match <= 1'b0;
+L015:         end else begin
+L016:             a_tem <= a_shift;
+L017:             match <= (a_shift[8:6] == 3'b011) && (a_shift[2:0] == 3'b110);
+L018:         end
+L019: 
+L020: endmodule
 ```
 
 ## Structured tool feedback

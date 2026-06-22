@@ -236,6 +236,10 @@ def format_formal_for_llm(result: FormalRunResult | dict[str, Any] | None) -> st
 
     results = cex.get("results") or {}
     for sig, info in list(results.items())[:4]:
+        from react.vcd_trace import is_clock_vcd_signal
+
+        if is_clock_vcd_signal(sig):
+            continue
         lines.append(f"\n## CEX waveform: {sig}")
         for line in info.get("lines", [])[:40]:
             lines.append(line)

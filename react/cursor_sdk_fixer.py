@@ -6,7 +6,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from react.connection_map import format_connection_map_for_llm  # noqa: E402
+from react.connection_map import (  # noqa: E402
+    format_connection_map_for_llm,
+    strip_buggy_module_from_prompt,
+)
 from react.cursor_transport import CursorPromptSession, cursor_prompt  # noqa: E402
 from react.formal_runner import format_formal_for_llm  # noqa: E402
 from react.parsers import (  # noqa: E402
@@ -16,6 +19,7 @@ from react.parsers import (  # noqa: E402
 )
 
 REPO_ROOT = Path(__file__).absolute().parents[1]
+CHIPBENCH_MAX_PROMPT_CHARS = int(os.environ.get("CHIPBENCH_MAX_PROMPT_CHARS", "12000"))
 
 
 @dataclass(frozen=True)
@@ -67,6 +71,15 @@ ERROR_PROMPTS: dict[ErrorKind, str] = {
 
 def _extract_topmodule_sv(text: str) -> str | None:
     m = re.search(
+        r"##\s*FixedTopModule\s*(?:```(?:verilog|systemverilog|sv)?\s*)?"
+        r"(module\s+TopModule[\s\S]*?endmodule)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if m:
+        return m.group(1).strip() + "\n"
+
+    m = re.search(
         r"```(?:verilog|systemverilog|sv)?\s*(module\s+TopModule[\s\S]*?endmodule)\s*```",
         text,
     )
@@ -78,6 +91,19 @@ def _extract_topmodule_sv(text: str) -> str | None:
         return m2.group(1).strip() + "\n"
 
     return None
+
+
+def _truncate_middle(text: str, limit: int, *, label: str) -> str:
+    if len(text) <= limit:
+        return text
+    head = limit // 2
+    tail = limit - head
+    omitted = len(text) - limit
+    return (
+        text[:head]
+        + f"\n\n[... truncated {omitted} chars from {label} ...]\n\n"
+        + text[-tail:]
+    )
 
 
 def _extract_rationale(text: str) -> str:
@@ -110,6 +136,10 @@ def _format_vcd_summary(vcd_summary: dict[str, Any] | None) -> str:
     if not vcd_summary:
         return ""
 
+    from react.vcd_trace import filter_vcd_summary_for_llm, is_clock_vcd_signal
+
+    vcd_summary = filter_vcd_summary_for_llm(vcd_summary) or {}
+
     parts: list[str] = []
 
     if vcd_summary.get("failure_time") is not None:
@@ -119,8 +149,11 @@ def _format_vcd_summary(vcd_summary: dict[str, Any] | None) -> str:
     if causal:
         parts.append("\n## Causal trace (transitions before failure)")
         for ev in causal[:20]:
+            sig = str(ev.get("signal", ""))
+            if is_clock_vcd_signal(sig):
+                continue
             parts.append(
-                f"- {ev['signal']} @ t={ev['time']}: {ev['value']} "
+                f"- {sig} @ t={ev['time']}: {ev['value']} "
                 f"(Δ={ev['delta_to_failure']} ps before failure)"
             )
 
@@ -131,6 +164,8 @@ def _format_vcd_summary(vcd_summary: dict[str, Any] | None) -> str:
 
     results = vcd_summary.get("results", {})
     for sig, info in list(results.items())[:6]:
+        if is_clock_vcd_signal(sig):
+            continue
         parts.append(f"\n## Waveform: {sig}")
         parts.extend(info.get("lines", [])[:80])
 
@@ -150,7 +185,6 @@ def build_chipbench_fix_prompt(
     *,
     prob_id: str,
     spec_text: str,
-    buggy_sv: str,
     current_sv: str,
     sim_stdout: str,
     sim_stderr: str,
@@ -173,15 +207,33 @@ def build_chipbench_fix_prompt(
 
     kind = kind or "unknown"
     error_guidance = ERROR_PROMPTS.get(kind, ERROR_PROMPTS["unknown"])
-    vcd_text = _format_vcd_summary(vcd_summary)
-    map_text = format_connection_map_for_llm(connection_map)
-    formal_text = format_formal_for_llm(formal_summary)
-    prior_memory = _format_prior_rationale(prior_rationales)
+    spec_brief = _truncate_middle(
+        strip_buggy_module_from_prompt(spec_text), 4000, label="spec"
+    )
+    vcd_text = _truncate_middle(_format_vcd_summary(vcd_summary), 3000, label="waveform evidence")
+    map_text = _truncate_middle(
+        format_connection_map_for_llm(connection_map) or "",
+        2000,
+        label="connection map",
+    )
+    formal_text = _truncate_middle(
+        format_formal_for_llm(formal_summary) or "",
+        1500,
+        label="formal evidence",
+    )
+    prior_memory = _truncate_middle(
+        _format_prior_rationale(prior_rationales),
+        1500,
+        label="previous rationale",
+    )
     numbered_current = _add_line_numbers(current_sv)
 
-    raw_sim = (sim_stdout or "").strip()
-    if (sim_stderr or "").strip():
-        raw_sim += "\n[stderr]\n" + sim_stderr.strip()
+    raw_sim = _truncate_middle(
+        (sim_stdout or "").strip()
+        + (("\n[stderr]\n" + sim_stderr.strip()) if (sim_stderr or "").strip() else ""),
+        1500,
+        label="simulation output",
+    )
 
     prompt = f"""You are debugging a Verilog RTL module called TopModule.
 
@@ -197,14 +249,9 @@ def build_chipbench_fix_prompt(
 {prior_memory}
 
 ## Spec (from prompt file)
-{spec_text.strip()}
+{spec_brief}
 
-## Buggy RTL (from prompt file)
-```verilog
-{buggy_sv.strip()}
-```
-
-## Current candidate RTL (line-numbered)
+## Current candidate RTL (line-numbered — fix this module)
 ```verilog
 {numbered_current}
 ```
@@ -246,6 +293,8 @@ def build_chipbench_fix_prompt(
 ## FixedTopModule
 A FULL corrected `TopModule` implementation (verilog). Put it in a single fenced ```verilog block.
 """
+    if len(prompt) > CHIPBENCH_MAX_PROMPT_CHARS:
+        prompt = _truncate_middle(prompt, CHIPBENCH_MAX_PROMPT_CHARS, label="fix prompt")
     return prompt, kind  # type: ignore[return-value]
 
 
@@ -253,7 +302,6 @@ def fix_with_cursor_sdk(
     *,
     prob_id: str,
     spec_text: str,
-    buggy_sv: str,
     current_sv: str,
     sim_stdout: str,
     sim_stderr: str,
@@ -279,7 +327,6 @@ def fix_with_cursor_sdk(
     prompt, _kind = build_chipbench_fix_prompt(
         prob_id=prob_id,
         spec_text=spec_text,
-        buggy_sv=buggy_sv,
         current_sv=current_sv,
         sim_stdout=sim_stdout,
         sim_stderr=sim_stderr,
@@ -289,6 +336,11 @@ def fix_with_cursor_sdk(
         error_kind=error_kind,
         prior_rationales=prior_rationales,
         formal_summary=formal_summary,
+    )
+    print(
+        f"[{prob_id}] Cursor fix prompt size: {len(prompt)} chars "
+        f"(limit {CHIPBENCH_MAX_PROMPT_CHARS})",
+        flush=True,
     )
 
     if cursor_session is not None:
@@ -309,7 +361,18 @@ def fix_with_cursor_sdk(
         )
     fixed = _extract_topmodule_sv(raw)
     if not fixed:
-        raise RuntimeError("Cursor response did not contain a parsable TopModule.")
+        raw_path: Path | None = None
+        if prompt_artifact_path is not None:
+            raw_path = prompt_artifact_path.with_name(
+                prompt_artifact_path.stem + "_raw_response.txt"
+            )
+            raw_path.write_text(raw or "(empty response)", encoding="utf-8")
+        excerpt = (raw or "").strip()[:800]
+        raise RuntimeError(
+            "Cursor response did not contain a parsable TopModule."
+            + (f" Raw excerpt saved to {raw_path.name}." if raw_path else "")
+            + (f" Excerpt: {excerpt!r}" if excerpt else " Response was empty.")
+        )
 
     rationale = _extract_rationale(raw)
     return FixResult(

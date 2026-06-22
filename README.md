@@ -35,7 +35,6 @@ source .venv/bin/activate   # after ./install.sh
 
 ```bash
 export CURSOR_API_KEY=crsr_...
-# API key example: crsr_20e46aafe6e8fa01817af509c3b891d5dc6bd6f6e95214f3f230bb9c9935a643
 # Optional: bridge (WSL/desktop) vs REST (headless)
 export CURSOR_TRANSPORT=auto          # default: try REST API call, fall back to bridge
 export CURSOR_CLOUD_REPO_URL="https://github.com/YOU/AIfordebugging"  # if REST

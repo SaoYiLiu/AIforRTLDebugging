@@ -191,27 +191,9 @@ There is no full pytest suite for the ReAct loop; correctness is judged by bench
 
 ## Algorithm
 
-### High-level ReAct loop (both tracks)
+### ReAct loop
 
-```mermaid
-flowchart TD
-  A[Load problem + stage workspace] --> B[Iter 1: run grade oracle]
-  B --> C{PASS?}
-  C -->|yes| Z[Done]
-  C -->|no| D[Parse failure → StructuredFeedback]
-  D --> E[Enrich evidence]
-  E --> F[Build llm_fix_request]
-  F --> G[Cursor: patch RTL]
-  G --> H[Write patched RTL]
-  H --> I{CVDP iter ≥ 3 and FAIL?}
-  I -->|optional| J[Cursor: DebugSimDecision]
-  J -->|use: yes| K[iverilog + VCD trace]
-  J -->|use: no| B
-  K --> B
-  I -->|no| B
-  B --> L{max_iters?}
-  L -->|exhausted| Y[FAIL]
-```
+![ChipBench Pipeline Flowchart](image/ChipBenchFlowchart.png)
 
 
 

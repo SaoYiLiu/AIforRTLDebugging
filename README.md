@@ -176,11 +176,9 @@ There is no full pytest suite for the ReAct loop; correctness is judged by bench
 | Item                                          | Notes                                                                                                       |
 | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `**mcp_server.py`** + counter/UART-FIFO demos | Pre-existing EDA MCP tooling and small RTL examples (`rtl/`, `tb/`, `bugs/uart_fifo/`, `formal/`)           |
-| **ChipBench dataset & reference flows**       | External benchmark; we wrap it in `react/`                                                                  |
-| **CVDP benchmark infrastructure**             | NVIDIA’s Docker harness, JSONL schema, cocotb tests — we orchestrate, not author                            |
-| **ReAct / agent paradigm**                    | General LLM pattern; our contribution is the *RTL-specific evidence pipeline*                               |
+| **ReAct / agent paradigm**                    | General LLM pattern; My contribution is the *RTL-specific evidence pipeline*                                |
 | **veridebugger-style parsers**                | `react/parsers.py` and `react/vcd_trace.py` note inspiration from veridebugger; extended for ChipBench/CVDP |
-| **Cursor IDE / Composer**                     | Commercial fixer; we call it via API, not train it                                                          |
+| **Cursor IDE / Composer**                     | Commercial fixer                                                                                            |
 
 
 ### What *is* our implementation this semester

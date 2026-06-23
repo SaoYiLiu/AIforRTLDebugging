@@ -122,6 +122,30 @@ There is no full pytest suite for the ReAct loop; correctness is judged by bench
 
 ---
 
+**Agentic vs Non-agentic subset of CVDP problems**
+Non-agentic — nested input / output:
+```
+input.prompt          → task text
+input.context         → buggy starter files (rtl/, etc.)
+output.context        → golden solution (used to infer patch_targets keys, NOT sent to LLM)
+harness.files         → docker-compose, tests, etc.
+```
+Detected in code when "input" in raw.
+
+Agentic — flat top-level fields:
+```
+prompt                → task text
+context               → full workspace snapshot (rtl/, verif/, docs/, …)
+patch                 → which paths are allowed to be edited
+harness               → embedded Docker harness
+system_message        → optional agent system prompt (agentic only)
+```
+Detected when there is no input key.
+
+The biggest difference is the patch scope. For agentic problem sets, the fixer prompt explicitly lists patch_targets and Cursor must patch only those paths, whereas non-agentic problems usually has one RTL file to fix.
+
+---
+
 ## Key research contributions (this project / this semester)
 
 1. **Unified ReAct RTL debug loop** — Iterative *simulate → parse → enrich evidence → LLM patch → re-simulate*, with explicit structured feedback instead of raw logs alone.
@@ -195,10 +219,10 @@ There is no full pytest suite for the ReAct loop; correctness is judged by bench
 
 ### ReAct loop
 
-ChipBench Pipeline Flowchart
+![ChipBench Pipeline Flowchart](image/ChipBenchFlowchart.png)
 **ChipBench oracle:** `iverilog` compile + `vvp` run; compare DUT vs `ref.sv` via TB; optional property checking after repeated failure.
 
-CVDP Pipeline Flochart
+![CVDP Pipeline Flochart](image/CVDPFlowchart.png)
 **CVDP oracle:** `docker compose run` cocotb/pytest harness (authoritative PASS/FAIL).
 
 ### Pseudocode

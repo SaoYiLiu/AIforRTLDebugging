@@ -122,7 +122,8 @@ There is no full pytest suite for the ReAct loop; correctness is judged by bench
 
 ---
 
-**Agentic vs Non-agentic subset of CVDP problems**
+### Agentic vs Non-agentic subset of CVDP problems
+
 Non-agentic — nested input / output:
 ```
 input.prompt          → task text

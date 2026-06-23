@@ -194,11 +194,9 @@ There is no full pytest suite for the ReAct loop; correctness is judged by bench
 ### ReAct loop
 
 ![ChipBench Pipeline Flowchart](image/ChipBenchFlowchart.png)
+**ChipBench oracle:** `iverilog` compile + `vvp` run; compare DUT vs `ref.sv` via TB; optional property checking after repeated failure.
 
-
-
-**ChipBench oracle:** `iverilog` compile + `vvp` run; compare DUT vs `ref.sv` via TB; optional formal after repeated failure.
-
+![CVDP Pipeline Flochart](image/CVDPFlowchart.png)
 **CVDP oracle:** `docker compose run` cocotb/pytest harness (authoritative PASS/FAIL).
 
 ### Pseudocode

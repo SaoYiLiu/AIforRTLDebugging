@@ -1,5 +1,7 @@
 # AI for RTL debugging — LLM-Guided RTL Debug with EDA Tool Feedback
 
+劉劭毅 saoki093@gmail.com
+
 An automated **ReAct** (reason–act–observe) pipeline for **Verilog/SystemVerilog RTL debugging**. A fixer LLM (Cursor) patches RTL using structured evidence from simulation, waveforms, optional formal checks, and benchmark-specific harnesses. Two evaluation tracks are supported:
 
 
@@ -193,10 +195,10 @@ There is no full pytest suite for the ReAct loop; correctness is judged by bench
 
 ### ReAct loop
 
-![ChipBench Pipeline Flowchart](image/ChipBenchFlowchart.png)
+ChipBench Pipeline Flowchart
 **ChipBench oracle:** `iverilog` compile + `vvp` run; compare DUT vs `ref.sv` via TB; optional property checking after repeated failure.
 
-![CVDP Pipeline Flochart](image/CVDPFlowchart.png)
+CVDP Pipeline Flochart
 **CVDP oracle:** `docker compose run` cocotb/pytest harness (authoritative PASS/FAIL).
 
 ### Pseudocode
@@ -257,7 +259,7 @@ procedure RUN_REACT(problem, max_iters, use_cursor_sdk):
 | **Paths on WSL**   | Avoid `Path.resolve()` on `/mnt/c` in runners; absolute paths without symlink resolution                                           |
 | **Hi-Z artifacts** | `chipbench_effective_pass()` treats functional match as PASS when ChipBench XOR compare flags hi-Z on data buses                   |
 | **Formal budget**  | Repeat BMC skipped after first completed run or timeout per problem                                                                |
-| **Output files**      | Per-iter `harness_stdout_iter_N.txt`, `llm_fix_request_iter_N.md`, `cursor_sdk_iter_N.txt`, `react_trace.md`, `result.json`        |
+| **Output files**   | Per-iter `harness_stdout_iter_N.txt`, `llm_fix_request_iter_N.md`, `cursor_sdk_iter_N.txt`, `react_trace.md`, `result.json`        |
 
 
 ---
@@ -306,6 +308,7 @@ Total time:   29m 53.6s
 ```
 
 Summary: non-agentic problem set, without testbench generation
+
 ```
 ========================================================================
 SUMMARY
@@ -352,9 +355,10 @@ Errors:       0/33
 Success rate: 87.9%
 Total time:   1h 42m 32.5s
 ========================================================================
-``` 
+```
 
 Summary: solving failed CVDP problems with testbench generation
+
 ```
 ========================================================================
 Problem ID                                         Status   Time
@@ -378,6 +382,7 @@ Total time:   41m 34.9s
 - **Debug TB path:** Helps on some logic bugs; often declined or fails compile on complex AES (iverilog limitations). Increasing the number of iterations is more effective.
 - **REST vs bridge:** Both work, but REST has shorter response time. 
 - **LLM performance:** The outcome is non-deterministic; some problems can be solved successfully but fails when tried again.
+
 ---
 
 ## Repository layout
@@ -408,3 +413,5 @@ AIfordebugging/
 - ChipBench: [https://github.com/zhongkaiyu/ChipBench](https://github.com/zhongkaiyu/ChipBench)
 - VeriDebug: [arXiv:2504.19099](https://arxiv.org/abs/2504.19099) (optional `--use-veridebug-hf`)
 
+## Demo Video
+https://drive.google.com/drive/folders/1nd6B3DyUI0lDs8z9ard-1Co_2376v23K?q=sharedwith:public%20parent:1nd6B3DyUI0lDs8z9ard-1Co_2376v23K

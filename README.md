@@ -257,14 +257,14 @@ procedure RUN_REACT(problem, max_iters, use_cursor_sdk):
 | **Paths on WSL**   | Avoid `Path.resolve()` on `/mnt/c` in runners; absolute paths without symlink resolution                                           |
 | **Hi-Z artifacts** | `chipbench_effective_pass()` treats functional match as PASS when ChipBench XOR compare flags hi-Z on data buses                   |
 | **Formal budget**  | Repeat BMC skipped after first completed run or timeout per problem                                                                |
-| **Artifacts**      | Per-iter `harness_stdout_iter_N.txt`, `llm_fix_request_iter_N.md`, `cursor_sdk_iter_N.txt`, `react_trace.md`, `result.json`        |
+| **Output files**      | Per-iter `harness_stdout_iter_N.txt`, `llm_fix_request_iter_N.md`, `cursor_sdk_iter_N.txt`, `react_trace.md`, `result.json`        |
 
 
 ---
 
 ## Experimental results
 
-Example summary: ChipBench one shot arithmetic dataset batch run
+Summary: ChipBench one shot arithmetic dataset batch run
 
 ```
 ========================================================================
@@ -305,13 +305,79 @@ Total time:   29m 53.6s
 ========================================================================
 ```
 
+Summary: non-agentic problem set, without testbench generation
+```
+========================================================================
+SUMMARY
+========================================================================
+Problem ID                                         Status   Time
+------------------------------------------------------------------------
+cvdp_copilot_Carry_Lookahead_Adder_0005            PASS     1m 1.3s
+cvdp_copilot_String_to_ASCII_0001                  PASS     1m 17.6s
+cvdp_copilot_apb_dsp_op_0002                       PASS     1m 43.4s
+cvdp_copilot_arithmetic_progression_generator_001  PASS     2m 19.3s
+cvdp_copilot_axi_alu_0001                          FAIL     7m 54.2s
+cvdp_copilot_cache_lru_0022                        PASS     37.6s
+cvdp_copilot_caesar_cipher_0024                    PASS     34.7s
+cvdp_copilot_cdc_pulse_synchronizer_0004           PASS     35.2s
+cvdp_copilot_coffee_machine_0001                   PASS     2m 9.6s
+cvdp_copilot_data_serializer_0001                  PASS     1m 12.1s
+cvdp_copilot_filo_0033                             PASS     45.8s
+cvdp_copilot_fsm_seq_detector_0023                 PASS     1m 17.3s
+cvdp_copilot_galois_encryption_0001                FAIL     12m 16.5s
+cvdp_copilot_generic_nbit_counter_0036             PASS     36.5s
+cvdp_copilot_grayscale_image_0014                  PASS     37.4s
+cvdp_copilot_image_stego_0004                      PASS     37.2s
+cvdp_copilot_kogge_stone_adder_0007                PASS     1m 37.7s
+cvdp_copilot_line_buffer_0003                      FAIL     15m 3.2s
+cvdp_copilot_manchester_enc_0005                   PASS     11m 18.5s
+cvdp_copilot_modified_booth_mul_0002               PASS     1m 12.1s
+cvdp_copilot_modified_booth_mul_0005               PASS     7m 40.0s
+cvdp_copilot_montgomery_0001                       PASS     39.9s
+cvdp_copilot_montgomery_0002                       PASS     1m 47.3s
+cvdp_copilot_morse_code_0014                       PASS     37.5s
+cvdp_copilot_mux_synch_0011                        PASS     58.6s
+cvdp_copilot_prim_max_0001                         PASS     1m 58.4s
+cvdp_copilot_radix2_div_0001                       PASS     49.0s
+cvdp_copilot_rgb2ycbcr_0001                        PASS     1m 6.6s
+cvdp_copilot_scrambler_0001                        PASS     3m 31.1s
+cvdp_copilot_scrambler_0009                        FAIL     11m 28.7s
+cvdp_copilot_signal_correlator_0015                PASS     1m 2.7s
+cvdp_copilot_sobel_filter_0011                     PASS     3m 50.5s
+cvdp_copilot_swizzler_0014                         PASS     2m 15.2s
+------------------------------------------------------------------------
+Passed:       29/33
+Failed:       4/33
+Errors:       0/33
+Success rate: 87.9%
+Total time:   1h 42m 32.5s
+========================================================================
+``` 
+
+Summary: solving failed CVDP problems with testbench generation
+```
+========================================================================
+Problem ID                                         Status   Time
+------------------------------------------------------------------------
+cvdp_copilot_galois_encryption_0001                PASS     5m 21.4s
+cvdp_copilot_line_buffer_0003                      FAIL     19m 30.0s
+cvdp_copilot_scrambler_0009                        PASS     16m 43.5s
+------------------------------------------------------------------------
+Passed:       2/3
+Failed:       1/3
+Errors:       0/3
+Success rate: 66.7%
+Total time:   41m 34.9s
+========================================================================
+```
+
 ### Observations
 
 - **Non-agentic CVDP cid016:** High pass rate on tried problems with `--use-cursor-sdk` and Docker harness; most fixes in 2–4 iterations.
 - **Agentic:** Harder (multi-file RTL, longer prompts); AES and similar crypto blocks remain open.
-- **Debug TB path:** Helps on some logic bugs; often declined or fails compile on complex AES (iverilog limitations).
-- **REST vs bridge:** Both work; REST used when bridge unavailable; adds latency from polling.
-
+- **Debug TB path:** Helps on some logic bugs; often declined or fails compile on complex AES (iverilog limitations). Increasing the number of iterations is more effective.
+- **REST vs bridge:** Both work, but REST has shorter response time. 
+- **LLM performance:** The outcome is non-deterministic; some problems can be solved successfully but fails when tried again.
 ---
 
 ## Repository layout

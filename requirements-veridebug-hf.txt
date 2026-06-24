@@ -8,7 +8,8 @@
 #   export VERIDEBUG_HF_MODEL=LLM-EDA/VeriDebug
 #   export VERIDEBUG_HF_DEVICE_MAP=auto
 #   export VERIDEBUG_HF_TORCH_DTYPE=float16   # default; 1080 Ti friendly
-# Optional if VRAM is tight: pip install bitsandbytes && export VERIDEBUG_HF_LOAD_IN_8BIT=1
+# Optional if VRAM is tight (auto-enabled on GPUs <=12GB):
+bitsandbytes>=0.43.0
 
 gritlm>=1.0.2
 transformers==4.41.2

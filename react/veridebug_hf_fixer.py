@@ -158,6 +158,62 @@ def _register_llama_grit_architecture() -> None:
     _llama_grit_registered = True
 
 
+def _gpu_vram_gib() -> float:
+    import torch
+
+    return float(torch.cuda.get_device_properties(0).total_memory) / (1024**3)
+
+
+def _should_use_8bit_load() -> bool:
+    env = os.environ.get("VERIDEBUG_HF_LOAD_IN_8BIT", "").lower()
+    if env in ("1", "true", "yes"):
+        return True
+    if env in ("0", "false", "no"):
+        return False
+    # 1080 Ti (11GB) and similar: fp16 7B unified model does not fit reliably.
+    return _gpu_vram_gib() <= 12.0
+
+
+def _build_veridebug_model_kwargs() -> dict[str, Any]:
+    import torch
+
+    device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "auto")
+    kwargs: dict[str, Any] = {
+        "mode": "unified",
+        "low_cpu_mem_usage": True,
+        "device_map": device_map,
+    }
+
+    vram_gib = _gpu_vram_gib()
+    if _should_use_8bit_load():
+        try:
+            import bitsandbytes  # noqa: F401
+        except ImportError as e:
+            raise RuntimeError(
+                f"VeriDebug on a {vram_gib:.1f}GB GPU requires 8-bit loading.\n"
+                "  pip install bitsandbytes\n"
+                "  export VERIDEBUG_HF_LOAD_IN_8BIT=1\n"
+                "Or use a GPU with >12GB VRAM and export VERIDEBUG_HF_LOAD_IN_8BIT=0"
+            ) from e
+        kwargs["load_in_8bit"] = True
+        # Leave ~1GiB headroom on 11GB cards; allow CPU offload for overflow layers.
+        cpu_budget = os.environ.get("VERIDEBUG_HF_CPU_RAM", "32GiB")
+        kwargs["max_memory"] = {0: f"{max(1, int(vram_gib) - 1)}GiB", "cpu": cpu_budget}
+        print(
+            f"[VeriDebug-HF] 8-bit load enabled (GPU {vram_gib:.1f}GB, max_memory={kwargs['max_memory']})",
+            flush=True,
+        )
+    else:
+        dtype_name = os.environ.get("VERIDEBUG_HF_TORCH_DTYPE", "float16")
+        kwargs["torch_dtype"] = getattr(torch, dtype_name, torch.float16)
+        kwargs["max_memory"] = {
+            0: f"{max(1, int(vram_gib * 0.9))}GiB",
+            "cpu": os.environ.get("VERIDEBUG_HF_CPU_RAM", "32GiB"),
+        }
+
+    return kwargs
+
+
 def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool = False) -> Any:
     """Lazy-load GritLM unified model (embedding + generation)."""
     global _model_singleton, _model_id_loaded
@@ -185,15 +241,8 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
             "  python -c \"import torch; print(torch.cuda.is_available())\""
         )
 
-    kwargs: dict[str, Any] = {"mode": "unified", "low_cpu_mem_usage": True}
-    device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "auto")
-    kwargs["device_map"] = device_map
-
-    if os.environ.get("VERIDEBUG_HF_LOAD_IN_8BIT", "").lower() in ("1", "true", "yes"):
-        kwargs["load_in_8bit"] = True
-    else:
-        dtype_name = os.environ.get("VERIDEBUG_HF_TORCH_DTYPE", "float16")
-        kwargs["torch_dtype"] = getattr(torch, dtype_name, torch.float16)
+    kwargs = _build_veridebug_model_kwargs()
+    device_map = kwargs.get("device_map", "auto")
 
     _register_llama_grit_architecture()
     print(
@@ -201,7 +250,21 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
         f"(device_map={device_map}, cuda={torch.cuda.get_device_name(0)})...",
         flush=True,
     )
-    _model_singleton = GritLM(model_id, **kwargs)
+    try:
+        _model_singleton = GritLM(model_id, **kwargs)
+    except OSError as exc:
+        if "mmap" in str(exc).lower() or "allocate memory" in str(exc).lower():
+            raise RuntimeError(
+                "Failed to mmap VeriDebug weight shards into RAM.\n"
+                "This usually means low system RAM or a cgroup/ulimit cap on zeus, not just VRAM.\n"
+                "Try:\n"
+                "  free -h && ulimit -v\n"
+                "  pip install bitsandbytes\n"
+                "  export VERIDEBUG_HF_LOAD_IN_8BIT=1\n"
+                "  export VERIDEBUG_HF_DEVICE_MAP=auto\n"
+                "If still failing, run on a node with >=16GB system RAM."
+            ) from exc
+        raise
     _model_id_loaded = model_id
     print(f"[VeriDebug-HF] Model ready on {_model_singleton.device}", flush=True)
     return _model_singleton

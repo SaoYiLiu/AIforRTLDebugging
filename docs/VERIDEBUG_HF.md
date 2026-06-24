@@ -161,6 +161,7 @@ If `apply_line_fix()` cannot match the model’s `buggy_code` string to a line i
 | `VERIDEBUG_HF_BITS` | `4` on GPUs <=24GB | `4`, `8`, or `0` for fp16 |
 | `VERIDEBUG_HF_DEVICE_MAP` | (unset) | e.g. `auto` for `device_map` |
 | `VERIDEBUG_HF_OFFLOAD_DISK` | on <=12GB GPUs | Spill weights to disk (1080 Ti) |
+| `VERIDEBUG_HF_CPU_ONLY` | auto on Ada + torch cu121 | **fp16** load on CPU (~14GB RAM); bnb 4-bit cannot run CPU-only |
 
 ## Module API
 

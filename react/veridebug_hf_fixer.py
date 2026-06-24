@@ -235,6 +235,62 @@ def _quant_load_max_memory(vram_gib: float, *, gpu_gib: int | None = None) -> di
     return {0: f"{gpu_cap}GiB", "cpu": f"{cpu_cap}GiB"}
 
 
+def _cpu_quant_device_map() -> dict[str, str]:
+    # Dict form avoids accelerate calling `.to()` on the whole 4-bit model (string "cpu" breaks).
+    return {"": "cpu"}
+
+
+def _is_cpu_device_map(device_map: Any) -> bool:
+    return device_map == {"": "cpu"} or device_map == "cpu"
+
+
+def _prefer_cpu_load() -> bool:
+    """Load fp16 on CPU (bnb 4-bit cannot quantize or run on CPU-only)."""
+    env = os.environ.get("VERIDEBUG_HF_CPU_ONLY", "").lower()
+    if env in ("1", "true", "yes"):
+        return True
+    if env in ("0", "false", "no"):
+        return False
+    import torch
+
+    cuda_ver = str(getattr(torch.version, "cuda", "") or "")
+    # Ada/Hopper + torch cu121: GPU-side 4-bit quant often hits CUDA driver errors.
+    return _gpu_compute_capability() >= (8, 9) and cuda_ver.startswith("12.1")
+
+
+def _cpu_fp16_model_kwargs() -> dict[str, Any]:
+    import torch
+
+    return {
+        "mode": "unified",
+        "low_cpu_mem_usage": True,
+        "device_map": _cpu_quant_device_map(),
+        "torch_dtype": torch.float16,
+    }
+
+
+def _cpu_fp16_kwargs_from(base: dict[str, Any]) -> dict[str, Any]:
+    import torch
+
+    out = {k: v for k, v in base.items() if k != "quantization_config"}
+    out["device_map"] = _cpu_quant_device_map()
+    out.pop("max_memory", None)
+    out["torch_dtype"] = torch.float16
+    return out
+
+
+def _is_cpu_fp16_load(kwargs: dict[str, Any]) -> bool:
+    return _is_cpu_device_map(kwargs.get("device_map")) and "quantization_config" not in kwargs
+
+
+def _gpu_quant_attempts(base: dict[str, Any], vram_gib: float) -> list[dict[str, Any]]:
+    attempts = [base]
+    tight = dict(base)
+    tight["max_memory"] = _quant_load_max_memory(vram_gib, gpu_gib=6)
+    attempts.append(tight)
+    return attempts
+
+
 def _bitsandbytes_config(torch: Any, *, bits: int) -> Any:
     from transformers import BitsAndBytesConfig
 
@@ -258,6 +314,16 @@ def _build_veridebug_model_kwargs() -> dict[str, Any]:
     os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
     vram_gib = _gpu_vram_gib()
+    device_map_env = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "").strip()
+
+    if _prefer_cpu_load() or device_map_env.lower() == "cpu":
+        print(
+            "[VeriDebug-HF] CPU fp16 load (~14GB RAM; bnb 4-bit requires GPU). "
+            "For GPU inference: upgrade torch cu124, unset VERIDEBUG_HF_CPU_ONLY.",
+            flush=True,
+        )
+        return _cpu_fp16_model_kwargs()
+
     bits = _quant_bits()
     kwargs: dict[str, Any] = {
         "mode": "unified",
@@ -274,9 +340,8 @@ def _build_veridebug_model_kwargs() -> dict[str, Any]:
             ) from e
         kwargs["quantization_config"] = _bitsandbytes_config(torch, bits=bits)
 
-        device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "").strip()
-        if device_map:
-            kwargs["device_map"] = device_map
+        if device_map_env:
+            kwargs["device_map"] = device_map_env
         elif _use_disk_offload(vram_gib):
             offload_dir = _offload_dir()
             offload_dir.mkdir(parents=True, exist_ok=True)
@@ -394,24 +459,26 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
         flush=True,
     )
 
-    load_attempts: list[dict[str, Any]] = [kwargs]
-    if bits is not None and not _use_disk_offload(vram_gib):
-        tight = dict(kwargs)
-        tight["max_memory"] = _quant_load_max_memory(vram_gib, gpu_gib=6)
-        load_attempts.append(tight)
-        cpu_only = dict(kwargs)
-        cpu_only["device_map"] = "cpu"
-        cpu_only.pop("max_memory", None)
-        load_attempts.append(cpu_only)
+    load_attempts: list[dict[str, Any]]
+    if _is_cpu_fp16_load(kwargs):
+        load_attempts = [kwargs]
+    elif bits is not None and not _use_disk_offload(vram_gib):
+        load_attempts = _gpu_quant_attempts(kwargs, vram_gib)
+        load_attempts.append(_cpu_fp16_kwargs_from(kwargs))
+    else:
+        load_attempts = [kwargs]
 
     last_exc: BaseException | None = None
     for attempt_idx, attempt_kwargs in enumerate(load_attempts):
         if attempt_idx > 0:
-            label = "CPU-staged quant" if attempt_kwargs.get("device_map") != "cpu" else "CPU-only quant"
+            dm = attempt_kwargs.get("device_map")
+            if _is_cpu_fp16_load(attempt_kwargs):
+                label = "CPU fp16 fallback"
+            else:
+                label = "CPU-staged quant"
             print(
                 f"[VeriDebug-HF] Retrying with {label} "
-                f"(device_map={attempt_kwargs.get('device_map')}, "
-                f"max_memory={attempt_kwargs.get('max_memory')})...",
+                f"(device_map={dm}, max_memory={attempt_kwargs.get('max_memory')})...",
                 flush=True,
             )
             torch.cuda.empty_cache()
@@ -429,6 +496,17 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
                     "  export VERIDEBUG_HF_DEVICE_MAP=''\n"
                     "Ask admin to raise ulimit -v if mmap still fails."
                 ) from exc
+            raise
+        except ValueError as exc:
+            msg = str(exc)
+            if "`.to` is not supported" in msg and "bitsandbytes" in msg:
+                last_exc = exc
+                if attempt_idx < len(load_attempts) - 1:
+                    continue
+            if "dispatched on the CPU" in msg or "load_in_8bit_fp32_cpu_offload" in msg:
+                last_exc = exc
+                if attempt_idx < len(load_attempts) - 1:
+                    continue
             raise
         except RuntimeError as exc:
             last_exc = exc

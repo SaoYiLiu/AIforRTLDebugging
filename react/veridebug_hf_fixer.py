@@ -164,46 +164,72 @@ def _gpu_vram_gib() -> float:
     return float(torch.cuda.get_device_properties(0).total_memory) / (1024**3)
 
 
-def _should_use_8bit_load() -> bool:
-    env = os.environ.get("VERIDEBUG_HF_LOAD_IN_8BIT", "").lower()
-    if env in ("1", "true", "yes"):
-        return True
-    if env in ("0", "false", "no"):
-        return False
-    # 1080 Ti (11GB) and similar: fp16 7B unified model does not fit reliably.
-    return _gpu_vram_gib() <= 12.0
+def _quant_bits() -> int | None:
+    """Return 4, 8, or None (full precision) for weight loading."""
+    bits_env = os.environ.get("VERIDEBUG_HF_BITS", "").strip()
+    if bits_env in ("4", "8"):
+        return int(bits_env)
+    load_8 = os.environ.get("VERIDEBUG_HF_LOAD_IN_8BIT", "").lower()
+    if load_8 in ("1", "true", "yes"):
+        return 8
+    if load_8 in ("0", "false", "no"):
+        return None
+    load_4 = os.environ.get("VERIDEBUG_HF_LOAD_IN_4BIT", "").lower()
+    if load_4 in ("1", "true", "yes"):
+        return 4
+    if load_4 in ("0", "false", "no"):
+        return None
+    # 1080 Ti (11GB): 8-bit still OOMs during load; 4-bit fits on GPU.
+    if _gpu_vram_gib() <= 12.0:
+        return 4
+    return None
+
+
+def _bitsandbytes_config(torch: Any, *, bits: int) -> Any:
+    from transformers import BitsAndBytesConfig
+
+    if bits == 4:
+        return BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+        )
+    return BitsAndBytesConfig(
+        load_in_8bit=True,
+        llm_int8_threshold=6.0,
+    )
 
 
 def _build_veridebug_model_kwargs() -> dict[str, Any]:
     import torch
 
-    device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "auto")
+    vram_gib = _gpu_vram_gib()
+    bits = _quant_bits()
     kwargs: dict[str, Any] = {
         "mode": "unified",
         "low_cpu_mem_usage": True,
-        "device_map": device_map,
     }
 
-    vram_gib = _gpu_vram_gib()
-    if _should_use_8bit_load():
+    if bits is not None:
         try:
             import bitsandbytes  # noqa: F401
         except ImportError as e:
             raise RuntimeError(
-                f"VeriDebug on a {vram_gib:.1f}GB GPU requires 8-bit loading.\n"
-                "  pip install bitsandbytes\n"
-                "  export VERIDEBUG_HF_LOAD_IN_8BIT=1\n"
-                "Or use a GPU with >12GB VRAM and export VERIDEBUG_HF_LOAD_IN_8BIT=0"
+                f"VeriDebug on a {vram_gib:.1f}GB GPU requires bitsandbytes ({bits}-bit).\n"
+                "  pip install 'bitsandbytes==0.43.1'"
             ) from e
-        kwargs["load_in_8bit"] = True
-        # Leave ~1GiB headroom on 11GB cards; allow CPU offload for overflow layers.
-        cpu_budget = os.environ.get("VERIDEBUG_HF_CPU_RAM", "32GiB")
-        kwargs["max_memory"] = {0: f"{max(1, int(vram_gib) - 1)}GiB", "cpu": cpu_budget}
+        kwargs["quantization_config"] = _bitsandbytes_config(torch, bits=bits)
+        # Pin to GPU 0 — CPU offload hits zeus ulimit -v (~15GB process cap).
+        device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "").strip()
+        kwargs["device_map"] = device_map if device_map else {"": 0}
         print(
-            f"[VeriDebug-HF] 8-bit load enabled (GPU {vram_gib:.1f}GB, max_memory={kwargs['max_memory']})",
+            f"[VeriDebug-HF] {bits}-bit load (GPU {vram_gib:.1f}GB, device_map={kwargs['device_map']})",
             flush=True,
         )
     else:
+        device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "auto")
+        kwargs["device_map"] = device_map
         dtype_name = os.environ.get("VERIDEBUG_HF_TORCH_DTYPE", "float16")
         kwargs["torch_dtype"] = getattr(torch, dtype_name, torch.float16)
         kwargs["max_memory"] = {
@@ -223,6 +249,8 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
 
     try:
         import torch
+
+        torch.cuda.empty_cache()
     except ImportError as e:
         raise RuntimeError(
             "PyTorch failed to import (broken CUDA/NCCL install).\n"
@@ -266,9 +294,21 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
         if "mmap" in str(exc).lower() or "allocate memory" in str(exc).lower():
             raise RuntimeError(
                 "Failed to mmap VeriDebug weight shards into RAM.\n"
-                "On zeus, check virtual-memory cap: ulimit -v (16000000 ≈ 15GB blocks large mmap).\n"
-                "Try: ulimit -v unlimited\n"
-                "Also ensure 8-bit load:\n"
+                "zeus ulimit -v is ~15GB per process (cannot be raised) — use 4-bit GPU-only load:\n"
+                "  unset VERIDEBUG_HF_LOAD_IN_8BIT\n"
+                "  export VERIDEBUG_HF_BITS=4\n"
+                "  export VERIDEBUG_HF_DEVICE_MAP=''\n"
+                "Ask admin to raise ulimit -v if mmap still fails."
+            ) from exc
+        raise
+    except RuntimeError as exc:
+        if "out of memory" in str(exc).lower():
+            raise RuntimeError(
+                "CUDA OOM while loading VeriDebug.\n"
+                "On 1080 Ti use 4-bit (not 8-bit), all layers on GPU 0:\n"
+                "  export VERIDEBUG_HF_BITS=4\n"
+                "  unset VERIDEBUG_HF_LOAD_IN_8BIT VERIDEBUG_HF_DEVICE_MAP\n"
+                f"Original: {exc}"
             ) from exc
         raise
     _model_id_loaded = model_id

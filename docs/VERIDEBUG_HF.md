@@ -63,7 +63,8 @@ Optional: `export HF_TOKEN=...` for faster Hugging Face downloads.
 | NumPy 2.x + torch warning | `pip install 'numpy<2'` |
 | `Cannot allocate memory` loading weights | Often `ulimit -v` (~15GB on zeus) — run `ulimit -v unlimited`; also use 8-bit |
 | `undefined symbol: ncclCommResume` | PyTorch/NCCL mismatch after pip upgrades — reinstall `torch==2.2.2` cu121 |
-| CUDA OOM on 11GB GPU | `VERIDEBUG_HF_DEVICE_MAP=auto` + `VERIDEBUG_HF_TORCH_DTYPE=float16`; or `pip install bitsandbytes` + `VERIDEBUG_HF_LOAD_IN_8BIT=1` |
+| CUDA OOM on 11GB GPU | Use **4-bit**, not 8-bit: `export VERIDEBUG_HF_BITS=4`; unset `VERIDEBUG_HF_LOAD_IN_8BIT` |
+| `ulimit -v` ~15GB, cannot raise | Avoid CPU offload; 4-bit + `device_map` pinned to GPU 0 only |
 
 ## Setup (WSL + GPU)
 

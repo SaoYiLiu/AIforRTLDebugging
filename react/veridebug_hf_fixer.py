@@ -266,6 +266,8 @@ def _cpu_fp16_model_kwargs() -> dict[str, Any]:
         "low_cpu_mem_usage": True,
         "device_map": _cpu_quant_device_map(),
         "torch_dtype": torch.float16,
+        # GritLM defaults self.device to cuda when available; weights stay on CPU via device_map.
+        "device": "cpu",
     }
 
 
@@ -276,6 +278,7 @@ def _cpu_fp16_kwargs_from(base: dict[str, Any]) -> dict[str, Any]:
     out["device_map"] = _cpu_quant_device_map()
     out.pop("max_memory", None)
     out["torch_dtype"] = torch.float16
+    out["device"] = "cpu"
     return out
 
 
@@ -518,6 +521,12 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
 
     if last_exc is not None:
         raise last_exc
+    try:
+        weight_device = next(_model_singleton.model.parameters()).device
+        if weight_device.type == "cpu":
+            _model_singleton.device = "cpu"
+    except StopIteration:
+        pass
     _model_id_loaded = model_id
     print(f"[VeriDebug-HF] Model ready on {_model_singleton.device}", flush=True)
     return _model_singleton

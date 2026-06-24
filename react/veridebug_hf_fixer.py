@@ -167,9 +167,11 @@ def _gpu_vram_gib() -> float:
 
 def _quant_bits() -> int | None:
     """Return 4, 8, or None (full precision) for weight loading."""
-    bits_env = os.environ.get("VERIDEBUG_HF_BITS", "").strip()
+    bits_env = os.environ.get("VERIDEBUG_HF_BITS", "").strip().lower()
     if bits_env in ("4", "8"):
         return int(bits_env)
+    if bits_env in ("0", "none", "fp16", "16", "full"):
+        return None
     load_8 = os.environ.get("VERIDEBUG_HF_LOAD_IN_8BIT", "").lower()
     if load_8 in ("1", "true", "yes"):
         return 8
@@ -180,8 +182,9 @@ def _quant_bits() -> int | None:
         return 4
     if load_4 in ("0", "false", "no"):
         return None
-    # 1080 Ti (11GB): 8-bit still OOMs during load; 4-bit fits on GPU.
-    if _gpu_vram_gib() <= 12.0:
+    # 7B fp16 load peaks above 24GB during shard materialization; 4-bit avoids that.
+    # 8-bit still OOMs on 11GB cards during load.
+    if _gpu_vram_gib() <= 24.0:
         return 4
     return None
 
@@ -246,13 +249,12 @@ def _build_veridebug_model_kwargs() -> dict[str, Any]:
             offload_dir = _offload_dir()
             offload_dir.mkdir(parents=True, exist_ok=True)
             gpu_gib = int(os.environ.get("VERIDEBUG_HF_GPU_GIB", "5"))
+            cpu_gib = int(os.environ.get("VERIDEBUG_HF_CPU_RAM_GIB", "12"))
             kwargs["offload_folder"] = str(offload_dir)
             kwargs["offload_state_dict"] = True
             kwargs["device_map"] = "auto"
-            kwargs["max_memory"] = {
-                0: f"{gpu_gib}GiB",
-                "disk": os.environ.get("VERIDEBUG_HF_DISK_BUDGET", "100GiB"),
-            }
+            # accelerate does not accept "disk" as a device key; offload_folder handles spill.
+            kwargs["max_memory"] = {0: f"{gpu_gib}GiB", "cpu": f"{cpu_gib}GiB"}
             print(
                 f"[VeriDebug-HF] {bits}-bit + disk offload "
                 f"(GPU {vram_gib:.1f}GB, max_memory={kwargs['max_memory']}, "
@@ -321,9 +323,11 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
     device_map = kwargs.get("device_map", "auto")
 
     _register_llama_grit_architecture()
+    free_gib, total_gib = torch.cuda.mem_get_info()
     print(
         f"[VeriDebug-HF] Loading {model_id} "
-        f"(device_map={device_map}, cuda={torch.cuda.get_device_name(0)})...",
+        f"(device_map={device_map}, cuda={torch.cuda.get_device_name(0)}, "
+        f"gpu_free={free_gib / (1024**3):.1f}GiB/{total_gib / (1024**3):.1f}GiB)...",
         flush=True,
     )
     try:
@@ -343,14 +347,15 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
         if "out of memory" in str(exc).lower():
             raise RuntimeError(
                 "CUDA OOM while loading VeriDebug.\n"
-                "On 1080 Ti try disk offload (default for <=12GB GPUs):\n"
-                "  export VERIDEBUG_HF_BITS=4\n"
-                "  export VERIDEBUG_HF_OFFLOAD_DISK=1\n"
-                "  export VERIDEBUG_HF_GPU_GIB=5\n"
-                "  unset VERIDEBUG_HF_DEVICE_MAP VERIDEBUG_HF_LOAD_IN_8BIT\n"
-                "Before retry: nvidia-smi  (ensure GPU is idle)\n"
-                "If still failing, this 7B model may not fit zeus 1080 Ti + 15GB ulimit; "
-                "use --use-cursor-sdk instead.\n"
+                "1. Check GPU is idle: nvidia-smi  (kill stale python processes)\n"
+                "2. Default is 4-bit on GPUs <=24GB; force it:\n"
+                "     export VERIDEBUG_HF_BITS=4\n"
+                "     unset VERIDEBUG_HF_OFFLOAD_DISK VERIDEBUG_HF_LOAD_IN_8BIT VERIDEBUG_HF_DEVICE_MAP\n"
+                "3. On 11GB GPUs (1080 Ti), add disk offload:\n"
+                "     export VERIDEBUG_HF_OFFLOAD_DISK=1\n"
+                "     export VERIDEBUG_HF_GPU_GIB=5\n"
+                "4. For fp16 on a large idle GPU: export VERIDEBUG_HF_BITS=0\n"
+                "If still failing on zeus (ulimit -v ~15GB), use --use-cursor-sdk instead.\n"
                 f"Original: {exc}"
             ) from exc
         raise

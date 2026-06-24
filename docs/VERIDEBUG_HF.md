@@ -33,6 +33,33 @@ flowchart LR
 | Apply | — | `apply_line_fix()` patches one line in `TopModule` |
 | Verify | — | existing `run_react_loop()` simulation |
 
+## Setup (RTX 4090 / valkyrie — recommended for VeriDebug)
+
+24GB VRAM fits the 7B model without zeus-style hacks. You still need **iverilog** for ChipBench sim (install without sudo):
+
+```bash
+# micromamba (user-local)
+curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+eval "$(~/bin/micromamba shell hook -s bash)"
+
+micromamba create -n chipbench -c conda-forge iverilog python=3.12 -y
+micromamba activate chipbench
+
+cd ~/AIfordebugging
+python -m venv .venv && source .venv/bin/activate
+pip install torch --index-url https://download.pytorch.org/whl/cu124
+pip install -r requirements-veridebug-hf.txt -r requirements.txt
+bash scripts/fetch_veridebug_modeling.sh
+
+export VERIDEBUG_HF_MODEL=LLM-EDA/VeriDebug
+unset VERIDEBUG_HF_OFFLOAD_DISK VERIDEBUG_HF_LOAD_IN_8BIT VERIDEBUG_HF_DEVICE_MAP
+# 4-bit auto-selected on GPUs <=24GB (avoids fp16 load spikes on 4090)
+# Optional fp16: export VERIDEBUG_HF_BITS=0
+
+iverilog -V   # must pass before running ChipBench
+PYTHONPATH=. python -m react.react_runner --prob-id Prob001 ... --use-veridebug-hf --max-iters 5
+```
+
 ## Setup (Linux GPU server, e.g. zeus)
 
 ```bash
@@ -63,7 +90,8 @@ Optional: `export HF_TOKEN=...` for faster Hugging Face downloads.
 | NumPy 2.x + torch warning | `pip install 'numpy<2'` |
 | `Cannot allocate memory` loading weights | Often `ulimit -v` (~15GB on zeus) — run `ulimit -v unlimited`; also use 8-bit |
 | `undefined symbol: ncclCommResume` | PyTorch/NCCL mismatch after pip upgrades — reinstall `torch==2.2.2` cu121 |
-| CUDA OOM on 11GB GPU | Use **4-bit**, not 8-bit: `export VERIDEBUG_HF_BITS=4`; unset `VERIDEBUG_HF_LOAD_IN_8BIT` |
+| CUDA OOM while loading | Run `nvidia-smi` (kill stale jobs). Default **4-bit** on GPUs <=24GB; force: `export VERIDEBUG_HF_BITS=4` |
+| CUDA OOM on 11GB GPU | Do not use 8-bit; add disk offload: `VERIDEBUG_HF_OFFLOAD_DISK=1 VERIDEBUG_HF_GPU_GIB=5` |
 | `ulimit -v` ~15GB, cannot raise | Avoid CPU offload; 4-bit + `device_map` pinned to GPU 0 only |
 
 ## Setup (WSL + GPU)
@@ -128,7 +156,9 @@ If `apply_line_fix()` cannot match the model’s `buggy_code` string to a line i
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `VERIDEBUG_HF_MODEL` | `LLM-EDA/VeriDebug` | Hugging Face model id or local path |
+| `VERIDEBUG_HF_BITS` | `4` on GPUs <=24GB | `4`, `8`, or `0` for fp16 |
 | `VERIDEBUG_HF_DEVICE_MAP` | (unset) | e.g. `auto` for `device_map` |
+| `VERIDEBUG_HF_OFFLOAD_DISK` | on <=12GB GPUs | Spill weights to disk (1080 Ti) |
 
 ## Module API
 

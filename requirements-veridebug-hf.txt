@@ -7,7 +7,7 @@
 # GPU strongly recommended (~7B-class model, ~13GB weights). Set:
 #   export VERIDEBUG_HF_MODEL=LLM-EDA/VeriDebug
 #   export VERIDEBUG_HF_DEVICE_MAP=auto
-#   export VERIDEBUG_HF_BITS=4          # auto on GPUs <=12GB (1080 Ti)
+#   export VERIDEBUG_HF_BITS=4          # auto on GPUs <=24GB; use 0 for fp16 on large GPUs
 #   unset VERIDEBUG_HF_LOAD_IN_8BIT     # 8-bit OOMs on 11GB cards
 bitsandbytes>=0.43.0
 

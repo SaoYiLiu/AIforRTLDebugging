@@ -91,6 +91,12 @@ class GuidedFix:
     retrieval: RetrievalResult
 
 
+class GuidedParseError(ValueError):
+    def __init__(self, message: str, *, raw_generation: str) -> None:
+        super().__init__(message)
+        self.raw_generation = raw_generation
+
+
 def gritlm_instruction(instruction: str) -> str:
     return "<|user|>\n" + instruction + "\n<|embed|>\n" if instruction else "<|embed|>\n"
 
@@ -597,16 +603,89 @@ def run_retrieval(
     )
 
 
+def _extract_json_object(text: str) -> str | None:
+    """Return the first balanced `{...}` object, respecting JSON string quotes."""
+    start = text.find("{")
+    if start < 0:
+        return None
+    depth = 0
+    in_string = False
+    escape = False
+    for i in range(start, len(text)):
+        ch = text[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start : i + 1]
+    return None
+
+
+def _unescape_json_string(fragment: str) -> str:
+    wrapped = f'"{fragment}"'
+    try:
+        return json.loads(wrapped)
+    except json.JSONDecodeError:
+        return fragment.replace('\\"', '"').replace("\\\\", "\\")
+
+
+def _parse_generation_json_regex(text: str) -> dict[str, str] | None:
+    buggy_m = re.search(
+        r'"buggy_code"\s*:\s*"((?:[^"\\]|\\.)*)"',
+        text,
+        flags=re.DOTALL,
+    )
+    correct_m = re.search(
+        r'"correct_code"\s*:\s*"((?:[^"\\]|\\.)*)"',
+        text,
+        flags=re.DOTALL,
+    )
+    if not buggy_m or not correct_m:
+        return None
+    buggy = _unescape_json_string(buggy_m.group(1)).strip()
+    correct = _unescape_json_string(correct_m.group(1)).strip()
+    if not buggy or not correct:
+        return None
+    return {"buggy_code": buggy, "correct_code": correct}
+
+
 def _parse_generation_json(decoded: str) -> dict[str, str]:
     text = decoded.strip()
-    if "}" in text:
-        text = text[: text.find("}") + 1]
-    data = json.loads(text)
-    buggy = str(data.get("buggy_code", "")).strip()
-    correct = str(data.get("correct_code", "")).strip()
-    if not buggy or not correct:
-        raise ValueError(f"Missing buggy_code/correct_code in: {data}")
-    return {"buggy_code": buggy, "correct_code": correct}
+    if "```" in text:
+        fence = re.search(r"```(?:json)?\s*(\{.*)", text, flags=re.DOTALL | re.IGNORECASE)
+        if fence:
+            text = fence.group(1)
+            if "```" in text:
+                text = text[: text.rfind("```")]
+
+    json_blob = _extract_json_object(text)
+    if json_blob:
+        try:
+            data = json.loads(json_blob)
+            buggy = str(data.get("buggy_code", "")).strip()
+            correct = str(data.get("correct_code", "")).strip()
+            if buggy and correct:
+                return {"buggy_code": buggy, "correct_code": correct}
+        except json.JSONDecodeError:
+            pass
+
+    regex_parsed = _parse_generation_json_regex(text)
+    if regex_parsed:
+        return regex_parsed
+
+    preview = text[:400].replace("\n", "\\n")
+    raise ValueError(f"Could not parse buggy_code/correct_code JSON from model output: {preview!r}")
 
 
 def guided_correction(
@@ -637,14 +716,33 @@ def guided_correction(
     encoded = model.tokenizer.apply_chat_template(
         messages, add_generation_prompt=True, return_tensors="pt"
     )
-    encoded = encoded.to(model.device)
+    import torch
 
-    gen = model.generate(encoded, max_new_tokens=max_new_tokens, do_sample=True)
-    valid_gen = gen[:, encoded.shape[1] :]
+    device = model.device
+    input_ids = encoded.to(device)
+    attention_mask = torch.ones_like(input_ids, dtype=torch.long, device=device)
+    pad_token_id = model.tokenizer.pad_token_id
+    if pad_token_id is None:
+        pad_token_id = model.tokenizer.eos_token_id
+    eos_token_id = model.tokenizer.eos_token_id
+    max_tokens = int(os.environ.get("VERIDEBUG_HF_MAX_NEW_TOKENS", "512"))
+
+    gen = model.generate(
+        input_ids,
+        attention_mask=attention_mask,
+        pad_token_id=pad_token_id,
+        eos_token_id=eos_token_id,
+        max_new_tokens=max_tokens,
+        do_sample=False,
+    )
+    valid_gen = gen[:, input_ids.shape[1] :]
     decoded_list = model.tokenizer.batch_decode(valid_gen)
     raw = decoded_list[0] if decoded_list else ""
 
-    parsed = _parse_generation_json(raw)
+    try:
+        parsed = _parse_generation_json(raw)
+    except ValueError as exc:
+        raise GuidedParseError(str(exc), raw_generation=raw) from exc
     return GuidedFix(
         buggy_line=parsed["buggy_code"],
         correct_line=parsed["correct_code"],
@@ -737,13 +835,24 @@ def fix_with_veridebug_hf(
         top_types=top_types,
     )
 
-    guided = guided_correction(
-        model,
-        spec_text,
-        current_sv,
-        retrieval,
-        sim_context=sim_context,
-    )
+    try:
+        guided = guided_correction(
+            model,
+            spec_text,
+            current_sv,
+            retrieval,
+            sim_context=sim_context,
+        )
+    except (json.JSONDecodeError, ValueError, GuidedParseError) as exc:
+        raw_gen = getattr(exc, "raw_generation", str(exc))
+        rationale = (
+            f"- Contrastive embedding top line: `{retrieval.top_line}`\n"
+            f"- Contrastive embedding top type: `{retrieval.top_type}`\n"
+            f"- Guided correction **failed** (invalid JSON from model): {exc}\n"
+            f"- Ranked lines (top 5): {retrieval.ranked_lines[:5]}\n"
+            "- RTL left unchanged; next iteration may retry."
+        )
+        return FixResult(fixed_sv=current_sv, rationale=rationale, raw_text=raw_gen)
 
     fixed_sv, applied = apply_line_fix(current_sv, guided.buggy_line, guided.correct_line)
 

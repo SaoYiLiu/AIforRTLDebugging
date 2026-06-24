@@ -47,13 +47,15 @@ micromamba activate chipbench
 
 cd ~/AIfordebugging
 python -m venv .venv && source .venv/bin/activate
-pip install torch --index-url https://download.pytorch.org/whl/cu124
+# Match driver CUDA 12.4+ on valkyrie (595.x) — use cu124, not cu121
+pip install 'numpy<2' 'torch>=2.4.0' --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements-veridebug-hf.txt -r requirements.txt
+pip install -U 'bitsandbytes>=0.43.3'
 bash scripts/fetch_veridebug_modeling.sh
 
 export VERIDEBUG_HF_MODEL=LLM-EDA/VeriDebug
 unset VERIDEBUG_HF_OFFLOAD_DISK VERIDEBUG_HF_LOAD_IN_8BIT VERIDEBUG_HF_DEVICE_MAP
-# 4-bit auto-selected on GPUs <=24GB (avoids fp16 load spikes on 4090)
+# 4-bit auto-selected on GPUs <=24GB (CPU-staged quant during load)
 # Optional fp16: export VERIDEBUG_HF_BITS=0
 
 iverilog -V   # must pass before running ChipBench
@@ -90,9 +92,9 @@ Optional: `export HF_TOKEN=...` for faster Hugging Face downloads.
 | NumPy 2.x + torch warning | `pip install 'numpy<2'` |
 | `Cannot allocate memory` loading weights | Often `ulimit -v` (~15GB on zeus) — run `ulimit -v unlimited`; also use 8-bit |
 | `undefined symbol: ncclCommResume` | PyTorch/NCCL mismatch after pip upgrades — reinstall `torch==2.2.2` cu121 |
-| CUDA OOM while loading | Run `nvidia-smi` (kill stale jobs). Default **4-bit** on GPUs <=24GB; force: `export VERIDEBUG_HF_BITS=4` |
-| CUDA OOM on 11GB GPU | Do not use 8-bit; add disk offload: `VERIDEBUG_HF_OFFLOAD_DISK=1 VERIDEBUG_HF_GPU_GIB=5` |
-| `ulimit -v` ~15GB, cannot raise | Avoid CPU offload; 4-bit + `device_map` pinned to GPU 0 only |
+| CUDA OOM / `CUDA driver error` while loading | Run `nvidia-smi`. On RTX 4090 reinstall **torch cu124** + `bitsandbytes>=0.43.3`. Default 4-bit uses CPU-staged load via `max_memory`. |
+| CUDA OOM on 11GB GPU | Add disk offload: `VERIDEBUG_HF_OFFLOAD_DISK=1 VERIDEBUG_HF_GPU_GIB=5` |
+| `ulimit -v` ~15GB, cannot raise | Use 4-bit + disk offload on zeus; avoid large CPU mmap |
 
 ## Setup (WSL + GPU)
 

@@ -159,6 +159,27 @@ def _register_llama_grit_architecture() -> None:
     _llama_grit_registered = True
 
 
+def _gpu_compute_capability() -> tuple[int, int]:
+    import torch
+
+    return torch.cuda.get_device_capability(0)
+
+
+def _bnb_double_quant_default() -> bool:
+    env = os.environ.get("VERIDEBUG_HF_DOUBLE_QUANT", "").lower()
+    if env in ("1", "true", "yes"):
+        return True
+    if env in ("0", "false", "no"):
+        return False
+    # RTX 40xx (Ada sm_89): double quant can trip CUDA driver errors during 4-bit load.
+    return _gpu_compute_capability() < (8, 9)
+
+
+def _is_cuda_mem_error(exc: BaseException) -> bool:
+    msg = str(exc).lower()
+    return "out of memory" in msg or "cuda driver error" in msg
+
+
 def _gpu_vram_gib() -> float:
     import torch
 
@@ -203,6 +224,17 @@ def _use_disk_offload(vram_gib: float) -> bool:
     return vram_gib <= 12.0
 
 
+def _quant_load_max_memory(vram_gib: float, *, gpu_gib: int | None = None) -> dict[int | str, str]:
+    gpu_cap = gpu_gib if gpu_gib is not None else int(
+        os.environ.get(
+            "VERIDEBUG_HF_GPU_GIB",
+            str(max(8, min(14, int(vram_gib * 0.55)))),
+        )
+    )
+    cpu_cap = int(os.environ.get("VERIDEBUG_HF_CPU_RAM_GIB", "64"))
+    return {0: f"{gpu_cap}GiB", "cpu": f"{cpu_cap}GiB"}
+
+
 def _bitsandbytes_config(torch: Any, *, bits: int) -> Any:
     from transformers import BitsAndBytesConfig
 
@@ -210,7 +242,7 @@ def _bitsandbytes_config(torch: Any, *, bits: int) -> Any:
         return BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_use_double_quant=True,
+            bnb_4bit_use_double_quant=_bnb_double_quant_default(),
             bnb_4bit_quant_type="nf4",
             bnb_4bit_quant_storage=torch.uint8,
         )
@@ -223,7 +255,7 @@ def _bitsandbytes_config(torch: Any, *, bits: int) -> Any:
 def _build_veridebug_model_kwargs() -> dict[str, Any]:
     import torch
 
-    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True,max_split_size_mb:64")
+    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
     vram_gib = _gpu_vram_gib()
     bits = _quant_bits()
@@ -262,9 +294,13 @@ def _build_veridebug_model_kwargs() -> dict[str, Any]:
                 flush=True,
             )
         else:
-            kwargs["device_map"] = {"": 0}
+            kwargs["device_map"] = "auto"
+            kwargs["max_memory"] = _quant_load_max_memory(vram_gib)
+            kwargs["torch_dtype"] = torch.float16
             print(
-                f"[VeriDebug-HF] {bits}-bit load (GPU {vram_gib:.1f}GB, device_map={kwargs['device_map']})",
+                f"[VeriDebug-HF] {bits}-bit load "
+                f"(GPU {vram_gib:.1f}GB, max_memory={kwargs['max_memory']}, "
+                f"double_quant={_bnb_double_quant_default()})",
                 flush=True,
             )
     else:
@@ -278,6 +314,30 @@ def _build_veridebug_model_kwargs() -> dict[str, Any]:
         }
 
     return kwargs
+
+
+def _cuda_load_failure(exc: BaseException, *, vram_gib: float) -> RuntimeError:
+    import torch
+
+    cuda_ver = getattr(torch.version, "cuda", "?")
+    return RuntimeError(
+        "CUDA OOM / driver error while loading VeriDebug.\n"
+        "1. Check GPU is idle: nvidia-smi  (kill stale python processes)\n"
+        "2. 4-bit + CPU-staged load (default on GPUs <=24GB):\n"
+        "     export VERIDEBUG_HF_BITS=4\n"
+        "     unset VERIDEBUG_HF_OFFLOAD_DISK VERIDEBUG_HF_LOAD_IN_8BIT VERIDEBUG_HF_DEVICE_MAP\n"
+        "3. RTX 4090 / Ada: match PyTorch to driver (cu124 if CUDA 12.4+):\n"
+        "     pip install 'numpy<2' 'torch>=2.4.0' "
+        "--index-url https://download.pytorch.org/whl/cu124 --force-reinstall\n"
+        "     pip install -U 'bitsandbytes>=0.43.3'\n"
+        f"     (current torch cuda={cuda_ver}, GPU {vram_gib:.1f}GB)\n"
+        "4. On 11GB GPUs (1080 Ti), add disk offload:\n"
+        "     export VERIDEBUG_HF_OFFLOAD_DISK=1\n"
+        "     export VERIDEBUG_HF_GPU_GIB=5\n"
+        "5. For fp16 on a large idle GPU: export VERIDEBUG_HF_BITS=0\n"
+        "If still failing on zeus (ulimit -v ~15GB), use --use-cursor-sdk instead.\n"
+        f"Original: {exc}"
+    )
 
 
 def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool = False) -> Any:
@@ -320,6 +380,8 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
         )
 
     kwargs = _build_veridebug_model_kwargs()
+    bits = _quant_bits()
+    vram_gib = _gpu_vram_gib()
     device_map = kwargs.get("device_map", "auto")
 
     _register_llama_grit_architecture()
@@ -327,38 +389,57 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
     print(
         f"[VeriDebug-HF] Loading {model_id} "
         f"(device_map={device_map}, cuda={torch.cuda.get_device_name(0)}, "
+        f"sm={_gpu_compute_capability()}, "
         f"gpu_free={free_gib / (1024**3):.1f}GiB/{total_gib / (1024**3):.1f}GiB)...",
         flush=True,
     )
-    try:
-        _model_singleton = GritLM(model_id, **kwargs)
-    except OSError as exc:
-        if "mmap" in str(exc).lower() or "allocate memory" in str(exc).lower():
-            raise RuntimeError(
-                "Failed to mmap VeriDebug weight shards into RAM.\n"
-                "zeus ulimit -v is ~15GB per process (cannot be raised) — use 4-bit GPU-only load:\n"
-                "  unset VERIDEBUG_HF_LOAD_IN_8BIT\n"
-                "  export VERIDEBUG_HF_BITS=4\n"
-                "  export VERIDEBUG_HF_DEVICE_MAP=''\n"
-                "Ask admin to raise ulimit -v if mmap still fails."
-            ) from exc
-        raise
-    except RuntimeError as exc:
-        if "out of memory" in str(exc).lower():
-            raise RuntimeError(
-                "CUDA OOM while loading VeriDebug.\n"
-                "1. Check GPU is idle: nvidia-smi  (kill stale python processes)\n"
-                "2. Default is 4-bit on GPUs <=24GB; force it:\n"
-                "     export VERIDEBUG_HF_BITS=4\n"
-                "     unset VERIDEBUG_HF_OFFLOAD_DISK VERIDEBUG_HF_LOAD_IN_8BIT VERIDEBUG_HF_DEVICE_MAP\n"
-                "3. On 11GB GPUs (1080 Ti), add disk offload:\n"
-                "     export VERIDEBUG_HF_OFFLOAD_DISK=1\n"
-                "     export VERIDEBUG_HF_GPU_GIB=5\n"
-                "4. For fp16 on a large idle GPU: export VERIDEBUG_HF_BITS=0\n"
-                "If still failing on zeus (ulimit -v ~15GB), use --use-cursor-sdk instead.\n"
-                f"Original: {exc}"
-            ) from exc
-        raise
+
+    load_attempts: list[dict[str, Any]] = [kwargs]
+    if bits is not None and not _use_disk_offload(vram_gib):
+        tight = dict(kwargs)
+        tight["max_memory"] = _quant_load_max_memory(vram_gib, gpu_gib=6)
+        load_attempts.append(tight)
+        cpu_only = dict(kwargs)
+        cpu_only["device_map"] = "cpu"
+        cpu_only.pop("max_memory", None)
+        load_attempts.append(cpu_only)
+
+    last_exc: BaseException | None = None
+    for attempt_idx, attempt_kwargs in enumerate(load_attempts):
+        if attempt_idx > 0:
+            label = "CPU-staged quant" if attempt_kwargs.get("device_map") != "cpu" else "CPU-only quant"
+            print(
+                f"[VeriDebug-HF] Retrying with {label} "
+                f"(device_map={attempt_kwargs.get('device_map')}, "
+                f"max_memory={attempt_kwargs.get('max_memory')})...",
+                flush=True,
+            )
+            torch.cuda.empty_cache()
+        try:
+            _model_singleton = GritLM(model_id, **attempt_kwargs)
+            last_exc = None
+            break
+        except OSError as exc:
+            if "mmap" in str(exc).lower() or "allocate memory" in str(exc).lower():
+                raise RuntimeError(
+                    "Failed to mmap VeriDebug weight shards into RAM.\n"
+                    "zeus ulimit -v is ~15GB per process (cannot be raised) — use 4-bit GPU-only load:\n"
+                    "  unset VERIDEBUG_HF_LOAD_IN_8BIT\n"
+                    "  export VERIDEBUG_HF_BITS=4\n"
+                    "  export VERIDEBUG_HF_DEVICE_MAP=''\n"
+                    "Ask admin to raise ulimit -v if mmap still fails."
+                ) from exc
+            raise
+        except RuntimeError as exc:
+            last_exc = exc
+            if attempt_idx < len(load_attempts) - 1 and _is_cuda_mem_error(exc):
+                continue
+            if _is_cuda_mem_error(exc):
+                raise _cuda_load_failure(exc, vram_gib=vram_gib) from exc
+            raise
+
+    if last_exc is not None:
+        raise last_exc
     _model_id_loaded = model_id
     print(f"[VeriDebug-HF] Model ready on {_model_singleton.device}", flush=True)
     return _model_singleton

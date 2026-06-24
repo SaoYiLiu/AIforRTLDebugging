@@ -14,6 +14,7 @@ import json
 import os
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 # Reuse FixResult shape from cursor_sdk_fixer for drop-in use in react_runner.
@@ -185,6 +186,20 @@ def _quant_bits() -> int | None:
     return None
 
 
+def _offload_dir() -> Path:
+    return Path(os.environ.get("VERIDEBUG_HF_OFFLOAD_DIR", Path.home() / ".cache/veridebug_offload"))
+
+
+def _use_disk_offload(vram_gib: float) -> bool:
+    env = os.environ.get("VERIDEBUG_HF_OFFLOAD_DISK", "").lower()
+    if env in ("1", "true", "yes"):
+        return True
+    if env in ("0", "false", "no"):
+        return False
+    # 1080 Ti + zeus ulimit: keep GPU budget low; spill cold weights to disk (not RAM).
+    return vram_gib <= 12.0
+
+
 def _bitsandbytes_config(torch: Any, *, bits: int) -> Any:
     from transformers import BitsAndBytesConfig
 
@@ -194,6 +209,7 @@ def _bitsandbytes_config(torch: Any, *, bits: int) -> Any:
             bnb_4bit_compute_dtype=torch.float16,
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_type="nf4",
+            bnb_4bit_quant_storage=torch.uint8,
         )
     return BitsAndBytesConfig(
         load_in_8bit=True,
@@ -203,6 +219,8 @@ def _bitsandbytes_config(torch: Any, *, bits: int) -> Any:
 
 def _build_veridebug_model_kwargs() -> dict[str, Any]:
     import torch
+
+    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True,max_split_size_mb:64")
 
     vram_gib = _gpu_vram_gib()
     bits = _quant_bits()
@@ -220,13 +238,33 @@ def _build_veridebug_model_kwargs() -> dict[str, Any]:
                 "  pip install 'bitsandbytes==0.43.1'"
             ) from e
         kwargs["quantization_config"] = _bitsandbytes_config(torch, bits=bits)
-        # Pin to GPU 0 — CPU offload hits zeus ulimit -v (~15GB process cap).
+
         device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "").strip()
-        kwargs["device_map"] = device_map if device_map else {"": 0}
-        print(
-            f"[VeriDebug-HF] {bits}-bit load (GPU {vram_gib:.1f}GB, device_map={kwargs['device_map']})",
-            flush=True,
-        )
+        if device_map:
+            kwargs["device_map"] = device_map
+        elif _use_disk_offload(vram_gib):
+            offload_dir = _offload_dir()
+            offload_dir.mkdir(parents=True, exist_ok=True)
+            gpu_gib = int(os.environ.get("VERIDEBUG_HF_GPU_GIB", "5"))
+            kwargs["offload_folder"] = str(offload_dir)
+            kwargs["offload_state_dict"] = True
+            kwargs["device_map"] = "auto"
+            kwargs["max_memory"] = {
+                0: f"{gpu_gib}GiB",
+                "disk": os.environ.get("VERIDEBUG_HF_DISK_BUDGET", "100GiB"),
+            }
+            print(
+                f"[VeriDebug-HF] {bits}-bit + disk offload "
+                f"(GPU {vram_gib:.1f}GB, max_memory={kwargs['max_memory']}, "
+                f"offload_folder={offload_dir})",
+                flush=True,
+            )
+        else:
+            kwargs["device_map"] = {"": 0}
+            print(
+                f"[VeriDebug-HF] {bits}-bit load (GPU {vram_gib:.1f}GB, device_map={kwargs['device_map']})",
+                flush=True,
+            )
     else:
         device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "auto")
         kwargs["device_map"] = device_map
@@ -305,9 +343,14 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
         if "out of memory" in str(exc).lower():
             raise RuntimeError(
                 "CUDA OOM while loading VeriDebug.\n"
-                "On 1080 Ti use 4-bit (not 8-bit), all layers on GPU 0:\n"
+                "On 1080 Ti try disk offload (default for <=12GB GPUs):\n"
                 "  export VERIDEBUG_HF_BITS=4\n"
-                "  unset VERIDEBUG_HF_LOAD_IN_8BIT VERIDEBUG_HF_DEVICE_MAP\n"
+                "  export VERIDEBUG_HF_OFFLOAD_DISK=1\n"
+                "  export VERIDEBUG_HF_GPU_GIB=5\n"
+                "  unset VERIDEBUG_HF_DEVICE_MAP VERIDEBUG_HF_LOAD_IN_8BIT\n"
+                "Before retry: nvidia-smi  (ensure GPU is idle)\n"
+                "If still failing, this 7B model may not fit zeus 1080 Ti + 15GB ulimit; "
+                "use --use-cursor-sdk instead.\n"
                 f"Original: {exc}"
             ) from exc
         raise

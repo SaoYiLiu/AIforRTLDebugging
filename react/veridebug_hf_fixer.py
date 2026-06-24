@@ -223,12 +223,22 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
 
     try:
         import torch
+    except ImportError as e:
+        raise RuntimeError(
+            "PyTorch failed to import (broken CUDA/NCCL install).\n"
+            "Reinstall a matching wheel, e.g.:\n"
+            "  pip uninstall -y torch torchvision torchaudio\n"
+            "  pip install 'numpy<2' 'torch==2.2.2' "
+            "--index-url https://download.pytorch.org/whl/cu121 --force-reinstall\n"
+            f"Original error: {e}"
+        ) from e
+
+    try:
         from gritlm import GritLM  # type: ignore
     except ImportError as e:
         raise RuntimeError(
             "gritlm is not installed. Install optional deps:\n"
-            "  pip install -r requirements-veridebug-hf.txt\n"
-            "Also requires PyTorch with CUDA for reasonable speed."
+            "  pip install -r requirements-veridebug-hf.txt"
         ) from e
 
     if not torch.cuda.is_available():
@@ -256,13 +266,9 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
         if "mmap" in str(exc).lower() or "allocate memory" in str(exc).lower():
             raise RuntimeError(
                 "Failed to mmap VeriDebug weight shards into RAM.\n"
-                "This usually means low system RAM or a cgroup/ulimit cap on zeus, not just VRAM.\n"
-                "Try:\n"
-                "  free -h && ulimit -v\n"
-                "  pip install bitsandbytes\n"
-                "  export VERIDEBUG_HF_LOAD_IN_8BIT=1\n"
-                "  export VERIDEBUG_HF_DEVICE_MAP=auto\n"
-                "If still failing, run on a node with >=16GB system RAM."
+                "On zeus, check virtual-memory cap: ulimit -v (16000000 ≈ 15GB blocks large mmap).\n"
+                "Try: ulimit -v unlimited\n"
+                "Also ensure 8-bit load:\n"
             ) from exc
         raise
     _model_id_loaded = model_id

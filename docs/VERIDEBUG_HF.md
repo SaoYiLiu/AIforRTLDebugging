@@ -61,7 +61,8 @@ Optional: `export HF_TOKEN=...` for faster Hugging Face downloads.
 | `model type llama_grit` not recognized | Run `bash scripts/fetch_veridebug_modeling.sh`, then `pip install transformers==4.41.2` |
 | CUDA driver too old for PyTorch | Reinstall torch with `cu121` wheel (see above), not `cu124` |
 | NumPy 2.x + torch warning | `pip install 'numpy<2'` |
-| `Cannot allocate memory` loading weights | CUDA was off — model tried CPU mmap of 13GB shards; fix CUDA first |
+| `Cannot allocate memory` loading weights | Often `ulimit -v` (~15GB on zeus) — run `ulimit -v unlimited`; also use 8-bit |
+| `undefined symbol: ncclCommResume` | PyTorch/NCCL mismatch after pip upgrades — reinstall `torch==2.2.2` cu121 |
 | CUDA OOM on 11GB GPU | `VERIDEBUG_HF_DEVICE_MAP=auto` + `VERIDEBUG_HF_TORCH_DTYPE=float16`; or `pip install bitsandbytes` + `VERIDEBUG_HF_LOAD_IN_8BIT=1` |
 
 ## Setup (WSL + GPU)

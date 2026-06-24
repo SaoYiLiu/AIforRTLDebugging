@@ -128,6 +128,36 @@ def _cosine_rank(query_emb: Any, doc_embs: list[Any]) -> list[int]:
     return list(np.argsort(sims)[::-1])
 
 
+_llama_grit_registered = False
+
+
+def _register_llama_grit_architecture() -> None:
+    """Register VeriDebug's custom llama_grit types with transformers."""
+    global _llama_grit_registered
+    if _llama_grit_registered:
+        return
+    try:
+        from react.modeling_llama_gritlm import (  # type: ignore
+            LlamaForCausalLMGrit,
+            LlamaGritConfig,
+            LlamaGritModel,
+        )
+    except ImportError as e:
+        raise RuntimeError(
+            "VeriDebug requires react/modeling_llama_gritlm.py (not bundled in the HF weights).\n"
+            "Run once from the repo root:\n"
+            "  bash scripts/fetch_veridebug_modeling.sh\n"
+            "Or see docs/VERIDEBUG_HF.md"
+        ) from e
+
+    from transformers import AutoConfig, AutoModel, AutoModelForCausalLM
+
+    AutoConfig.register("llama_grit", LlamaGritConfig, exist_ok=True)
+    AutoModel.register(LlamaGritConfig, LlamaGritModel, exist_ok=True)
+    AutoModelForCausalLM.register(LlamaGritConfig, LlamaForCausalLMGrit, exist_ok=True)
+    _llama_grit_registered = True
+
+
 def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool = False) -> Any:
     """Lazy-load GritLM unified model (embedding + generation)."""
     global _model_singleton, _model_id_loaded
@@ -149,6 +179,7 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
     if device_map:
         kwargs["device_map"] = device_map
 
+    _register_llama_grit_architecture()
     print(f"[VeriDebug-HF] Loading {model_id} (this may take a few minutes)...", flush=True)
     _model_singleton = GritLM(model_id, **kwargs)
     _model_id_loaded = model_id

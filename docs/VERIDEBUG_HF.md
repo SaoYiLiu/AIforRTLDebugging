@@ -33,6 +33,35 @@ flowchart LR
 | Apply | — | `apply_line_fix()` patches one line in `TopModule` |
 | Verify | — | existing `run_react_loop()` simulation |
 
+## Setup (Linux GPU server, e.g. zeus)
+
+```bash
+cd ~/AIfordebugging
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Match driver CUDA 12.2 (535.x) — use cu121, not cu124
+pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cu121
+pip install -r requirements-veridebug-hf.txt
+pip install -r requirements.txt
+
+# VeriDebug weights on HF omit the custom llama_grit modeling file
+bash scripts/fetch_veridebug_modeling.sh
+
+export VERIDEBUG_HF_MODEL=LLM-EDA/VeriDebug
+export VERIDEBUG_HF_DEVICE_MAP=auto   # 11GB GPUs: partial GPU + CPU offload
+```
+
+Optional: `export HF_TOKEN=...` for faster Hugging Face downloads.
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `model type llama_grit` not recognized | Run `bash scripts/fetch_veridebug_modeling.sh`, then `pip install transformers==4.41.2` |
+| CUDA driver too old for PyTorch | Reinstall torch with `cu121` wheel (see above), not `cu124` |
+| CUDA OOM on 11GB GPU | Keep `VERIDEBUG_HF_DEVICE_MAP=auto` |
+
 ## Setup (WSL + GPU)
 
 ```bash

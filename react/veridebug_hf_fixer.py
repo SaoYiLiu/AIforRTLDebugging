@@ -166,6 +166,7 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
         return _model_singleton
 
     try:
+        import torch
         from gritlm import GritLM  # type: ignore
     except ImportError as e:
         raise RuntimeError(
@@ -174,13 +175,32 @@ def get_veridebug_model(model_id: str = DEFAULT_MODEL_ID, *, force_reload: bool 
             "Also requires PyTorch with CUDA for reasonable speed."
         ) from e
 
-    kwargs: dict[str, Any] = {"torch_dtype": "auto", "mode": "unified"}
-    device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP")
-    if device_map:
-        kwargs["device_map"] = device_map
+    if not torch.cuda.is_available():
+        raise RuntimeError(
+            "CUDA is not available — VeriDebug (~13GB) will not fit in CPU RAM.\n"
+            "On zeus with driver 535 / CUDA 12.2, reinstall PyTorch cu121:\n"
+            "  pip install 'numpy<2' 'torch==2.2.2' "
+            "--index-url https://download.pytorch.org/whl/cu121 --force-reinstall\n"
+            "Then verify:\n"
+            "  python -c \"import torch; print(torch.cuda.is_available())\""
+        )
+
+    kwargs: dict[str, Any] = {"mode": "unified", "low_cpu_mem_usage": True}
+    device_map = os.environ.get("VERIDEBUG_HF_DEVICE_MAP", "auto")
+    kwargs["device_map"] = device_map
+
+    if os.environ.get("VERIDEBUG_HF_LOAD_IN_8BIT", "").lower() in ("1", "true", "yes"):
+        kwargs["load_in_8bit"] = True
+    else:
+        dtype_name = os.environ.get("VERIDEBUG_HF_TORCH_DTYPE", "float16")
+        kwargs["torch_dtype"] = getattr(torch, dtype_name, torch.float16)
 
     _register_llama_grit_architecture()
-    print(f"[VeriDebug-HF] Loading {model_id} (this may take a few minutes)...", flush=True)
+    print(
+        f"[VeriDebug-HF] Loading {model_id} "
+        f"(device_map={device_map}, cuda={torch.cuda.get_device_name(0)})...",
+        flush=True,
+    )
     _model_singleton = GritLM(model_id, **kwargs)
     _model_id_loaded = model_id
     print(f"[VeriDebug-HF] Model ready on {_model_singleton.device}", flush=True)

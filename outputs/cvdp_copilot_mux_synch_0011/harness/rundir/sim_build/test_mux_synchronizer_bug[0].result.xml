@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782016129" />
-    <testcase name="test_mux_synchronizer_bug" classname="test_mux_synchronizer_bug" file="/src/test_mux_synchronizer_bug.py" lineno="8" time="0.00577545166015625" sim_time_ns="1000.0" ratio_time="173146.63143989432" />
-  </testsuite>
-</testsuites>

@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782012703" />
-    <testcase name="test_data_serializer_single_param" classname="test_data_serializer" file="/src/test_data_serializer.py" lineno="15" time="0.01609516143798828" sim_time_ns="525.0" ratio_time="32618.4985483202" />
-  </testsuite>
-</testsuites>

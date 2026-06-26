@@ -31,6 +31,26 @@ cd ./AIfordebugging
 chmod +x install.sh
 ./install.sh
 source .venv/bin/activate   # after ./install.sh
+
+# Veridebug LLM
+pip install -r requirements-veridebug-hf.txt -r requirements.txt
+pip install -U 'bitsandbytes>=0.43.3'   # GPU 4-bit; skip if CPU-only below
+bash scripts/fetch_veridebug_modeling.sh
+
+export VERIDEBUG_HF_MODEL=LLM-EDA/VeriDebug
+unset VERIDEBUG_HF_OFFLOAD_DISK VERIDEBUG_HF_LOAD_IN_8BIT VERIDEBUG_HF_DEVICE_MAP VERIDEBUG_HF_CPU_ONLY
+export VERIDEBUG_HF_BITS=0      # fp16 on GPU instead of 4-bit (needs more VRAM)
+
+# fp16 on CPU, ~14 GB RAM; slower (~8–20 min/iter)
+export VERIDEBUG_HF_CPU_ONLY=1  
+unset VERIDEBUG_HF_BITS
+
+#If Small GPU
+export VERIDEBUG_HF_MODEL=LLM-EDA/VeriDebug
+export VERIDEBUG_HF_DEVICE_MAP=auto
+export VERIDEBUG_HF_OFFLOAD_DISK=1
+export VERIDEBUG_HF_GPU_GIB=5
+
 ```
 
 ### Environment (Cursor fixer settings)
@@ -146,6 +166,26 @@ Detected when there is no input key.
 The biggest difference is the patch scope. For agentic problem sets, the fixer prompt explicitly lists patch_targets and Cursor must patch only those paths, whereas non-agentic problems usually has one RTL file to fix.
 
 ---
+
+### Replace Cursor Composer with Veridebug LLM 
+```
+PYTHONPATH=. python -m react.react_runner \
+  --prob-id Prob001 \
+  --prompt "third_party/ChipBench/Verilog Debugging/dataset_debug_one_shot_arithmetic/Prob001_continuous_input_sequence_detect_prompt.txt" \
+  --testbench "third_party/ChipBench/Verilog Debugging/dataset_debug_one_shot_arithmetic/Prob001_continuous_input_sequence_detect_test.sv" \
+  --ref "third_party/ChipBench/Verilog Debugging/dataset_debug_one_shot_arithmetic/Prob001_continuous_input_sequence_detect_ref.sv" \
+  --use-veridebug-hf \
+  --max-iters 5
+```
+
+Full batch
+```
+PYTHONPATH=. python run_chipbench_batch.py \
+  --dataset-dir "third_party/ChipBench/Verilog Debugging/dataset_debug_one_shot_arithmetic" \
+  --use-veridebug-hf \
+  --max-iters 5 \
+  --output-root outputs
+```
 
 ## Key research contributions (this project / this semester)
 

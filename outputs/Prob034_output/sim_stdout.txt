@@ -1,8 +1,0 @@
-VCD info: dumpfile wave.vcd opened for output.
-Hint: Output 'remain' has 334 mismatches. First mismatch occurred at time 100.
-Hint: Output 'yellow' has 44 mismatches. First mismatch occurred at time 540.
-Hint: Output 'red' has 34 mismatches. First mismatch occurred at time 110.
-Hint: Total mismatched samples is 334 out of 353 samples
-
-Simulation finished at 1766 ps
-Mismatches: 334 in 353 samples

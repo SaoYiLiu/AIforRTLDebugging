@@ -1,3 +1,0 @@
-source=cursor_sdk_error_focused
-focus_net_count=17
-vcd_trace_signals=['tb.tb_mismatch', 'tb.clock_ref', 'tb.clock_dut', 'tb.red_ref', 'tb.red_dut', 'tb.yellow_ref', 'tb.yellow_dut', 'tb.green_ref', 'tb.green_dut', 'tb.clk', 'tb.rst_n', 'tb.pass_request']

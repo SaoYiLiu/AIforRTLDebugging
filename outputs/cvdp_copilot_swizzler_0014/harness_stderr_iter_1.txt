@@ -1,7 +1,0 @@
- Network cvdp_react_cvdp_copilot_swizzler_0014_1_default Creating 
- Network cvdp_react_cvdp_copilot_swizzler_0014_1_default Created 
- Image cvdp_react_cvdp_copilot_swizzler_0014_1-direct Building 
- Image cvdp_react_cvdp_copilot_swizzler_0014_1-direct Built 
- Container cvdp_react_cvdp_copilot_swizzler_0014_1-direct-run-92f9be15bbeb Creating 
- Container cvdp_react_cvdp_copilot_swizzler_0014_1-direct-run-92f9be15bbeb Created 
-

@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782021348" />
-    <testcase name="test_galois_encryption" classname="test_galois_encryption" file="/src/test_galois_encryption.py" lineno="7" time="1.7202227115631104" sim_time_ns="40150.0" ratio_time="23340.001111552006" />
-  </testsuite>
-</testsuites>

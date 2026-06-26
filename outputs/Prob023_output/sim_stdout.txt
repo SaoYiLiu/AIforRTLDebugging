@@ -1,6 +1,0 @@
-VCD info: dumpfile wave.vcd opened for output.
-Hint: Output 'gray_out' has no mismatches.
-Hint: Total mismatched samples is 0 out of 421 samples
-
-Simulation finished at 2106 ps
-Mismatches: 0 in 421 samples

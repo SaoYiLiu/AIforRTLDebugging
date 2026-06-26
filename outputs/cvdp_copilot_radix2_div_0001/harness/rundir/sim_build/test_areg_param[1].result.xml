@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782016296" />
-    <testcase name="tb_verified_radix2_div" classname="test_radix2_div" file="/src/test_radix2_div.py" lineno="57" time="0.027851343154907227" sim_time_ns="1700.0" ratio_time="61038.3488704555" />
-  </testsuite>
-</testsuites>

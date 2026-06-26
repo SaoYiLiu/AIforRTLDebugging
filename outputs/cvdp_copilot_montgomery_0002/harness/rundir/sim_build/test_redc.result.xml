@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782016032" />
-    <testcase name="test_montgomery_mult" classname="test_montgomery_mult" file="/src/test_montgomery_mult.py" lineno="8" time="0.09204959869384766" sim_time_ns="4505.0" ratio_time="48941.00641311217" />
-  </testsuite>
-</testsuites>

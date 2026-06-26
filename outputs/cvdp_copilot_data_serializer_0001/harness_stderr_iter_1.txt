@@ -1,7 +1,0 @@
- Network cvdp_react_cvdp_copilot_data_serializer_0001_1_default Creating 
- Network cvdp_react_cvdp_copilot_data_serializer_0001_1_default Created 
- Image cvdp_react_cvdp_copilot_data_serializer_0001_1-direct Building 
- Image cvdp_react_cvdp_copilot_data_serializer_0001_1-direct Built 
- Container cvdp_react_cvdp_copilot_data_serializer_0001_1-direct-run-2677bd13cccd Creating 
- Container cvdp_react_cvdp_copilot_data_serializer_0001_1-direct-run-2677bd13cccd Created 
-

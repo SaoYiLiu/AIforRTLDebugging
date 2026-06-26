@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782016362" />
-    <testcase name="test_axis_rgb2ycbcr" classname="axis_rgb2ycbcr_tester" file="/src/axis_rgb2ycbcr_tester.py" lineno="155" time="0.015397787094116211" sim_time_ns="330.0" ratio_time="21431.651053682857" />
-  </testsuite>
-</testsuites>

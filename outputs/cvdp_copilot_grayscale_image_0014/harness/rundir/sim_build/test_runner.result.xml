@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782013637" />
-    <testcase name="test_bug_detection" classname="test_conv3x3" file="/src/test_conv3x3.py" lineno="5" time="0.0028314590454101562" sim_time_ns="120.0" ratio_time="42380.9767598518" />
-  </testsuite>
-</testsuites>

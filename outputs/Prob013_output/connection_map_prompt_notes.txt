@@ -1,3 +1,0 @@
-source=cursor_sdk_error_focused
-focus_net_count=14
-vcd_trace_signals=['tb.tb_mismatch', 'tb.lcm_out_dut', 'tb.lcm_out_ref', 'tb.mcd_out_dut', 'tb.mcd_out_ref', 'tb.vld_out_dut', 'tb.vld_out_ref', 'tb.tb_match', 'tb.vld_in', 'tb.A', 'tb.B', 'tb.clk']

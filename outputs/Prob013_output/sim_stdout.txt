@@ -1,8 +1,0 @@
-VCD info: dumpfile wave.vcd opened for output.
-Hint: Output 'lcm_out' has 389 mismatches. First mismatch occurred at time 5.
-Hint: Output 'mcd_out' has no mismatches.
-Hint: Output 'vld_out' has no mismatches.
-Hint: Total mismatched samples is 389 out of 399 samples
-
-Simulation finished at 1996 ps
-Mismatches: 389 in 399 samples

@@ -1,5 +1,0 @@
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_line_buffer_0003/debug/tb_debug_iter_4.sv:100: syntax error
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_line_buffer_0003/debug/tb_debug_iter_4.sv:252: warning: extra digits given for sized hex constant.
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_line_buffer_0003/debug/tb_debug_iter_4.sv:252: warning: Numeric constant truncated to 64 bits.
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_line_buffer_0003/debug/tb_debug_iter_4.sv:272: syntax error
-/mnt/c/Users/user/Desktop/AIfordebugging/outputs/cvdp_copilot_line_buffer_0003/debug/tb_debug_iter_4.sv:273: error: malformed statement

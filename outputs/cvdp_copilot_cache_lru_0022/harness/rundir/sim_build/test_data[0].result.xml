@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782012432" />
-    <testcase name="test_policy_working" classname="test_fifo_policy" file="/src/test_fifo_policy.py" lineno="110" time="0.10963892936706543" sim_time_ns="4035.0" ratio_time="36802.6213252323" />
-  </testsuite>
-</testsuites>

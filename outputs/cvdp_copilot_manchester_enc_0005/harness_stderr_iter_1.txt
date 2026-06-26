@@ -1,6 +1,0 @@
- Network cvdp_react_cvdp_copilot_manchester_enc_0005_1_default Creating 
- Network cvdp_react_cvdp_copilot_manchester_enc_0005_1_default Created 
- Container cvdp_react_cvdp_copilot_manchester_enc_0005_1-direct-run-72dd9bc67061 Creating 
- Container cvdp_react_cvdp_copilot_manchester_enc_0005_1-direct-run-72dd9bc67061 Created 
-
-[harness timed out after 600s]

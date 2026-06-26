@@ -1,7 +1,0 @@
-============================= test session starts ==============================
-platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.6.0 -- /venv/bin/python
-cachedir: /code/rundir/.cache
-rootdir: /src
-collecting ... collected 4 items
-
-../../src/test_runner.py::test_manchester_even[6-test_sequence0-expected_output0] 

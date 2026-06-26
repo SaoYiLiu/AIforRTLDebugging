@@ -1,6 +1,0 @@
-VCD info: dumpfile wave.vcd opened for output.
-Hint: Output 'match' has 2 mismatches. First mismatch occurred at time 200.
-Hint: Total mismatched samples is 2 out of 455 samples
-
-Simulation finished at 2276 ps
-Mismatches: 2 in 455 samples

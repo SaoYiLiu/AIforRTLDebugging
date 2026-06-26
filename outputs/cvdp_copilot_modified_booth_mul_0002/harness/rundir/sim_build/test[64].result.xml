@@ -1,7 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782015425" />
-    <testcase name="test_signed_sequential_booth_multiplier" classname="test_signed_sequential_booth_multiplier" file="/src/test_signed_sequential_booth_multiplier.py" lineno="17" time="0.11353254318237305" sim_time_ns="8980.0" ratio_time="79096.26392826393" />
-    <testcase name="verify_specific_scenarios" classname="test_signed_sequential_booth_multiplier" file="/src/test_signed_sequential_booth_multiplier.py" lineno="196" time="0.018850326538085938" sim_time_ns="1580.0" ratio_time="83818.17666700395" />
-  </testsuite>
-</testsuites>

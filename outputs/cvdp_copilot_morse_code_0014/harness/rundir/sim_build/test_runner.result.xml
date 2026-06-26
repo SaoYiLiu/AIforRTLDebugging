@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782016070" />
-    <testcase name="test_lut_bug_fix" classname="test_morse_encoder" file="/src/test_morse_encoder.py" lineno="5" time="0.0008168220520019531" sim_time_ns="3.0" ratio_time="3672.77057793345" />
-  </testsuite>
-</testsuites>

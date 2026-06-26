@@ -15,4 +15,7 @@ __pycache__/
 *_sby/
 sby_*/
 
+# Run artifacts
+outputs/
+
 ".venv/" 

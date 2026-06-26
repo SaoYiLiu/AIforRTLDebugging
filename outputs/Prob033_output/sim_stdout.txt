@@ -1,9 +1,0 @@
-VCD info: dumpfile wave.vcd opened for output.
-Hint: Output 'clock' has 456 mismatches. First mismatch occurred at time 220.
-Hint: Output 'red' has 120 mismatches. First mismatch occurred at time 870.
-Hint: Output 'yellow' has 70 mismatches. First mismatch occurred at time 820.
-Hint: Output 'green' has 190 mismatches. First mismatch occurred at time 820.
-Hint: Total mismatched samples is 458 out of 517 samples
-
-Simulation finished at 2586 ps
-Mismatches: 458 in 517 samples

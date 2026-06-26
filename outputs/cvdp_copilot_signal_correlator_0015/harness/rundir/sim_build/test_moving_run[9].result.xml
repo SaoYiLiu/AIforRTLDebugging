@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1782017325" />
-    <testcase name="test_clamping_logic" classname="test_signal_correlator" file="/src/test_signal_correlator.py" lineno="6" time="0.0016334056854248047" sim_time_ns="21.0" ratio_time="12856.57334695665" />
-  </testsuite>
-</testsuites>
